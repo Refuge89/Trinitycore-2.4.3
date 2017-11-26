@@ -13105,7 +13105,6 @@ bool Unit::SetHover(bool enable, bool /*packetOnly = false*/)
         AddUnitMovementFlag(MOVEMENTFLAG_HOVER);
     else
         RemoveUnitMovementFlag(MOVEMENTFLAG_HOVER);
-
     return true;
 }
 
