@@ -141,35 +141,8 @@ struct TC_GAME_API ScriptedAI : public CreatureAI
 
     void AttackStartNoMove(Unit* target);
 
-    // Called at any Damage from any attacker (before damage apply)
-    void DamageTaken(Unit* /*attacker*/, uint32& /*damage*/) override { }
-
     //Called at World update tick
     virtual void UpdateAI(uint32 diff) override;
-
-    //Called at creature death
-    void JustDied(Unit* /*killer*/) override { }
-
-    //Called at creature killing another unit
-    void KilledUnit(Unit* /*victim*/) override { }
-
-    // Called when the creature summon successfully other creature
-    void JustSummoned(Creature* /*summon*/) override { }
-
-    // Called when a summoned creature is despawned
-    void SummonedCreatureDespawn(Creature* /*summon*/) override { }
-
-    // Called when hit by a spell
-    void SpellHit(Unit* /*caster*/, SpellInfo const* /*spell*/) override { }
-
-    // Called when spell hits a target
-    void SpellHitTarget(Unit* /*target*/, SpellInfo const* /*spell*/) override { }
-
-    //Called at waypoint reached or PointMovement end
-    void MovementInform(uint32 /*type*/, uint32 /*id*/) override { }
-
-    // Called when AI is temporarily replaced or put back when possess is applied or removed
-    void OnPossess(bool /*apply*/) { }
 
     // *************
     // Variables
@@ -181,12 +154,6 @@ struct TC_GAME_API ScriptedAI : public CreatureAI
     // *************
     //Pure virtual functions
     // *************
-
-    //Called at creature reset either by death or evade
-    void Reset() override { }
-
-    //Called at creature aggro either by MoveInLOS or Attack Start
-    void JustEngagedWith(Unit* /*who*/) override { }
 
     // Called before JustEngagedWith even before the creature is in combat.
     void AttackStart(Unit* /*target*/) override;
@@ -272,8 +239,8 @@ struct TC_GAME_API ScriptedAI : public CreatureAI
     // return the dungeon or raid difficulty
     Difficulty GetDifficulty() const { return _difficulty; }
 
-    template<class T> inline
-    const T& DUNGEON_MODE(const T& normal5, const T& heroic10) const
+    template <class T>
+    inline T const& DUNGEON_MODE(T const& normal5, T const& heroic10) const
     {
         switch (_difficulty)
         {
