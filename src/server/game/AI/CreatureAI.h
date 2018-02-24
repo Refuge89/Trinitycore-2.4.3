@@ -203,7 +203,7 @@ class TC_GAME_API CreatureAI : public UnitAI
 
         /// == Fields =======================================
 
-        virtual void OnSpellClick(Unit* /*clicker*/, bool& /*result*/) { }
+        virtual void OnSpellClick(Unit* /*clicker*/, bool /*spellClickHandled*/) { }
 
         virtual bool CanSeeAlways(WorldObject const* /*obj*/) { return false; }
 
