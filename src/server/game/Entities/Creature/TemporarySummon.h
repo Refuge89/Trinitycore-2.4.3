@@ -59,7 +59,6 @@ class TC_GAME_API Minion : public TempSummon
         Unit* GetOwner() const { return m_owner; }
         float GetFollowAngle() const override { return m_followAngle; }
         void SetFollowAngle(float angle) { m_followAngle = angle; }
-        bool IsSpiritWolf() const { return GetEntry() == 29264; } // Spirit wolf from feral spirits
         bool IsGuardianPet() const;
     protected:
         Unit* const m_owner;

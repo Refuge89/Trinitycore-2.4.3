@@ -129,7 +129,7 @@ class boss_anzu : public CreatureScript
                             events.ScheduleEvent(EVENT_SPELL_BOMB, Seconds(12));
                             break;
                         case EVENT_SPELL_BOMB:
-                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, [&](Unit* u) { return u && u->getPowerType() == POWER_MANA; }))
+                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, [&](Unit* u) { return u && u->GetPowerType() == POWER_MANA; }))
                             {
                                 DoCast(target, SPELL_SPELL_BOMB);
                                 Talk(SAY_SPELL_BOMB, target);

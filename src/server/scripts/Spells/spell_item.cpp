@@ -2175,7 +2175,7 @@ class spell_item_mad_alchemists_potion : public SpellScript
 
         Unit* target = GetCaster();
 
-        if (target->getPowerType() == POWER_MANA)
+        if (target->GetPowerType() == POWER_MANA)
             availableElixirs.push_back(28509); // Elixir of Major Mageblood (22840)
 
         uint32 chosenElixir = Trinity::Containers::SelectRandomContainerElement(availableElixirs);

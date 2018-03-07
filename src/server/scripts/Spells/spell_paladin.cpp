@@ -723,7 +723,7 @@ class spell_pal_judgement_of_wisdom_mana : public SpellScriptLoader
 
             bool CheckProc(ProcEventInfo& eventInfo)
             {
-                return eventInfo.GetProcTarget()->getPowerType() == POWER_MANA;
+                return eventInfo.GetProcTarget()->GetPowerType() == POWER_MANA;
             }
 
             void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
