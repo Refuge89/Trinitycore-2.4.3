@@ -17,6 +17,7 @@
  */
 
 #include "DisableMgr.h"
+#include "Creature.h"
 #include "DatabaseEnv.h"
 #include "DBCStores.h"
 #include "Log.h"
