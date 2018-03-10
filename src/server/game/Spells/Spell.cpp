@@ -45,6 +45,7 @@
 #include "SpellHistory.h"
 #include "SpellInfo.h"
 #include "SpellMgr.h"
+#include "SpellPackets.h"
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 #include "TradeData.h"
@@ -172,41 +173,40 @@ void SpellCastTargets::Read(ByteBuffer& data, Unit* caster)
     Update(caster);
 }
 
-void SpellCastTargets::Write(ByteBuffer& data)
+void SpellCastTargets::Write(WorldPackets::Spells::SpellTargetData& data)
 {
-    data << uint32(m_targetMask);
+    data.Flags = m_targetMask;
 
     if (m_targetMask & (TARGET_FLAG_UNIT | TARGET_FLAG_CORPSE_ALLY | TARGET_FLAG_GAMEOBJECT | TARGET_FLAG_CORPSE_ENEMY | TARGET_FLAG_UNIT_MINIPET))
-        data << m_objectTargetGUID.WriteAsPacked();
+        data.Unit = m_objectTargetGUID;
 
     if (m_targetMask & (TARGET_FLAG_ITEM | TARGET_FLAG_TRADE_ITEM))
     {
+        data.Item = boost::in_place();
         if (m_itemTarget)
-            data << m_itemTarget->GetPackGUID();
-        else
-            data << uint8(0);
+            data.Item = m_itemTarget->GetGUID();
     }
 
     if (m_targetMask & TARGET_FLAG_SOURCE_LOCATION)
     {
-        data << m_src._transportGUID.WriteAsPacked(); // relative position guid here - transport for example
-        if (m_src._transportGUID)
-            data << m_src._transportOffset.PositionXYZStream();
+        data.SrcLocation = boost::in_place();
+        if (!m_src._transportGUID.IsEmpty())
+            data.SrcLocation = m_src._transportOffset;
         else
-            data << m_src._position.PositionXYZStream();
+            data.SrcLocation = m_src._position;
     }
 
     if (m_targetMask & TARGET_FLAG_DEST_LOCATION)
     {
-        data << m_dst._transportGUID.WriteAsPacked(); // relative position guid here - transport for example
+        data.DstLocation = boost::in_place();
         if (m_dst._transportGUID)
-            data << m_dst._transportOffset.PositionXYZStream();
+            data.DstLocation = m_dst._transportOffset;
         else
-            data << m_dst._position.PositionXYZStream();
+            data.DstLocation = m_dst._position;
     }
 
     if (m_targetMask & TARGET_FLAG_STRING)
-        data << m_strTarget;
+        data.Name = m_strTarget;
 }
 
 ObjectGuid SpellCastTargets::GetOrigUnitTargetGUID() const
@@ -3978,55 +3978,38 @@ void Spell::SendSpellStart()
 
     //TC_LOG_DEBUG("spells", "Sending SMSG_SPELL_START id=%u", m_spellInfo->Id);
 
-    uint32 castFlags = CAST_FLAG_UNKNOWN_2;
-    uint32 schoolImmunityMask = 0;
-    uint32 mechanicImmunityMask = 0;
-    if (Unit* unitCaster = m_caster->ToUnit())
-    {
-        schoolImmunityMask = unitCaster->GetSchoolImmunityMask();
-        mechanicImmunityMask = unitCaster->GetMechanicImmunityMask();
-    }
-
-    if (schoolImmunityMask || mechanicImmunityMask)
-        castFlags |= CAST_FLAG_IMMUNITY;
+    uint16 castFlags = CAST_FLAG_UNKNOWN_2;
 
     if (((IsTriggered() && !m_spellInfo->IsAutoRepeatRangedSpell()) || m_triggeredByAuraSpell) && !m_cast_count)
         castFlags |= CAST_FLAG_PENDING;
 
     if (m_spellInfo->HasAttribute(SPELL_ATTR0_REQ_AMMO) || m_spellInfo->HasAttribute(SPELL_ATTR0_CU_NEEDS_AMMO_DATA))
         castFlags |= CAST_FLAG_AMMO;
-    if ((m_caster->GetTypeId() == TYPEID_PLAYER ||
-        (m_caster->GetTypeId() == TYPEID_UNIT && m_caster->ToCreature()->IsPet()))
-         && m_spellInfo->PowerType != POWER_HEALTH)
-        castFlags |= CAST_FLAG_POWER_LEFT_SELF;
 
-    WorldPacket data(SMSG_SPELL_START, 8 + 8 + 4 + 4 + 2);
+    WorldPackets::Spells::SpellStart packet;
+    WorldPackets::Spells::SpellCastData& castData = packet.Cast;
+
     if (m_CastItem)
-        data << m_CastItem->GetPackGUID();
+        castData.CasterGUID = m_CastItem->GetGUID();
     else
-        data << m_caster->GetPackGUID();
+        castData.CasterGUID = m_caster->GetGUID();
 
-    data << m_caster->GetPackGUID();
-    data << uint8(m_cast_count);                            // pending spell cast?
-    data << uint32(m_spellInfo->Id);                        // spellId
-    data << uint32(castFlags);                              // cast flags
-    data << int32(m_timer);                                 // delay?
+    castData.CasterUnit = m_caster->GetGUID();
+    castData.SendCastID = true;
+    castData.CastID = m_cast_count;
+    castData.SpellID = m_spellInfo->Id;
+    castData.CastFlags = castFlags;
+    castData.CastTime = m_timer;
 
-    m_targets.Write(data);
-
-    if (castFlags & CAST_FLAG_POWER_LEFT_SELF)
-        data << uint32(ASSERT_NOTNULL(m_caster->ToUnit())->GetPower((Powers)m_spellInfo->PowerType));
+    m_targets.Write(castData.Target);
 
     if (castFlags & CAST_FLAG_AMMO)
-        WriteAmmoToPacket(&data);
-
-    if (castFlags & CAST_FLAG_IMMUNITY)
     {
-        data << uint32(schoolImmunityMask);
-        data << uint32(mechanicImmunityMask);
+        castData.Ammo = boost::in_place();
+        UpdateSpellCastDataAmmo(*castData.Ammo);
     }
 
-    m_caster->SendMessageToSet(&data, true);
+    m_caster->SendMessageToSet(packet.Write(), true);
 }
 
 void Spell::SendSpellGo()
@@ -4035,9 +4018,7 @@ void Spell::SendSpellGo()
     if (!IsNeedSendToClient())
         return;
 
-    //TC_LOG_DEBUG("spells", "Sending SMSG_SPELL_GO id=%u", m_spellInfo->Id);
-
-    uint32 castFlags = CAST_FLAG_UNKNOWN_9;
+    uint16 castFlags = CAST_FLAG_UNKNOWN_9;
 
     // triggered spells with spell visual != 0
     if (((IsTriggered() && !m_spellInfo->IsAutoRepeatRangedSpell()) || m_triggeredByAuraSpell) && !m_cast_count)
@@ -4046,67 +4027,33 @@ void Spell::SendSpellGo()
     if (m_spellInfo->HasAttribute(SPELL_ATTR0_REQ_AMMO) || m_spellInfo->HasAttribute(SPELL_ATTR0_CU_NEEDS_AMMO_DATA))
         castFlags |= CAST_FLAG_AMMO;                        // arrows/bullets visual
 
-    if ((m_caster->GetTypeId() == TYPEID_PLAYER ||
-        (m_caster->GetTypeId() == TYPEID_UNIT && m_caster->ToCreature()->IsPet()))
-        && m_spellInfo->PowerType != POWER_HEALTH)
-        castFlags |= CAST_FLAG_POWER_LEFT_SELF;
+    WorldPackets::Spells::SpellGo packet;
+    WorldPackets::Spells::SpellCastData& castData = packet.Cast;
 
-    if (m_targets.HasTraj())
-        castFlags |= CAST_FLAG_ADJUST_MISSILE;
-
-    if (!m_spellInfo->StartRecoveryTime)
-        castFlags |= CAST_FLAG_NO_GCD;
-
-    WorldPacket data(SMSG_SPELL_GO, 50);                    // guess size
     if (m_CastItem)
-        data << m_CastItem->GetPackGUID();
+        castData.CasterGUID = m_CastItem->GetGUID();
     else
-        data << m_caster->GetPackGUID();
+        castData.CasterGUID = m_caster->GetGUID();
 
-    data << m_caster->GetPackGUID();
-    data << uint8(m_cast_count);                            // pending spell cast?
-    data << uint32(m_spellInfo->Id);                        // spellId
-    data << uint32(castFlags);                              // cast flags
-    data << uint32(GameTime::GetGameTimeMS());              // timestamp
+    castData.CasterUnit = m_caster->GetGUID();
+    castData.SpellID = m_spellInfo->Id;
+    castData.CastFlags = castFlags;
+    castData.CastTime = GameTime::GetGameTimeMS();
 
-    WriteSpellGoTargets(&data);
+    UpdateSpellCastDataTargets(castData);
 
-    m_targets.Write(data);
-
-    if (castFlags & CAST_FLAG_POWER_LEFT_SELF)
-        data << uint32(ASSERT_NOTNULL(m_caster->ToUnit())->GetPower((Powers)m_spellInfo->PowerType));
-
-    if (castFlags & CAST_FLAG_ADJUST_MISSILE)
-    {
-        data << m_targets.GetElevation();
-        data << uint32(m_delayMoment);
-    }
+    m_targets.Write(castData.Target);
 
     if (castFlags & CAST_FLAG_AMMO)
-        WriteAmmoToPacket(&data);
-
-    if (castFlags & CAST_FLAG_VISUAL_CHAIN)
     {
-        data << uint32(0);
-        data << uint32(0);
+        castData.Ammo = boost::in_place();
+        UpdateSpellCastDataAmmo(*castData.Ammo);
     }
 
-    if (m_targets.GetTargetMask() & TARGET_FLAG_DEST_LOCATION)
-    {
-        data << uint8(0);
-    }
-
-    // should be sent to self only
-    if (castFlags & CAST_FLAG_POWER_LEFT_SELF)
-    {
-        if (Player* player = m_caster->GetAffectingPlayer())
-            player->SendDirectMessage(&data);
-    }
-    else
-        m_caster->SendMessageToSet(&data, true);
+    m_caster->SendMessageToSet(packet.Write(), true);
 }
 
-void Spell::WriteAmmoToPacket(WorldPacket* data)
+void Spell::UpdateSpellCastDataAmmo(WorldPackets::Spells::SpellAmmo& ammo)
 {
     uint32 ammoInventoryType = 0;
     uint32 ammoDisplayID = 0;
@@ -4174,13 +4121,16 @@ void Spell::WriteAmmoToPacket(WorldPacket* data)
         }
     }
 
-    *data << uint32(ammoDisplayID);
-    *data << uint32(ammoInventoryType);
+    ammo.DisplayID = ammoDisplayID;
+    ammo.InventoryType = ammoInventoryType;
 }
 
 /// Writes miss and hit targets for a SMSG_SPELL_GO packet
-void Spell::WriteSpellGoTargets(WorldPacket* data)
+void Spell::UpdateSpellCastDataTargets(WorldPackets::Spells::SpellCastData& data)
 {
+    data.HitTargets = boost::in_place();
+    data.MissStatus = boost::in_place();
+
     // This function also fill data for channeled spells:
     // m_needAliveTargetMask req for stop channelig if one target die
     for (TargetInfo& targetInfo : m_UniqueTargetInfo)
@@ -4188,53 +4138,31 @@ void Spell::WriteSpellGoTargets(WorldPacket* data)
         if (targetInfo.EffectMask == 0)                  // No effect apply - all immuned add state
             // possibly SPELL_MISS_IMMUNE2 for this??
             targetInfo.MissCondition = SPELL_MISS_IMMUNE2;
-    }
 
-    // Hit and miss target counts are both uint8, that limits us to 255 targets for each
-    // sending more than 255 targets crashes the client (since count sent would be wrong)
-    // Spells like 40647 (with a huge radius) can easily reach this limit (spell might need
-    // target conditions but we still need to limit the number of targets sent and keeping
-    // correct count for both hit and miss).
-
-    uint32 hit = 0;
-    size_t hitPos = data->wpos();
-    *data << (uint8)0; // placeholder
-    for (auto ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end() && hit < 255; ++ihit)
-    {
-        if (ihit->MissCondition == SPELL_MISS_NONE)       // Add only hits
+        if (targetInfo.MissCondition == SPELL_MISS_NONE)       // Add only hits
         {
-            *data << uint64(ihit->TargetGUID);
-            m_channelTargetEffectMask |= ihit->EffectMask;
-            ++hit;
+            data.HitTargets->push_back(targetInfo.TargetGUID);
+
+            m_channelTargetEffectMask |= targetInfo.EffectMask;
+        }
+        else // misses
+        {
+            WorldPackets::Spells::SpellMissStatus missStatus;
+            missStatus.TargetGUID = targetInfo.TargetGUID;
+            missStatus.Reason = targetInfo.MissCondition;
+            if (targetInfo.MissCondition == SPELL_MISS_REFLECT)
+                missStatus.ReflectStatus = targetInfo.ReflectResult;
+
+            data.MissStatus->push_back(missStatus);
         }
     }
 
-    for (auto ighit = m_UniqueGOTargetInfo.begin(); ighit != m_UniqueGOTargetInfo.end() && hit < 255; ++ighit)
-    {
-        *data << uint64(ighit->TargetGUID);                 // Always hits
-        ++hit;
-    }
+    for (GOTargetInfo const& targetInfo : m_UniqueGOTargetInfo)
+        data.HitTargets->push_back(targetInfo.TargetGUID); // Always hits
 
-    uint32 miss = 0;
-    size_t missPos = data->wpos();
-    *data << (uint8)0; // placeholder
-    for (auto ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end() && miss < 255; ++ihit)
-    {
-        if (ihit->MissCondition != SPELL_MISS_NONE)        // Add only miss
-        {
-            *data << uint64(ihit->TargetGUID);
-            *data << uint8(ihit->MissCondition);
-            if (ihit->MissCondition == SPELL_MISS_REFLECT)
-                *data << uint8(ihit->ReflectResult);
-            ++miss;
-        }
-    }
     // Reset m_needAliveTargetMask for non channeled spell
     if (!m_spellInfo->IsChanneled())
         m_channelTargetEffectMask = 0;
-
-    data->put<uint8>(hitPos, (uint8)hit);
-    data->put<uint8>(missPos, (uint8)miss);
 }
 
 void Spell::SendLogExecute()
