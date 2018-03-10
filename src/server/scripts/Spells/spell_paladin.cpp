@@ -452,6 +452,57 @@ public:
     }
 };
 
+//   498 - Divine Protection
+//   642 - Divine Shield
+// -1022 - Hand of Protection
+class spell_pal_immunities : public SpellScript
+{
+    PrepareSpellScript(spell_pal_immunities);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo(
+            {
+                SPELL_PALADIN_FORBEARANCE,
+                SPELL_PALADIN_AVENGING_WRATH_MARKER,
+                SPELL_PALADIN_IMMUNE_SHIELD_MARKER
+            });
+    }
+
+    SpellCastResult CheckCast()
+    {
+        Unit* caster = GetCaster();
+
+        // for HoP
+        Unit* target = GetExplTargetUnit();
+        if (!target)
+            target = caster;
+
+        // "Cannot be used within $61987d. of using Avenging Wrath."
+        if (target->HasAura(SPELL_PALADIN_FORBEARANCE) || target->HasAura(SPELL_PALADIN_AVENGING_WRATH_MARKER))
+            return SPELL_FAILED_TARGET_AURASTATE;
+
+        return SPELL_CAST_OK;
+    }
+
+    void TriggerDebuffs()
+    {
+        if (Unit* target = GetHitUnit())
+        {
+            // Blizz seems to just apply aura without bothering to cast
+            GetCaster()->AddAura(SPELL_PALADIN_FORBEARANCE, target);
+            GetCaster()->AddAura(SPELL_PALADIN_AVENGING_WRATH_MARKER, target);
+            GetCaster()->AddAura(SPELL_PALADIN_IMMUNE_SHIELD_MARKER, target);
+        }
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_pal_immunities::CheckCast);
+        AfterHit += SpellHitFn(spell_pal_immunities::TriggerDebuffs);
+    }
+};
+
 // -20234 - Improved Lay on Hands
 class spell_pal_improved_lay_of_hands : public SpellScriptLoader
 {
@@ -1274,6 +1325,7 @@ void AddSC_paladin_spell_scripts()
     new spell_pal_eye_for_an_eye();
     new spell_pal_holy_shock();
     new spell_pal_illumination();
+    RegisterSpellScript(spell_pal_immunities);
     new spell_pal_improved_lay_of_hands();
     new spell_pal_item_healing_discount();
     new spell_pal_item_t6_trinket();

@@ -661,6 +661,27 @@ class spell_mage_ice_barrier : public SpellScriptLoader
         }
 };
 
+// 45438 - Ice Block
+class spell_mage_ice_block : public SpellScript
+{
+    PrepareSpellScript(spell_mage_ice_block);
+
+    bool Validate(SpellInfo const* spellInfo) override
+    {
+        return ValidateSpellInfo({ spellInfo->ExcludeTargetAuraSpell });
+    }
+
+    void TriggerHypothermia()
+    {
+        GetCaster()->CastSpell(nullptr, GetSpellInfo()->ExcludeTargetAuraSpell, true);
+    }
+
+    void Register() override
+    {
+        AfterHit += SpellHitFn(spell_mage_ice_block::TriggerHypothermia);
+    }
+};
+
 // -11119 - Ignite
 class spell_mage_ignite : public SpellScriptLoader
 {
@@ -975,6 +996,7 @@ void AddSC_mage_spell_scripts()
     new spell_mage_gen_extra_effects();
     new spell_mage_hot_streak();
     new spell_mage_ice_barrier();
+    RegisterSpellScript(spell_mage_ice_block);
     new spell_mage_ignite();
     new spell_mage_magic_absorption();
     new spell_mage_mana_shield();
