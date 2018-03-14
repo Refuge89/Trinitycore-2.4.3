@@ -504,6 +504,20 @@ void Player::UpdateShieldBlockValue()
 
 void Player::CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, bool addTotalPct, float& minDamage, float& maxDamage, uint8 damageIndex) const
 {
+    // Only proto damage, not affected by any mods
+    if (damageIndex != 0)
+    {
+        minDamage = 0.0f;
+        maxDamage = 0.0f;
+
+        if (!IsInFeralForm() && CanUseAttackType(attType))
+        {
+            minDamage = GetWeaponDamageRange(attType, MINDAMAGE, damageIndex);
+            maxDamage = GetWeaponDamageRange(attType, MAXDAMAGE, damageIndex);
+        }
+        return;
+    }
+
     UnitMods unitMod;
 
     switch (attType)
@@ -522,27 +536,19 @@ void Player::CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, bo
 
     float const attackPowerMod = std::max(GetAPMultiplier(attType, normalized), 0.25f);
 
-    float baseValue = GetFlatModifierValue(unitMod, BASE_VALUE);
-    if (damageIndex == 0) // apply AP bonus only to primary weapon damage
-        baseValue += GetTotalAttackPowerValue(attType) / 14.0f * attackPowerMod;
+    float baseValue  = GetFlatModifierValue(unitMod, BASE_VALUE);
+    baseValue += GetTotalAttackPowerValue(attType) / 14.0f * attackPowerMod;
 
     float basePct = GetPctModifierValue(unitMod, BASE_PCT);
     float totalValue = GetFlatModifierValue(unitMod, TOTAL_VALUE);
     float totalPct = addTotalPct ? GetPctModifierValue(unitMod, TOTAL_PCT) : 1.0f;
 
-    float weaponMinDamage = GetWeaponDamageRange(attType, MINDAMAGE, damageIndex);
-    float weaponMaxDamage = GetWeaponDamageRange(attType, MAXDAMAGE, damageIndex);
+    float weaponMinDamage = GetWeaponDamageRange(attType, MINDAMAGE);
+    float weaponMaxDamage = GetWeaponDamageRange(attType, MAXDAMAGE);
 
-    // check if player is druid and in cat or bear forms (only primary damage)
+    // check if player is druid and in cat or bear forms
     if (IsInFeralForm())
     {
-        if (damageIndex != 0)
-        {
-            minDamage = 0.f;
-            maxDamage = 0.f;
-            return;
-        }
-
         uint8 lvl = getLevel();
         if (lvl > 60)
             lvl = 60;
@@ -552,8 +558,8 @@ void Player::CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, bo
     }
     else if (!CanUseAttackType(attType)) // check if player not in form but still can't use (disarm case)
     {
-        // set secondary damages to 0 by default
-        if (damageIndex != 0 || attType != BASE_ATTACK)
+        // cannot use ranged/off attack, set values to 0
+        if (attType != BASE_ATTACK)
         {
             minDamage = 0.f;
             maxDamage = 0.f;
@@ -563,7 +569,7 @@ void Player::CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, bo
         weaponMinDamage = BASE_MINDAMAGE;
         weaponMaxDamage = BASE_MAXDAMAGE;
     }
-    else if (damageIndex == 0 && attType == RANGED_ATTACK) // add ammo DPS to ranged primary damage
+    else if (attType == RANGED_ATTACK) // add ammo DPS to ranged primary damage
     {
         weaponMinDamage += GetAmmoDPS() * attackPowerMod;
         weaponMaxDamage += GetAmmoDPS() * attackPowerMod;
