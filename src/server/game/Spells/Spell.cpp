@@ -2761,10 +2761,9 @@ void Spell::DoSpellEffectHit(Unit* unit, uint8 effIndex, TargetInfo& hitInfo)
                 }
             }
             else
-            {
-                hitInfo.HitAura = _spellAura;
                 _spellAura->AddStaticApplication(unit, aura_effmask);
-            }
+
+            hitInfo.HitAura = _spellAura;
         }
     }
 
