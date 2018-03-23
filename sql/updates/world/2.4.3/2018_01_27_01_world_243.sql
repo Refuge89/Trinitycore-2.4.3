@@ -1,0 +1,12 @@
+DELETE FROM `creature_onkill_reputation` WHERE `RewOnKillRepFaction1` OR `RewOnKillRepFaction2` IN (1052,
+1156,
+1050,
+1068,
+1094,
+1126,
+1064,
+1067,
+1085,
+1124,
+1104,
+1105);

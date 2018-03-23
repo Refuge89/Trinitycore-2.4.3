@@ -1,0 +1,40 @@
+DELETE FROM `disables` WHERE `sourceType` = 3 AND `entry` IN (10,
+11);
+
+DELETE FROM `disables` WHERE `sourceType` = 7 AND `entry` IN (650,
+649);
+
+DELETE FROM `disables` WHERE `sourceType` = 2 AND `entry` IN (650);
+
+DELETE FROM `disables` WHERE `sourceType` = 0 AND `entry` IN (45323,
+53038,
+31696,
+52227,
+52228,
+48188,
+56940,
+54114,
+69922,
+69956,
+46171,
+50439,
+47405,
+47316,
+47149,
+47117,
+58515,
+58518,
+71599,
+71024,
+51964,
+70460,
+62266,
+52212,
+45425,
+62042,
+64767,
+45537,
+66636,
+49308,
+45949,
+50563);

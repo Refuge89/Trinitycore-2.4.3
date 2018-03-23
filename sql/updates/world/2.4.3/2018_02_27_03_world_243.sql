@@ -1,0 +1,9 @@
+DELETE FROM `game_event_gameobject` WHERE `guid` IN (78410,
+78411,
+78412,
+78413,
+78414,
+78415,
+78419,
+78539,
+85101);

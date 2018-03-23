@@ -1,0 +1,1 @@
+DELETE FROM `spell_learn_spell` WHERE `entry` IN (53428, 58984);

@@ -1,0 +1,5 @@
+DELETE FROM `spell_pet_auras` WHERE `spell` IN (56314,
+56315,
+56316,
+56317,
+56318);
