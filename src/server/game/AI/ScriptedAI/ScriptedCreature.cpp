@@ -314,13 +314,13 @@ SpellInfo const* ScriptedAI::SelectSpell(Unit* target, uint32 school, uint32 mec
             continue;
 
         //Check if the spell meets our range requirements
-        if (rangeMin && me->GetSpellMinRangeForTarget(target, tempSpell) < rangeMin)
+        if (rangeMin && tempSpell->GetMinRange() < rangeMin)
             continue;
-        if (rangeMax && me->GetSpellMaxRangeForTarget(target, tempSpell) > rangeMax)
+        if (rangeMax && tempSpell->GetMaxRange() > rangeMax)
             continue;
 
         //Check if our target is in range
-        if (me->IsWithinDistInMap(target, float(me->GetSpellMinRangeForTarget(target, tempSpell))) || !me->IsWithinDistInMap(target, float(me->GetSpellMaxRangeForTarget(target, tempSpell))))
+        if (me->IsWithinDistInMap(target, tempSpell->GetMinRange()) || !me->IsWithinDistInMap(target, tempSpell->GetMaxRange()))
             continue;
 
         //All good so lets add it to the spell list

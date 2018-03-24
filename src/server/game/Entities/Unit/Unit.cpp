@@ -8010,7 +8010,7 @@ float Unit::GetPPMProcChance(uint32 WeaponSpeed, float PPM, SpellInfo const* spe
     return std::floor((WeaponSpeed * PPM) / 600.0f);   // result is chance in percents (probability = Speed_in_sec * (PPM / 60))
 }
 
-void Unit::Mount(uint32 mount, uint32 creatureEntry)
+void Unit::Mount(uint32 mount)
 {
     if (mount)
         SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, mount);
@@ -9127,22 +9127,6 @@ void Unit::ClearDiminishings()
 {
     for (DiminishingReturn& dim : m_Diminishing)
         dim.Clear();
-}
-
-float Unit::GetSpellMaxRangeForTarget(Unit const* target, SpellInfo const* spellInfo) const
-{
-    if (!spellInfo->RangeEntry)
-        return 0;
-
-    return spellInfo->GetMaxRange();
-}
-
-float Unit::GetSpellMinRangeForTarget(Unit const* target, SpellInfo const* spellInfo) const
-{
-    if (!spellInfo->RangeEntry)
-        return 0;
-
-    return spellInfo->GetMinRange();
 }
 
 uint32 Unit::GetCreatureType() const

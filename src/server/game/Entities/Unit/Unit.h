@@ -771,10 +771,6 @@ class TC_GAME_API Unit : public WorldObject
         void ApplyDiminishingAura(DiminishingGroup group, bool apply);
         void ClearDiminishings();
 
-        // target dependent range checks
-        float GetSpellMaxRangeForTarget(Unit const* target, SpellInfo const* spellInfo) const;
-        float GetSpellMinRangeForTarget(Unit const* target, SpellInfo const* spellInfo) const;
-
         virtual void Update(uint32 time) override;
 
         void setAttackTimer(WeaponAttackType type, uint32 time) { m_attackTimer[type] = time; }
@@ -919,7 +915,7 @@ class TC_GAME_API Unit : public WorldObject
 
         bool IsMounted() const { return HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNT); }
         uint32 GetMountID() const { return GetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID); }
-        void Mount(uint32 mount, uint32 creatureEntry = 0);
+        void Mount(uint32 mount);
         void Dismount();
 
         uint32 GetMaxSkillValueForLevel(Unit const* target = nullptr) const { return (target ? getLevelForTarget(target) : getLevel()) * 5; }

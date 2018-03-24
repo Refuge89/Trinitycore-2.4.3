@@ -321,8 +321,8 @@ bool SpellTargetSelector::operator()(Unit const* target) const
                 meleeRange = std::max(meleeRange, NOMINAL_MELEE_RANGE);
             }
 
-            minRange = _caster->GetSpellMinRangeForTarget(target, _spellInfo) + meleeRange;
-            maxRange = _caster->GetSpellMaxRangeForTarget(target, _spellInfo);
+            minRange = _spellInfo->GetMinRange() + meleeRange;
+            maxRange = _spellInfo->GetMaxRange();
 
             rangeMod = _caster->GetCombatReach();
             rangeMod += target->GetCombatReach();
