@@ -46,7 +46,7 @@ void BuildPartyLockDungeonBlock(WorldPacket& data, lfg::LfgLockPartyMap const& l
     }
 }
 
-void WorldSession::HandleLfgJoinOpcode(WorldPacket& recvData)
+void WorldSession::HandleLfgJoinOpcode(WorldPacket& /*recvData*/)
 {
     TC_LOG_DEBUG("lfg", "CMSG_LFG_JOIN %s", GetPlayerInfo().c_str());
 

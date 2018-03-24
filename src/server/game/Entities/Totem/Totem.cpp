@@ -149,7 +149,7 @@ void Totem::UnSummon(uint32 msTime)
     AddObjectToRemoveList();
 }
 
-bool Totem::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index, Unit* caster) const
+bool Totem::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index) const
 {
     /// @todo possibly all negative auras immune?
     if (GetEntry() == 5925)
@@ -166,5 +166,5 @@ bool Totem::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index, Uni
             break;
     }
 
-    return Creature::IsImmunedToSpellEffect(spellInfo, index, caster);
+    return Creature::IsImmunedToSpellEffect(spellInfo, index);
 }

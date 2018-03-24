@@ -2371,7 +2371,7 @@ void AuraEffect::HandleAuraMounted(AuraApplication const* aurApp, uint8 mode, bo
                     displayId = 0;
         }
 
-        target->Mount(displayId, creatureEntry);
+        target->Mount(displayId);
     }
     else
     {

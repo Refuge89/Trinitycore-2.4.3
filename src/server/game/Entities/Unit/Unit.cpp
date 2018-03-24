@@ -1141,7 +1141,7 @@ void Unit::CalculateMeleeDamage(Unit* victim, CalcDamageInfo* damageInfo, Weapon
         damage += CalculateDamage(damageInfo->AttackType, false, addPctMods, (1 << i));
         // Add melee damage bonus
         damage = MeleeDamageBonusDone(damageInfo->Target, damage, damageInfo->AttackType, nullptr, schoolMask);
-        damage = damageInfo->Target->MeleeDamageBonusTaken(this, damage, damageInfo->AttackType, nullptr, schoolMask);
+        damage = damageInfo->Target->MeleeDamageBonusTaken(this, damage, damageInfo->AttackType, nullptr);
 
         // Script Hook For CalculateMeleeDamage -- Allow scripts to change the Damage pre class mitigation calculations
         sScriptMgr->ModifyMeleeDamage(damageInfo->Target, damageInfo->Attacker, damage);
@@ -7664,7 +7664,7 @@ bool Unit::IsImmunedToSpell(SpellInfo const* spellInfo, Unit* caster) const
         if (!spellInfo->Effects[i].IsEffect())
             continue;
 
-        if (!IsImmunedToSpellEffect(spellInfo, i, caster))
+        if (!IsImmunedToSpellEffect(spellInfo, i))
         {
             immuneToAllEffects = false;
             break;
@@ -7726,7 +7726,7 @@ uint32 Unit::GetMechanicImmunityMask() const
     return mask;
 }
 
-bool Unit::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index, Unit* caster) const
+bool Unit::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index) const
 {
     if (!spellInfo || !spellInfo->Effects[index].IsEffect())
         return false;
@@ -7888,7 +7888,7 @@ uint32 Unit::MeleeDamageBonusDone(Unit* victim, uint32 pdamage, WeaponAttackType
     return uint32(std::max(tmpDamage, 0.0f));
 }
 
-uint32 Unit::MeleeDamageBonusTaken(Unit* attacker, uint32 pdamage, WeaponAttackType attType, SpellInfo const* spellProto /*= nullptr*/, SpellSchoolMask damageSchoolMask /*= SPELL_SCHOOL_MASK_NORMAL*/)
+uint32 Unit::MeleeDamageBonusTaken(Unit* attacker, uint32 pdamage, WeaponAttackType attType, SpellInfo const* spellProto /*= nullptr*/)
 {
     if (pdamage == 0)
         return 0;
@@ -11969,7 +11969,7 @@ Aura* Unit::AddAura(SpellInfo const* spellInfo, uint8 effMask, Unit* target)
     {
         if (!(effMask & (1 << i)))
             continue;
-        if (target->IsImmunedToSpellEffect(spellInfo, i, this))
+        if (target->IsImmunedToSpellEffect(spellInfo, i))
             effMask &= ~(1 << i);
     }
 

@@ -594,7 +594,7 @@ void Aura::UpdateTargetMap(Unit* caster, bool apply)
         // check target immunities
         for (uint8 effIndex = 0; effIndex < MAX_SPELL_EFFECTS; ++effIndex)
         {
-            if (itr->first->IsImmunedToSpellEffect(GetSpellInfo(), effIndex, caster))
+            if (itr->first->IsImmunedToSpellEffect(GetSpellInfo(), effIndex))
                 itr->second &= ~(1 << effIndex);
         }
         if (!itr->second
