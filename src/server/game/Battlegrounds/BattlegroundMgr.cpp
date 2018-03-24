@@ -25,8 +25,6 @@
 #include "BattlegroundNA.h"
 #include "BattlegroundBE.h"
 #include "BattlegroundRL.h"
-#include "BattlegroundDS.h"
-#include "BattlegroundRV.h"
 #include "Common.h"
 #include "Containers.h"
 #include "Chat.h"
@@ -391,12 +389,6 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId original
         case BATTLEGROUND_RL:
             bg = new BattlegroundRL(*(BattlegroundRL*)bg_template);
             break;
-        case BATTLEGROUND_DS:
-            bg = new BattlegroundDS(*(BattlegroundDS*)bg_template);
-            break;
-        case BATTLEGROUND_RV:
-            bg = new BattlegroundRV(*(BattlegroundRV*)bg_template);
-            break;
         case BATTLEGROUND_RB:
         case BATTLEGROUND_AA:
         default:
@@ -469,12 +461,6 @@ bool BattlegroundMgr::CreateBattleground(BattlegroundTemplate const* bgTemplate)
                 break;
             case BATTLEGROUND_RL:
                 bg = new BattlegroundRL();
-                break;
-            case BATTLEGROUND_DS:
-                bg = new BattlegroundDS();
-                break;
-            case BATTLEGROUND_RV:
-                bg = new BattlegroundRV();
                 break;
             case BATTLEGROUND_AA:
                 bg = new Battleground();
@@ -626,13 +612,12 @@ void BattlegroundMgr::InitAutomaticArenaPointDistribution()
     TC_LOG_DEBUG("bg.battleground", "Automatic Arena Point Distribution initialized.");
 }
 
-void BattlegroundMgr::BuildBattlegroundListPacket(WorldPacket* data, ObjectGuid guid, Player* player, BattlegroundTypeId bgTypeId, uint8 fromWhere)
+void BattlegroundMgr::BuildBattlegroundListPacket(WorldPacket* data, ObjectGuid guid, Player* player, BattlegroundTypeId bgTypeId)
 {
     if (!player)
         return;
 
     uint32 winner_kills = player->GetRandomWinner() ? sWorld->getIntConfig(CONFIG_BG_REWARD_WINNER_HONOR_LAST) : sWorld->getIntConfig(CONFIG_BG_REWARD_WINNER_HONOR_FIRST);
-    uint32 winner_arena = player->GetRandomWinner() ? sWorld->getIntConfig(CONFIG_BG_REWARD_WINNER_ARENA_LAST) : sWorld->getIntConfig(CONFIG_BG_REWARD_WINNER_ARENA_FIRST);
     uint32 loser_kills = player->GetRandomWinner() ? sWorld->getIntConfig(CONFIG_BG_REWARD_LOSER_HONOR_LAST) : sWorld->getIntConfig(CONFIG_BG_REWARD_LOSER_HONOR_FIRST);
 
     winner_kills = Trinity::Honor::hk_honor_at_level(player->getLevel(), float(winner_kills));
@@ -705,8 +690,6 @@ bool BattlegroundMgr::IsArenaType(BattlegroundTypeId bgTypeId)
     return bgTypeId == BATTLEGROUND_AA
             || bgTypeId == BATTLEGROUND_BE
             || bgTypeId == BATTLEGROUND_NA
-            || bgTypeId == BATTLEGROUND_DS
-            || bgTypeId == BATTLEGROUND_RV
             || bgTypeId == BATTLEGROUND_RL;
 }
 
@@ -726,10 +709,8 @@ BattlegroundQueueTypeId BattlegroundMgr::BGQueueTypeId(BattlegroundTypeId bgType
             return BATTLEGROUND_QUEUE_WS;
         case BATTLEGROUND_AA:
         case BATTLEGROUND_BE:
-        case BATTLEGROUND_DS:
         case BATTLEGROUND_NA:
         case BATTLEGROUND_RL:
-        case BATTLEGROUND_RV:
             switch (arenaType)
             {
                 case ARENA_TYPE_2v2:
