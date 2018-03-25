@@ -2717,6 +2717,7 @@ void Spell::EffectLearnPetSpell(SpellEffIndex effIndex)
     if (!learn_spellproto)
         return;
 
+    pet->SetTrainingPoints(pet->GetTrainingPointsValue() - pet->GetTrainingPointsForSpell(learn_spellproto->Id));
     pet->learnSpell(learn_spellproto->Id);
     pet->SavePetToDB(PET_SAVE_AS_CURRENT);
     pet->GetOwner()->PetSpellInitialize();

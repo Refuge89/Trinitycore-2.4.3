@@ -127,11 +127,20 @@ class TC_GAME_API Pet : public Guardian
 
         void InitPetCreateSpells();
 
-        static void resetTalentsForAllPetsOf(Player* owner, Pet* online_pet = nullptr);
+        LoyaltyLevel GetLoyaltyLevel() const { return LoyaltyLevel(GetByteValue(UNIT_FIELD_BYTES_1, UNIT_BYTES_1_OFFSET_PET_LOYALTY)); }
+        void SetLoyaltyLevel(LoyaltyLevel level) { SetByteValue(UNIT_FIELD_BYTES_1, UNIT_BYTES_1_OFFSET_PET_LOYALTY, uint8(level)); }
+        int32 GetLoyaltyPoints() const { return _loyaltyPoints; }
+        void ModifyLoyalty(int32 value);
+        void TickLoyaltyChange();
+        void KillLoyaltyBonus(uint32 level);
 
-        uint8 GetFreeTalentPoints() const { return GetByteValue(UNIT_FIELD_BYTES_1, 1); }
-
-        uint32  m_usedTalentCount;
+        void ResetSpells(uint32 cost);
+        uint32 ResetTalentsCost() const;
+        void SetTrainingPoints(int32 trainingPoints);
+        int32 GetTrainingPoints() const;
+        int32 GetTrainingPointsValue() const { return _trainingPoints; }
+        bool HasTrainingPointsForSpell(uint32 spellId) const;
+        uint32 GetTrainingPointsForSpell(uint32 spellId) const;
 
         uint64 GetAuraUpdateMaskForRaid() const { return m_auraRaidUpdateMask; }
         void SetAuraUpdateMaskForRaid(uint8 slot) { m_auraRaidUpdateMask |= (uint64(1) << slot); }
@@ -144,12 +153,17 @@ class TC_GAME_API Pet : public Guardian
         Player* GetOwner() const;
 
     protected:
-        uint32  m_happinessTimer;
+        uint32 m_happinessTimer;
         PetType m_petType;
-        int32   m_duration;                                 // time until unsummon (used mostly for summoned guardians and not used for controlled pets)
-        uint64  m_auraRaidUpdateMask;
-        bool    m_loading;
-        uint32  m_focusRegenTimer;
+        int32 m_duration;                                 // time until unsummon (used mostly for summoned guardians and not used for controlled pets)
+        uint64 m_auraRaidUpdateMask;
+        bool m_loading;
+        uint32 m_focusRegenTimer;
+        uint32 _loyaltyTimer;
+        int32 _loyaltyPoints;
+        int32 _trainingPoints;
+        uint32 _resetTalentsCost;
+        time_t _resetTalentsTime;
 
         DeclinedName *m_declinedname;
 

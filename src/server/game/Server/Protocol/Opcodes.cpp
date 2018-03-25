@@ -881,7 +881,7 @@ void OpcodeTable::Initialize()
     /*0x2ED*/ DEFINE_SERVER_OPCODE_HANDLER(SMSG_BATTLEGROUND_PLAYER_LEFT,  STATUS_NEVER);
     /*0x2EE*/ DEFINE_HANDLER(CMSG_BATTLEMASTER_JOIN,                       STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleBattlemasterJoinOpcode    );
     /*0x2EF*/ DEFINE_SERVER_OPCODE_HANDLER(SMSG_ADDON_INFO,                STATUS_NEVER);
-    /*0x2F0*/ DEFINE_HANDLER(CMSG_PET_UNLEARN,                             STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
+    /*0x2F0*/ DEFINE_HANDLER(CMSG_PET_UNLEARN,                             STATUS_LOGGEDIN, PROCESS_INPLACE,      &WorldSession::HandlePetUnlearn                );
     /*0x2F1*/ DEFINE_SERVER_OPCODE_HANDLER(SMSG_PET_UNLEARN_CONFIRM,       STATUS_NEVER);
     /*0x2F2*/ DEFINE_SERVER_OPCODE_HANDLER(SMSG_PARTY_MEMBER_STATS_FULL,   STATUS_NEVER);
     /*0x2F3*/ DEFINE_HANDLER(CMSG_PET_SPELL_AUTOCAST,                      STATUS_LOGGEDIN, PROCESS_INPLACE,      &WorldSession::HandlePetSpellAutocastOpcode    );

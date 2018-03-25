@@ -135,6 +135,7 @@ enum EUnitFields
     UNIT_CREATED_BY_SPELL                     = OBJECT_END + 0x00A1, // Size: 1, Type: INT, Flags: PUBLIC
     UNIT_NPC_FLAGS                            = OBJECT_END + 0x00A2, // Size: 1, Type: INT, Flags: DYNAMIC
     UNIT_NPC_EMOTESTATE                       = OBJECT_END + 0x00A3, // Size: 1, Type: INT, Flags: PUBLIC
+    UNIT_TRAINING_POINTS                      = OBJECT_END + 0x00A4, // Size: 1, Type: TWO_SHORT, Flags: OWNER
     UNIT_FIELD_STAT0                          = OBJECT_END + 0x00A5, // Size: 1, Type: INT, Flags: PRIVATE, OWNER
     UNIT_FIELD_STAT1                          = OBJECT_END + 0x00A6, // Size: 1, Type: INT, Flags: PRIVATE, OWNER
     UNIT_FIELD_STAT2                          = OBJECT_END + 0x00A7, // Size: 1, Type: INT, Flags: PRIVATE, OWNER

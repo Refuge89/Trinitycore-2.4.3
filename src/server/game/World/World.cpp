@@ -620,6 +620,11 @@ void World::LoadConfigSettings(bool reload)
         TC_LOG_ERROR("server.loading", "Rate.Quest.Money.Max.Level.Reward (%f) must be >=0. Using 0 instead.", rate_values[RATE_MONEY_MAX_LEVEL_QUEST]);
         rate_values[RATE_MONEY_MAX_LEVEL_QUEST] = 0.0f;
     }
+    if (rate_values[RATE_LOYALTY] < 0.0f)
+    {
+        TC_LOG_ERROR("server.loading", "Rate.Loyalty (%f) must be > 0. Using 1 instead.", rate_values[RATE_LOYALTY]);
+        rate_values[RATE_LOYALTY] = 1.0f;
+    }
     ///- Read other configuration items from the config file
 
     m_bool_configs[CONFIG_DURABILITY_LOSS_IN_PVP] = sConfigMgr->GetBoolDefault("DurabilityLoss.InPvP", false);

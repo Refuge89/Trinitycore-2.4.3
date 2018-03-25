@@ -202,9 +202,6 @@ public:
             ChatHandler(target->GetSession()).SendSysMessage(LANG_RESET_TALENTS);
             if (!handler->GetSession() || handler->GetSession()->GetPlayer() != target)
                 handler->PSendSysMessage(LANG_RESET_TALENTS_ONLINE, handler->GetNameLink(target).c_str());
-
-            Pet* pet = target->GetPet();
-            Pet::resetTalentsForAllPetsOf(target, pet);
             return true;
         }
         else if (targetGuid)

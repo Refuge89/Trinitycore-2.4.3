@@ -800,6 +800,33 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPacket& recvPacket)
     }
 }
 
+void WorldSession::HandlePetUnlearn(WorldPacket& recvPacket)
+{
+    TC_LOG_DEBUG("network.opcode", "WORLD: Received CMSG_PET_UNLEARN");
+
+    ObjectGuid petguid;
+    recvPacket >> petguid;
+
+    Pet* pet = ObjectAccessor::GetPet(*_player, petguid);
+
+    if (!pet || !pet->IsPet() || ((Pet*)pet)->getPetType() != HUNTER_PET ||
+        pet->GetOwnerGUID() != _player->GetGUID() || !pet->GetCharmInfo())
+        return;
+
+    uint32 cost = pet->ResetTalentsCost();
+
+    if (!_player->HasEnoughMoney(cost))
+    {
+        _player->SendBuyError(BUY_ERR_NOT_ENOUGHT_MONEY, nullptr, 0, 0);
+        return;
+    }
+
+    pet->ResetSpells(cost);
+
+    _player->ModifyMoney(-(int32)cost);
+    _player->PetSpellInitialize();
+}
+
 void WorldSession::SendPetNameInvalid(uint32 error, const std::string& name, DeclinedName *declinedName)
 {
     WorldPacket data(SMSG_PET_NAME_INVALID, 4 + name.size() + 1 + 1);

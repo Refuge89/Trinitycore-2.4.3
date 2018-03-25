@@ -45,6 +45,36 @@ enum HappinessState
     HAPPY   = 3
 };
 
+enum LoyaltyLevel
+{
+    REBELLIOUS  = 1,
+    UNRULY      = 2,
+    SUBMISSIVE  = 3,
+    DEPENDABLE  = 4,
+    FAITHFUL    = 5,
+    BEST_FRIEND = 6
+};
+
+uint32 const LevelUpLoyalty[6] =
+{
+    5500,
+    11500,
+    17000,
+    23500,
+    31000,
+    39500,
+};
+
+uint32 const LevelStartLoyalty[6] =
+{
+    2000,
+    4500,
+    7000,
+    10000,
+    13500,
+    17500,
+};
+
 enum PetSpellState
 {
     PETSPELL_UNCHANGED = 0,

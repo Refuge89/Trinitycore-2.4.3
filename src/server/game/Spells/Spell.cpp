@@ -4937,6 +4937,9 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                 if (m_spellInfo->SpellLevel > pet->getLevel())
                     return SPELL_FAILED_LOWLEVEL;
 
+                if (!pet->HasTrainingPointsForSpell(learn_spellproto->Id))
+                    return SPELL_FAILED_TRAINING_POINTS;
+
                 break;
             }
             case SPELL_EFFECT_LEARN_PET_SPELL:
@@ -4958,6 +4961,9 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
 
                     if (m_spellInfo->SpellLevel > pet->getLevel())
                         return SPELL_FAILED_LOWLEVEL;
+
+                    if (!pet->HasTrainingPointsForSpell(learn_spellproto->Id))
+                        return SPELL_FAILED_TRAINING_POINTS;
                 }
                 break;
             }

@@ -490,7 +490,7 @@ void WorldSession::SendStablePetCallback(ObjectGuid guid, PreparedQueryResult re
         data << uint32(pet->GetEntry());
         data << uint32(pet->getLevel());
         data << pet->GetName();                             // petname
-        // loyalty
+        data << uint32(pet->GetLoyaltyLevel());
         data << uint8(1);                                   // 1 = current, 2/3 = in stable (any from 4, 5, ... create problems with proper show)
         ++num;
     }
@@ -505,7 +505,7 @@ void WorldSession::SendStablePetCallback(ObjectGuid guid, PreparedQueryResult re
             data << uint32(fields[2].GetUInt32());          // creature entry
             data << uint32(fields[3].GetUInt16());          // level
             data << fields[4].GetString();                  // name
-            // loyalty
+            data << uint32(fields[5].GetUInt16());          // loyalty
             data << uint8(2);                               // 1 = current, 2/3 = in stable (any from 4, 5, ... create problems with proper show)
 
             ++num;

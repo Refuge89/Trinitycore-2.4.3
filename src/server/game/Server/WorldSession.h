@@ -788,6 +788,7 @@ class TC_GAME_API WorldSession
         void HandlePetCancelAuraOpcode(WorldPacket& recvPacket);
         void HandlePetSpellAutocastOpcode(WorldPacket& recvPacket);
         void HandlePetCastSpellOpcode(WorldPacket& recvPacket);
+        void HandlePetUnlearn(WorldPacket& recvPacket);
 
         void HandleSetActionBarToggles(WorldPacket& recvData);
 
