@@ -125,17 +125,17 @@ void TargetedMovementGenerator<T, D>::SetTargetLocation(T* owner, bool updateDes
     float x, y, z;
     if (updateDestination || !_path)
     {
+        float size = owner->GetCombatReach();
         if (!_offset)
         {
             if (GetTarget()->IsWithinDistInMap(owner, CONTACT_DISTANCE))
                 return;
 
-            GetTarget()->GetContactPoint(owner, x, y, z);
+            GetTarget()->GetNearPoint(owner, x, y, z, size, CONTACT_DISTANCE, GetTarget()->GetAngle(owner));
         }
         else
         {
             float distance = _offset + 1.0f;
-            float size = owner->GetCombatReach();
 
             if (owner->IsPet() && GetTarget()->GetTypeId() == TYPEID_PLAYER)
             {

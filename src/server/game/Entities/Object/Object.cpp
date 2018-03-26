@@ -374,10 +374,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
 
             *data << object->GetPositionX();
             *data << object->GetPositionY();
-            if (isType(TYPEMASK_UNIT))
-                *data << unit->GetPositionZMinusOffset();
-            else
-                *data << object->GetPositionZ();
+            *data << object->GetPositionZ();
 
             if (transport)
             {
@@ -389,10 +386,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
             {
                 *data << object->GetPositionX();
                 *data << object->GetPositionY();
-                if (isType(TYPEMASK_UNIT))
-                    *data << unit->GetPositionZMinusOffset();
-                else
-                    *data << object->GetPositionZ();
+                *data << object->GetPositionZ();
             }
 
             *data << object->GetOrientation();
@@ -1442,65 +1436,38 @@ void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z) const
     if (GetTransport())
         return;
 
-    switch (GetTypeId())
+    if (Unit const* unit = ToUnit())
     {
-        case TYPEID_UNIT:
+        if (!unit->CanFly())
         {
-            // non fly unit don't must be in air
-            // non swim unit must be at ground (mostly speedup, because it don't must be in water and water level check less fast
-            if (!ToCreature()->CanFly())
-            {
-                bool canSwim = ToCreature()->CanSwim();
-                float ground_z = z;
-                float max_z = canSwim
-                    ? GetMapWaterOrGroundLevel(x, y, z, &ground_z)
-                    : (ground_z = GetMapHeight(x, y, z));
-                if (max_z > INVALID_HEIGHT)
-                {
-                    if (z > max_z)
-                        z = max_z;
-                    else if (z < ground_z)
-                        z = ground_z;
-                }
-            }
+            bool canSwim = unit->CanSwim();
+            float ground_z = z;
+            float max_z;
+            if (canSwim)
+                max_z = GetMapWaterOrGroundLevel(x, y, z, &ground_z);
             else
+                max_z = ground_z = GetMapHeight(x, y, z);
+
+            if (max_z > INVALID_HEIGHT)
             {
-                float ground_z = GetMapHeight(x, y, z);
-                if (std::fabs(z - ground_z) < GetCollisionHeight())
+                if (z > max_z)
+                    z = max_z;
+                else if (z < ground_z)
                     z = ground_z;
             }
-            break;
         }
-        case TYPEID_PLAYER:
-        {
-            // for server controlled moves playr work same as creature (but it can always swim)
-            if (!ToPlayer()->CanFly())
-            {
-                float ground_z = z;
-                float max_z = GetMapWaterOrGroundLevel(x, y, z, &ground_z);
-                if (max_z > INVALID_HEIGHT)
-                {
-                    if (z > max_z)
-                        z = max_z;
-                    else if (z < ground_z)
-                        z = ground_z;
-                }
-            }
-            else
-            {
-                float ground_z = GetMapHeight(x, y, z);
-                if (std::fabs(z - ground_z) < GetCollisionHeight())
-                    z = ground_z;
-            }
-            break;
-        }
-        default:
+        else
         {
             float ground_z = GetMapHeight(x, y, z);
-            if (ground_z > INVALID_HEIGHT)
+            if (z < ground_z)
                 z = ground_z;
-            break;
         }
+    }
+    else
+    {
+        float ground_z = GetMapHeight(x, y, z);
+        if (ground_z > INVALID_HEIGHT)
+            z = ground_z;
     }
 }
 
@@ -2276,7 +2243,7 @@ float WorldObject::SelectBestZForDestination(float x, float y, float z, bool exc
     if (Unit const* unit = ToUnit())
     {
         float const ground = GetFloorZ();
-        bool const isInAir = (G3D::fuzzyGt(unit->GetPositionZMinusOffset(), ground + GROUND_HEIGHT_TOLERANCE) || G3D::fuzzyLt(unit->GetPositionZMinusOffset(), ground - GROUND_HEIGHT_TOLERANCE));
+        bool const isInAir = (G3D::fuzzyGt(unit->GetPositionZ(), ground + GROUND_HEIGHT_TOLERANCE) || G3D::fuzzyLt(unit->GetPositionZ(), ground - GROUND_HEIGHT_TOLERANCE));
         if (unit->IsFlying() && isInAir)
             return z;
     }
