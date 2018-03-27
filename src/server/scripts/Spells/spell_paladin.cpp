@@ -461,12 +461,7 @@ class spell_pal_immunities : public SpellScript
 
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
-        return ValidateSpellInfo(
-            {
-                SPELL_PALADIN_FORBEARANCE,
-                SPELL_PALADIN_AVENGING_WRATH_MARKER,
-                SPELL_PALADIN_IMMUNE_SHIELD_MARKER
-            });
+        return ValidateSpellInfo({ SPELL_PALADIN_FORBEARANCE });
     }
 
     SpellCastResult CheckCast()
@@ -479,7 +474,7 @@ class spell_pal_immunities : public SpellScript
             target = caster;
 
         // "Cannot be used within $61987d. of using Avenging Wrath."
-        if (target->HasAura(SPELL_PALADIN_FORBEARANCE) || target->HasAura(SPELL_PALADIN_AVENGING_WRATH_MARKER))
+        if (target->HasAura(SPELL_PALADIN_FORBEARANCE))
             return SPELL_FAILED_TARGET_AURASTATE;
 
         return SPELL_CAST_OK;
@@ -487,13 +482,9 @@ class spell_pal_immunities : public SpellScript
 
     void TriggerDebuffs()
     {
+        // Blizz seems to just apply aura without bothering to cast
         if (Unit* target = GetHitUnit())
-        {
-            // Blizz seems to just apply aura without bothering to cast
             GetCaster()->AddAura(SPELL_PALADIN_FORBEARANCE, target);
-            GetCaster()->AddAura(SPELL_PALADIN_AVENGING_WRATH_MARKER, target);
-            GetCaster()->AddAura(SPELL_PALADIN_IMMUNE_SHIELD_MARKER, target);
-        }
     }
 
     void Register() override
