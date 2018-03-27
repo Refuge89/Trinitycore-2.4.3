@@ -1316,15 +1316,8 @@ void Spell::EffectHeal(SpellEffIndex effIndex)
 
         addhealth += tickheal * tickcount;
     }
-    // Nourish
-    else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] & 0x2000000)
-        addhealth = unitCaster->SpellHealingBonusDone(unitTarget, m_spellInfo, addhealth, HEAL, effIndex, { });
-    // Death Pact - return pct of max health to caster
-    else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && m_spellInfo->SpellFamilyFlags[0] & 0x00080000)
-        addhealth = unitCaster->SpellHealingBonusDone(unitTarget, m_spellInfo, int32(unitCaster->CountPctFromMaxHealth(damage)), HEAL, effIndex, { });
-    else
-        addhealth = unitCaster->SpellHealingBonusDone(unitTarget, m_spellInfo, addhealth, HEAL, effIndex, { });
 
+    addhealth = unitCaster->SpellHealingBonusDone(unitTarget, m_spellInfo, addhealth, HEAL, effIndex, { });
     addhealth = unitTarget->SpellHealingBonusTaken(unitCaster, m_spellInfo, addhealth, HEAL);
 
     m_healing += addhealth;
@@ -2131,6 +2124,7 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
 
             summon = unitCaster->GetMap()->SummonCreature(entry, *destTarget, properties, duration, unitCaster, m_spellInfo->Id);
             break;
+        }
     }
 
     if (summon)
@@ -2865,7 +2859,7 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
         {
             if (m_spellInfo->SpellFamilyFlags[0] & 0x8000000) // Mocking Blow
             {
-                if (unitTarget->IsImmunedToSpellEffect(m_spellInfo, EFFECT_1, unitCaster) || unitTarget->GetTypeId() == TYPEID_PLAYER)
+                if (unitTarget->IsImmunedToSpellEffect(m_spellInfo, EFFECT_1) || unitTarget->GetTypeId() == TYPEID_PLAYER)
                 {
                     m_damage = 0;
                     return;
@@ -3871,7 +3865,7 @@ void Spell::EffectForceDeselect(SpellEffIndex /*effIndex*/)
     float dist = unitCaster->GetVisibilityRange();
 
     // and selection
-    data.Initialize(SMSG_CLEAR_TARGET, 8);
+    WorldPacket data(SMSG_CLEAR_TARGET, 8);
     data << uint64(unitCaster->GetGUID());
     Trinity::MessageDistDelivererToHostile notifierClear(unitCaster, &data, dist);
     Cell::VisitWorldObjects(unitCaster, notifierClear, dist);

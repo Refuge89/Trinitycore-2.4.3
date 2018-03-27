@@ -2170,34 +2170,6 @@ int32 WorldObject::CalculateSpellDamage(SpellInfo const* spellInfo, uint8 effInd
     return spellInfo->Effects[effIndex].CalcValue(this, basePoints);
 }
 
-float WorldObject::GetSpellMaxRangeForTarget(Unit const* target, SpellInfo const* spellInfo) const
-{
-    if (!spellInfo->RangeEntry)
-        return 0.f;
-
-    if (spellInfo->RangeEntry->maxRangeFriend == spellInfo->RangeEntry->maxRangeHostile)
-        return spellInfo->GetMaxRange();
-
-    if (!target)
-        return spellInfo->GetMaxRange(true);
-
-    return spellInfo->GetMaxRange(!IsHostileTo(target));
-}
-
-float WorldObject::GetSpellMinRangeForTarget(Unit const* target, SpellInfo const* spellInfo) const
-{
-    if (!spellInfo->RangeEntry)
-        return 0.f;
-
-    if (spellInfo->RangeEntry->minRangeFriend == spellInfo->RangeEntry->minRangeHostile)
-        return spellInfo->GetMinRange();
-
-    if (!target)
-        return spellInfo->GetMinRange(true);
-
-    return spellInfo->GetMinRange(!IsHostileTo(target));
-}
-
 float WorldObject::ApplyEffectModifiers(SpellInfo const* spellInfo, uint8 effIndex, float value) const
 {
     if (Player* modOwner = GetSpellModOwner())
@@ -2241,10 +2213,6 @@ int32 WorldObject::ModSpellDuration(SpellInfo const* spellInfo, WorldObject cons
 {
     // don't mod permanent auras duration
     if (duration < 0)
-        return duration;
-
-    // some auras are not affected by duration modifiers
-    if (spellInfo->HasAttribute(SPELL_ATTR7_IGNORE_DURATION_MODS))
         return duration;
 
     // cut duration only of negative effects
@@ -2298,36 +2266,6 @@ int32 WorldObject::ModSpellDuration(SpellInfo const* spellInfo, WorldObject cons
         }
     }
 
-    // Glyphs which increase duration of selfcast buffs
-    if (unitTarget == this)
-    {
-        switch (spellInfo->SpellFamilyName)
-        {
-            case SPELLFAMILY_DRUID:
-                if (spellInfo->SpellFamilyFlags[0] & 0x100)
-                {
-                    // Glyph of Thorns
-                    if (AuraEffect* aurEff = unitTarget->GetAuraEffect(57862, EFFECT_0))
-                        duration += aurEff->GetAmount() * MINUTE * IN_MILLISECONDS;
-                }
-                break;
-            case SPELLFAMILY_PALADIN:
-                if ((spellInfo->SpellFamilyFlags[0] & 0x00000002) && spellInfo->SpellIconID == 298)
-                {
-                    // Glyph of Blessing of Might
-                    if (AuraEffect* aurEff = unitTarget->GetAuraEffect(57958, EFFECT_0))
-                        duration += aurEff->GetAmount() * MINUTE * IN_MILLISECONDS;
-                }
-                else if ((spellInfo->SpellFamilyFlags[0] & 0x00010000) && spellInfo->SpellIconID == 306)
-                {
-                    // Glyph of Blessing of Wisdom
-                    if (AuraEffect* aurEff = unitTarget->GetAuraEffect(57979, EFFECT_0))
-                        duration += aurEff->GetAmount() * MINUTE * IN_MILLISECONDS;
-                }
-                break;
-        }
-    }
-
     return std::max(duration, 0);
 }
 
@@ -2349,8 +2287,6 @@ void WorldObject::ModSpellCastTime(SpellInfo const* spellInfo, int32& castTime, 
         castTime = unitCaster->CanInstantCast() ? 0 : int32(float(castTime) * unitCaster->GetFloatValue(UNIT_MOD_CAST_SPEED));
     else if (spellInfo->HasAttribute(SPELL_ATTR0_REQ_AMMO) && !spellInfo->HasAttribute(SPELL_ATTR2_AUTOREPEAT_FLAG))
         castTime = int32(float(castTime) * unitCaster->m_modAttackSpeedPct[RANGED_ATTACK]);
-    else if (spellInfo->SpellVisual[0] == 3881 && unitCaster->HasAura(67556)) // cooking with Chef Hat.
-        castTime = 500;
 }
 
 void WorldObject::ModSpellDurationTime(SpellInfo const* spellInfo, int32& duration, Spell* spell /*= nullptr*/) const
@@ -2953,16 +2889,7 @@ bool WorldObject::IsValidSpellAssistTarget(WorldObject const* target, SpellInfo 
     if (unitTarget && unitTarget->HasUnitState(UNIT_STATE_UNATTACKABLE))
         return false;
 
-    // can't assist own vehicle or passenger
     Unit const* unit = ToUnit();
-    if (unit && unitTarget && unit->GetVehicle())
-    {
-        if (unit->IsOnVehicle(unitTarget))
-            return false;
-
-        if (unit->GetVehicleBase()->IsOnVehicle(unitTarget))
-            return false;
-    }
 
     // can't assist invisible
     if (!bySpell->HasAttribute(SPELL_ATTR6_CAN_TARGET_INVISIBLE) && !CanSeeOrDetect(target, bySpell->IsAffectingArea()))

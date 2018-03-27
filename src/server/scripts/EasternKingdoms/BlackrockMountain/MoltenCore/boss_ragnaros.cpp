@@ -244,7 +244,7 @@ class boss_ragnaros : public CreatureScript
                                 events.Repeat(Seconds(25));
                                 break;
                             case EVENT_HAND_OF_RAGNAROS:
-                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, [&](Unit* u) { return u && u->GetTypeId() == TYPEID_PLAYER && u->getPowerType() == POWER_MANA; }))
+                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, [&](Unit* u) { return u && u->GetTypeId() == TYPEID_PLAYER && u->GetPowerType() == POWER_MANA; }))
                                     DoCast(target, SPELL_HAND_OF_RAGNAROS);
                                 if (urand(0, 1))
                                     Talk(SAY_HAND);

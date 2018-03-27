@@ -411,10 +411,6 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
         Player* GetSpellModOwner() const;
         int32 CalculateSpellDamage(SpellInfo const* spellInfo, uint8 effIndex, int32 const* basePoints = nullptr) const;
 
-        // target dependent range checks
-        float GetSpellMaxRangeForTarget(Unit const* target, SpellInfo const* spellInfo) const;
-        float GetSpellMinRangeForTarget(Unit const* target, SpellInfo const* spellInfo) const;
-
         float ApplyEffectModifiers(SpellInfo const* spellInfo, uint8 effIndex, float value) const;
         int32 CalcSpellDuration(SpellInfo const* spellInfo) const;
         int32 ModSpellDuration(SpellInfo const* spellInfo, WorldObject const* target, int32 duration, bool positive, uint32 effectMask) const;

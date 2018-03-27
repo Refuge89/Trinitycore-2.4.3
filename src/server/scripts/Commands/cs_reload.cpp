@@ -735,7 +735,7 @@ public:
         return true;
     }
 
-    static bool HandleReloadSkillExtraItemTemplateCommand(ChatHandler* handler, char const* args)
+    static bool HandleReloadSkillExtraItemTemplateCommand(ChatHandler* handler, char const* /*args*/)
     {
         TC_LOG_INFO("misc", "Re-Loading Skill Extra Item Table...");
         LoadSkillExtraItemTable();

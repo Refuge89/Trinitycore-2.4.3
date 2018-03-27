@@ -896,8 +896,6 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
     // Power
     if (petType == HUNTER_PET) // Hunter pets have focus
         SetPowerType(POWER_FOCUS);
-    else if (IsPetGhoul() || IsRisenAlly()) // DK pets have energy
-        SetPowerType(POWER_ENERGY);
     else
         SetPowerType(POWER_MANA);
 
@@ -1151,6 +1149,7 @@ void Pet::_LoadAuras(uint32 timediff)
             int32 remaintime = fields[12].GetInt32();
             uint8 remaincharges = fields[13].GetUInt8();
             bool applyResilience = fields[14].GetBool();
+            float critChance = fields[15].GetFloat();
 
             SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellid);
             if (!spellInfo)
@@ -1189,7 +1188,7 @@ void Pet::_LoadAuras(uint32 timediff)
                     aura->Remove();
                     continue;
                 }
-                aura->SetLoadedState(maxduration, remaintime, remaincharges, stackcount, recalculatemask, applyResilience, &damage[0]);
+                aura->SetLoadedState(maxduration, remaintime, remaincharges, stackcount, recalculatemask, critChance, applyResilience, &damage[0]);
                 aura->ApplyForTargets();
                 TC_LOG_DEBUG("entities.pet", "Added aura spellid %u, effectmask %u", spellInfo->Id, effmask);
             }
@@ -1255,6 +1254,7 @@ void Pet::_SaveAuras(SQLTransaction& trans)
         stmt->setInt32(index++, itr->second->GetDuration());
         stmt->setUInt8(index++, itr->second->GetCharges());
         stmt->setBool (index++, itr->second->CanApplyResilience());
+        stmt->setFloat(index++, itr->second->GetCritChance());
 
         trans->Append(stmt);
     }

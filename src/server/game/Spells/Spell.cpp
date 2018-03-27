@@ -1661,7 +1661,7 @@ void Spell::SelectEffectTypeImplicitTargets(uint8 effIndex)
                     // since we're completely skipping AddUnitTarget logic, we need to check immunity manually
                     // eg. aura 21546 makes target immune to summons
                     Player* player = target->ToPlayer();
-                    if (player->IsImmunedToSpellEffect(m_spellInfo, effIndex, nullptr))
+                    if (player->IsImmunedToSpellEffect(m_spellInfo, effIndex))
                         return;
 
                     target->GetMap()->AddFarSpellCallback(std::bind([](Map* map, Spell* spell, uint8 effIndex, ObjectGuid const& targetGuid)
@@ -1671,7 +1671,7 @@ void Spell::SelectEffectTypeImplicitTargets(uint8 effIndex)
                             return;
 
                         // check immunity again in case it changed during update
-                        if (player->IsImmunedToSpellEffect(spell->GetSpellInfo(), effIndex, nullptr))
+                        if (player->IsImmunedToSpellEffect(spell->GetSpellInfo(), effIndex))
                             return;
 
                         spell->HandleEffects(player, nullptr, nullptr, effIndex, SPELL_EFFECT_HANDLE_HIT_TARGET);

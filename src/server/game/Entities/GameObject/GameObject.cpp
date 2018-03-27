@@ -2074,7 +2074,7 @@ void GameObject::SetWorldRotationAngles(float z_rot, float y_rot, float x_rot)
     SetWorldRotation(quat.x, quat.y, quat.z, quat.w);
 }
 
-void GameObject::ModifyHealth(int32 change, WorldObject* attackerOrHealer /*= nullptr*/, uint32 spellId /*= 0*/)
+void GameObject::ModifyHealth(int32 change, WorldObject* attackerOrHealer /*= nullptr*/)
 {
     if (!m_goValue.Building.MaxHealth || !change)
         return;

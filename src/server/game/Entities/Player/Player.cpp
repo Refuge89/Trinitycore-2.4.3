@@ -17113,6 +17113,7 @@ void Player::_LoadAuras(PreparedQueryResult result, uint32 timediff)
             int32 remaintime = fields[12].GetInt32();
             uint8 remaincharges = fields[13].GetUInt8();
             bool applyResilience = fields[14].GetBool();
+            float critChance = fields[15].GetFloat();
 
             SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellid);
             if (!spellInfo)
@@ -17155,7 +17156,7 @@ void Player::_LoadAuras(PreparedQueryResult result, uint32 timediff)
                     continue;
                 }
 
-                aura->SetLoadedState(maxduration, remaintime, remaincharges, stackcount, recalculatemask, applyResilience, &damage[0]);
+                aura->SetLoadedState(maxduration, remaintime, remaincharges, stackcount, recalculatemask, critChance, applyResilience, &damage[0]);
                 aura->ApplyForTargets();
                 TC_LOG_DEBUG("entities.player", "Player::_LoadAuras: Added aura (SpellID: %u, EffectMask: %u) to player '%s (%s)",
                     spellInfo->Id, effmask, GetName().c_str(), GetGUID().ToString().c_str());
@@ -18789,6 +18790,7 @@ void Player::_SaveAuras(SQLTransaction& trans)
         stmt->setInt32(index++, itr->second->GetDuration());
         stmt->setUInt8(index++, itr->second->GetCharges());
         stmt->setBool (index++, itr->second->CanApplyResilience());
+        stmt->setFloat(index++, itr->second->GetCritChance());
         trans->Append(stmt);
     }
 }

@@ -218,40 +218,16 @@ void AuraApplication::UpdateApplyEffectMask(uint8 newEffMask)
     _effectsToApply = newEffMask;
 }
 
-void AuraApplication::BuildUpdatePacket(ByteBuffer& data, bool remove) const
+void AuraApplication::BuildUpdatePacket(ByteBuffer& /*data*/, bool /*remove*/) const
 {
-    data << uint8(_slot);
-
-    if (remove)
-    {
-        ASSERT(!_target->GetVisibleAura(_slot));
-        data << uint32(0);
-        return;
-    }
-    ASSERT(_target->GetVisibleAura(_slot));
-
-    Aura const* aura = GetBase();
-    data << uint32(aura->GetId());
-    uint32 flags = _flags;
-    if (aura->GetMaxDuration() > 0 && !aura->GetSpellInfo()->HasAttribute(SPELL_ATTR5_HIDE_DURATION))
-        flags |= AFLAG_DURATION;
-    data << uint8(flags);
-    data << uint8(aura->GetCasterLevel());
-    // send stack amount for aura which could be stacked (never 0 - causes incorrect display) or charges
-    // stack amount has priority over charges (checked on retail with spell 50262)
-    data << uint8(aura->GetSpellInfo()->StackAmount ? aura->GetStackAmount() : aura->GetCharges());
-
-    if (!(flags & AFLAG_CASTER))
-        data << aura->GetCasterGUID().WriteAsPacked();
-
-    if (flags & AFLAG_DURATION)
-    {
-        data << uint32(aura->GetMaxDuration());
-        data << uint32(aura->GetDuration());
-    }
+    // To Rewrite
+    // Auras in Unit Fields
+    // SMSG_UPDATE_AURA_DURATION
+    // SMSG_SET_EXTRA_AURA_INFO
+    // SMSG_SET_EXTRA_AURA_INFO_NEED_UPDATE
 }
 
-void AuraApplication::ClientUpdate(bool remove)
+void AuraApplication::ClientUpdate(bool /*remove*/)
 {
     _needClientUpdate = false;
 }
@@ -653,7 +629,6 @@ void Aura::UpdateTargetMap(Unit* caster, bool apply)
         bool addUnit = true;
         // check target immunities
         for (uint8 effIndex = 0; effIndex < MAX_SPELL_EFFECTS; ++effIndex)
-        {
             if (itr->first->IsImmunedToSpellEffect(GetSpellInfo(), effIndex))
                 itr->second &= ~(1 << effIndex);
 
@@ -1182,13 +1157,14 @@ int32 Aura::CalcDispelChance(Unit const* auraTarget, bool offensive) const
     return 100 - resistChance;
 }
 
-void Aura::SetLoadedState(int32 maxduration, int32 duration, int32 charges, uint8 stackamount, uint8 recalculateMask, bool applyResilience, int32* amount)
+void Aura::SetLoadedState(int32 maxduration, int32 duration, int32 charges, uint8 stackamount, uint8 recalculateMask, float critChance, bool applyResilience, int32* amount)
 {
     m_maxDuration = maxduration;
     m_duration = duration;
     m_procCharges = charges;
     m_isUsingCharges = m_procCharges != 0;
     m_stackAmount = stackamount;
+    SetCritChance(critChance);
     SetCanApplyResilience(applyResilience);
     Unit* caster = GetCaster();
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
