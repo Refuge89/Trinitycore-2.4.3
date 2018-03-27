@@ -40,10 +40,10 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Spells::SpellTargetData c
         data << spellTargetData.Item->WriteAsPacked();
 
     if (spellTargetData.SrcLocation)
-        data << spellTargetData.SrcLocation.PositionXYZStream();
+        data << spellTargetData.SrcLocation->PositionXYZStream();
 
     if (spellTargetData.DstLocation)
-        data << spellTargetData.DstLocation.PositionXYZStream();
+        data << spellTargetData.DstLocation->PositionXYZStream();
 
     if (spellTargetData.Name)
         data << *spellTargetData.Name;
@@ -62,8 +62,8 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Spells::SpellCastData con
     data << spellCastData.CasterGUID.WriteAsPacked();
     data << spellCastData.CasterUnit.WriteAsPacked();
     data << uint32(spellCastData.SpellID);              // spellId
-    if (SendCastID)
-        data << uint8(spellCastData.CastID);                // pending spell cast?
+    if (spellCastData.SendCastID)
+        data << uint8(spellCastData.CastID);            // pending spell cast?
     data << uint16(spellCastData.CastFlags);            // cast flags
     data << uint32(spellCastData.CastTime);             // timestamp
 
