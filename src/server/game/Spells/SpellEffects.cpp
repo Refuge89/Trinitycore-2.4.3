@@ -374,7 +374,7 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                     break;
 
                 // Shield Slam
-                if ((m_spellInfo->SpellFamilyFlags[1] & 0x200) && m_spellInfo->GetCategory() == 1209)
+                if ((m_spellInfo->SpellFamilyFlags[1] & 0x200) && m_spellInfo->GetCategory() == 971)
                 {
                     uint8 level = unitCaster->getLevel();
                     uint32 block_value = unitCaster->GetShieldBlockValue(uint32(float(level) * 24.5f), uint32(float(level) * 34.5f));
@@ -383,14 +383,6 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                 // Victory Rush
                 else if (m_spellInfo->SpellFamilyFlags[1] & 0x100)
                     ApplyPct(damage, unitCaster->GetTotalAttackPowerValue(BASE_ATTACK));
-                // Shockwave
-                else if (m_spellInfo->Id == 46968)
-                {
-                    int32 pct = unitCaster->CalculateSpellDamage(m_spellInfo, EFFECT_2);
-                    if (pct > 0)
-                        damage += int32(CalculatePct(unitCaster->GetTotalAttackPowerValue(BASE_ATTACK), pct));
-                    break;
-                }
                 break;
             }
             case SPELLFAMILY_WARLOCK:
@@ -405,11 +397,11 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                     // Check aura state for speed but aura state set not only for Immolate spell
                     if (unitTarget->HasAuraState(AURA_STATE_CONFLAGRATE))
                     {
-                        if (unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_WARLOCK, 0x4, 0, 0))
+                        if (unitTarget->GetAuraEffectByFamilyFlags(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_WARLOCK, 0x4, 0))
                             damage += damage / 4;
                     }
                 }
-                // Conflagrate - consumes Immolate or Shadowflame
+                // Conflagrate - consumes Immolate
                 else if (m_spellInfo->TargetAuraState == AURA_STATE_CONFLAGRATE)
                 {
                     AuraEffect const* aura = nullptr;                // found req. aura for damage calculation
@@ -428,16 +420,12 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                             aura = *i;                      // it selected always if exist
                             break;
                         }
-
-                        // Shadowflame
-                        if ((*i)->GetSpellInfo()->SpellFamilyFlags[2] & 0x00000002)
-                            aura = *i;                      // remember but wait possible Immolate as primary priority
                     }
 
-                    // found Immolate or Shadowflame
+                    // found Immolate
                     if (aura)
                     {
-                        // Calculate damage of Immolate/Shadowflame tick
+                        // Calculate damage of Immolate tick
                         int32 pdamage = aura->GetAmount();
                         pdamage = unitTarget->SpellDamageBonusTaken(unitCaster, aura->GetSpellInfo(), pdamage, DOT);
 
@@ -503,7 +491,7 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                 {
                     // Improved Insect Swarm
                     if (AuraEffect const* aurEff = unitCaster->GetDummyAuraEffect(SPELLFAMILY_DRUID, 1771, 0))
-                        if (unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_DRUID, 0x00200000, 0, 0))
+                        if (unitTarget->GetAuraEffectByFamilyFlags(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_DRUID, 0x00200000, 0))
                             AddPct(damage, aurEff->GetAmount());
                 }
                 break;
@@ -522,7 +510,7 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                         if (uint32 combo = player->GetComboPoints())
                         {
                             // Lookup for Deadly poison (only attacker applied)
-                            if (AuraEffect const* aurEff = unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_ROGUE, 0x00010000, 0, 0, unitCaster->GetGUID()))
+                            if (AuraEffect const* aurEff = unitTarget->GetAuraEffectByFamilyFlags(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_ROGUE, 0x00010000, 0, unitCaster->GetGUID()))
                             {
                                 // count consumed deadly poison doses at target
                                 bool needConsume = true;

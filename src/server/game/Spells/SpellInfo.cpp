@@ -1288,7 +1288,7 @@ bool SpellInfo::IsItemFitToSpellRequirements(Item const* item) const
     return false;
 }
 
-bool SpellInfo::IsAffected(uint32 familyName, flag96 const& familyFlags) const
+bool SpellInfo::IsAffected(uint32 familyName, flag64 const& familyFlags) const
 {
     if (!familyName)
         return true;
@@ -1885,12 +1885,8 @@ void SpellInfo::_LoadAuraState()
         if (GetSpellSpecific() == SPELL_SPECIFIC_SEAL)
             return AURA_STATE_JUDGEMENT;
 
-        // Conflagrate aura state on Immolate and Shadowflame
-        if (SpellFamilyName == SPELLFAMILY_WARLOCK &&
-            // Immolate
-            ((SpellFamilyFlags[0] & 4) ||
-                // Shadowflame
-            (SpellFamilyFlags[2] & 2)))
+        // Conflagrate aura state on Immolate
+        if (SpellFamilyName == SPELLFAMILY_WARLOCK && SpellFamilyFlags[0] & 4)
             return AURA_STATE_CONFLAGRATE;
 
         // Faerie Fire (druid versions)
@@ -2059,8 +2055,8 @@ void SpellInfo::_LoadSpellSpecific()
                 if (Dispel == DISPEL_CURSE)
                     return SPELL_SPECIFIC_CURSE;
 
-                // Warlock (Demon Armor | Demon Skin | Fel Armor)
-                if (SpellFamilyFlags[1] & 0x20000020 || SpellFamilyFlags[2] & 0x00000010)
+                // Warlock (Demon Armor | Fel Armor)
+                if (SpellFamilyFlags[1] & 0x20000020)
                     return SPELL_SPECIFIC_WARLOCK_ARMOR;
 
                 //seed of corruption and corruption
@@ -2083,7 +2079,7 @@ void SpellInfo::_LoadSpellSpecific()
                     return SPELL_SPECIFIC_STING;
 
                 // only hunter aspects have this (but not all aspects in hunter family)
-                if (SpellFamilyFlags.HasFlag(0x00380000, 0x00440000, 0x00001010))
+                if (SpellFamilyFlags.HasFlag(0x00380000, 0x00440000))
                     return SPELL_SPECIFIC_ASPECT;
 
                 break;
@@ -2101,10 +2097,6 @@ void SpellInfo::_LoadSpellSpecific()
                 // Judgement of Wisdom, Judgement of Light, Judgement of Justice
                 if (Id == 20184 || Id == 20185 || Id == 20186)
                     return SPELL_SPECIFIC_JUDGEMENT;
-
-                // only paladin auras have this (for palaldin class family)
-                if (SpellFamilyFlags[2] & 0x00000020)
-                    return SPELL_SPECIFIC_AURA;
 
                 break;
             }
@@ -2288,13 +2280,6 @@ void SpellInfo::_LoadSpellDiminishInfo()
                     return DIMINISHING_FEAR;
                 break;
             }
-            case SPELLFAMILY_SHAMAN:
-            {
-                // Storm, Earth and Fire - Earthgrab
-                if (SpellFamilyFlags[2] & 0x4000)
-                    return DIMINISHING_NONE;
-                break;
-            }
             default:
                 break;
         }
@@ -2420,7 +2405,7 @@ void SpellInfo::_LoadSpellDiminishInfo()
                 if (SpellFamilyFlags[1] & 0x8000000)
                     return 6 * IN_MILLISECONDS;
                 // Curse of Tongues - limit to 12 seconds in PvP
-                else if (SpellFamilyFlags[2] & 0x800)
+                else if (SpellVisual[0] == 339)
                     return 12 * IN_MILLISECONDS;
                 // Curse of Elements - limit to 120 seconds in PvP
                 else if (SpellFamilyFlags[1] & 0x200)
@@ -3268,7 +3253,7 @@ bool _isPositiveEffectImpl(SpellInfo const* spellInfo, uint8 effIndex, std::unor
             if (spellInfo->SpellFamilyFlags[0] == 0x00002000)
                 return true;
             // Permafrost (due to zero basepoint)
-            if (spellInfo->SpellFamilyFlags[2] == 0x00000010)
+            if (spellInfo->SpellIconID == 143)
                 return false;
             // Arcane Missiles
             if (spellInfo->SpellFamilyFlags[0] == 0x00000800)
@@ -3281,7 +3266,7 @@ bool _isPositiveEffectImpl(SpellInfo const* spellInfo, uint8 effIndex, std::unor
             break;
         case SPELLFAMILY_PALADIN:
             // assortment of judgement related spells
-            if (spellInfo->SpellFamilyFlags & flag96(0x208C0000, 0x00000208, 0x00000008))
+            if (spellInfo->SpellFamilyFlags & flag64(0x208C0000, 0x00000208))
                 return false;
             break;
         case SPELLFAMILY_HUNTER:
@@ -3289,10 +3274,6 @@ bool _isPositiveEffectImpl(SpellInfo const* spellInfo, uint8 effIndex, std::unor
             if (spellInfo->Id == 34074)
                 return true;
             break;
-        case SPELLFAMILY_DRUID:
-            // Starfall
-            if (spellInfo->SpellFamilyFlags[2] == 0x00000100)
-                return false;
         default:
             break;
     }

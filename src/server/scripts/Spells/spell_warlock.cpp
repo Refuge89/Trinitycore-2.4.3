@@ -80,7 +80,7 @@ class spell_warl_banish : public SpellScriptLoader
             {
                 if (Unit* target = GetHitUnit())
                 {
-                    if (target->GetAuraEffect(SPELL_AURA_SCHOOL_IMMUNITY, SPELLFAMILY_WARLOCK, 0, 0x08000000, 0))
+                    if (target->GetAuraEffectByFamilyFlags(SPELL_AURA_SCHOOL_IMMUNITY, SPELLFAMILY_WARLOCK, 0, 0x08000000))
                     {
                         // No need to remove old aura since its removed due to not stack by current Banish aura
                         PreventHitDefaultEffect(EFFECT_0);
@@ -331,7 +331,7 @@ class spell_warl_everlasting_affliction : public SpellScriptLoader
                 if (Unit* target = GetHitUnit())
                 {
                     // Refresh corruption on target
-                    if (AuraEffect* aur = target->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_WARLOCK, 0x2, 0, 0, caster->GetGUID()))
+                    if (AuraEffect* aur = target->GetAuraEffectByFamilyFlags(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_WARLOCK, 0x2, 0, caster->GetGUID()))
                     {
                         aur->ChangeAmount(aur->CalculateAmount(aur->GetCaster()), false);
                         aur->CalculatePeriodic(caster, false, false);

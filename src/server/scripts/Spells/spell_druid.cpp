@@ -475,7 +475,7 @@ class spell_dru_lifebloom : public SpellScriptLoader
                 return ValidateSpellInfo({ SPELL_DRUID_LIFEBLOOM_FINAL_HEAL });
             }
 
-            void OnRemoveEffect(Unit* target, AuraEffect const* aurEff, uint32 stack)
+            void OnRemoveEffect(Unit* target, AuraEffect const* aurEff, uint32 /*stack*/)
             {
                 CastSpellExtraArgs args(aurEff);
                 args.OriginalCaster = GetCasterGUID();

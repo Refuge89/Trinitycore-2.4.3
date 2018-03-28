@@ -138,7 +138,7 @@ struct SpellModifier
     SpellModType type;
 
     int32 value;
-    flag96 mask;
+    flag64 mask;
     uint32 spellId;
     Aura* const ownerAura;
 };

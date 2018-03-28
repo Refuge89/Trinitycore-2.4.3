@@ -383,7 +383,7 @@ class TC_GAME_API SpellInfo
         uint32 MaxTargetLevel;
         uint32 MaxAffectedTargets;
         uint32 SpellFamilyName;
-        flag96 SpellFamilyFlags;
+        flag64 SpellFamilyFlags;
         uint32 DmgClass;
         uint32 PreventionType;
         int32  AreaGroupId;
@@ -453,7 +453,7 @@ class TC_GAME_API SpellInfo
 
         bool IsItemFitToSpellRequirements(Item const* item) const;
 
-        bool IsAffected(uint32 familyName, flag96 const& familyFlags) const;
+        bool IsAffected(uint32 familyName, flag64 const& familyFlags) const;
 
         bool IsAffectedBySpellMods() const;
         bool IsAffectedBySpellMod(SpellModifier const* mod) const;

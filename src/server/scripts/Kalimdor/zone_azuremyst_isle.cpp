@@ -54,128 +54,129 @@ enum draeneiSurvivor
     SAY_HEAL            = 0,
     SAY_HELP            = 1,
     SPELL_IRRIDATION    = 35046,
-    SPELL_STUNNED       = 28630
+    SPELL_STUNNED       = 28630,
+    SPELL_GIFT_OF_NAARU = 28880
 };
 
 class npc_draenei_survivor : public CreatureScript
 {
-public:
-    npc_draenei_survivor() : CreatureScript("npc_draenei_survivor") { }
+    public:
+        npc_draenei_survivor() : CreatureScript("npc_draenei_survivor") { }
 
-    struct npc_draenei_survivorAI : public ScriptedAI
-    {
-        npc_draenei_survivorAI(Creature* creature) : ScriptedAI(creature)
+        struct npc_draenei_survivorAI : public ScriptedAI
         {
-            Initialize();
-        }
-
-        void Initialize()
-        {
-            pCaster.Clear();
-
-            SayThanksTimer = 0;
-            RunAwayTimer = 0;
-            SayHelpTimer = 10000;
-
-            CanSayHelp = true;
-        }
-
-        ObjectGuid pCaster;
-
-        uint32 SayThanksTimer;
-        uint32 RunAwayTimer;
-        uint32 SayHelpTimer;
-
-        bool CanSayHelp;
-
-        void Reset() override
-        {
-            Initialize();
-
-            DoCast(me, SPELL_IRRIDATION, true);
-
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
-            me->SetHealth(me->CountPctFromMaxHealth(10));
-            me->SetStandState(UNIT_STAND_STATE_SLEEP);
-        }
-
-        void JustEngagedWith(Unit* /*who*/) override { }
-
-        void MoveInLineOfSight(Unit* who) override
-        {
-            if (CanSayHelp && who->GetTypeId() == TYPEID_PLAYER && me->IsFriendlyTo(who) && me->IsWithinDistInMap(who, 25.0f))
+            npc_draenei_survivorAI(Creature* creature) : ScriptedAI(creature)
             {
-                //Random switch between 4 texts
-                Talk(SAY_HELP, who);
-
-                SayHelpTimer = 20000;
-                CanSayHelp = false;
-            }
-        }
-
-        void SpellHit(Unit* Caster, SpellInfo const* Spell) override
-        {
-            if (Spell->SpellFamilyFlags[2] & 0x080000000)
-            {
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
-                me->SetStandState(UNIT_STAND_STATE_STAND);
-
-                DoCast(me, SPELL_STUNNED, true);
-
-                pCaster = Caster->GetGUID();
-
-                SayThanksTimer = 5000;
-            }
-        }
-
-        void UpdateAI(uint32 diff) override
-        {
-            if (SayThanksTimer)
-            {
-                if (SayThanksTimer <= diff)
-                {
-                    me->RemoveAurasDueToSpell(SPELL_IRRIDATION);
-
-                    if (Player* player = ObjectAccessor::GetPlayer(*me, pCaster))
-                    {
-                        Talk(SAY_HEAL, player);
-
-                        player->TalkedToCreature(me->GetEntry(), me->GetGUID());
-                    }
-
-                    me->GetMotionMaster()->Clear();
-                    me->GetMotionMaster()->MovePoint(0, -4115.053711f, -13754.831055f, 73.508949f);
-
-                    RunAwayTimer = 10000;
-                    SayThanksTimer = 0;
-                } else SayThanksTimer -= diff;
-
-                return;
+                Initialize();
             }
 
-            if (RunAwayTimer)
+            void Initialize()
             {
-                if (RunAwayTimer <= diff)
-                    me->DespawnOrUnsummon();
-                else
-                    RunAwayTimer -= diff;
+                pCaster.Clear();
 
-                return;
-            }
+                SayThanksTimer = 0;
+                RunAwayTimer = 0;
+                SayHelpTimer = 10000;
 
-            if (SayHelpTimer <= diff)
-            {
                 CanSayHelp = true;
-                SayHelpTimer = 20000;
-            } else SayHelpTimer -= diff;
-        }
-    };
+            }
 
-    CreatureAI* GetAI(Creature* creature) const override
-    {
-        return new npc_draenei_survivorAI(creature);
-    }
+            ObjectGuid pCaster;
+
+            uint32 SayThanksTimer;
+            uint32 RunAwayTimer;
+            uint32 SayHelpTimer;
+
+            bool CanSayHelp;
+
+            void Reset() override
+            {
+                Initialize();
+
+                DoCast(me, SPELL_IRRIDATION, true);
+
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
+                me->SetHealth(me->CountPctFromMaxHealth(10));
+                me->SetStandState(UNIT_STAND_STATE_SLEEP);
+            }
+
+            void JustEngagedWith(Unit* /*who*/) override { }
+
+            void MoveInLineOfSight(Unit* who) override
+            {
+                if (CanSayHelp && who->GetTypeId() == TYPEID_PLAYER && me->IsFriendlyTo(who) && me->IsWithinDistInMap(who, 25.0f))
+                {
+                    //Random switch between 4 texts
+                    Talk(SAY_HELP, who);
+
+                    SayHelpTimer = 20000;
+                    CanSayHelp = false;
+                }
+            }
+
+            void SpellHit(Unit* Caster, SpellInfo const* Spell) override
+            {
+                if (Spell->Id == SPELL_GIFT_OF_NAARU)
+                {
+                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+                    me->SetStandState(UNIT_STAND_STATE_STAND);
+
+                    DoCastSelf(SPELL_STUNNED, true);
+
+                    pCaster = Caster->GetGUID();
+
+                    SayThanksTimer = 5000;
+                }
+            }
+
+            void UpdateAI(uint32 diff) override
+            {
+                if (SayThanksTimer)
+                {
+                    if (SayThanksTimer <= diff)
+                    {
+                        me->RemoveAurasDueToSpell(SPELL_IRRIDATION);
+
+                        if (Player* player = ObjectAccessor::GetPlayer(*me, pCaster))
+                        {
+                            Talk(SAY_HEAL, player);
+
+                            player->TalkedToCreature(me->GetEntry(), me->GetGUID());
+                        }
+
+                        me->GetMotionMaster()->Clear();
+                        me->GetMotionMaster()->MovePoint(0, -4115.053711f, -13754.831055f, 73.508949f);
+
+                        RunAwayTimer = 10000;
+                        SayThanksTimer = 0;
+                    } else SayThanksTimer -= diff;
+
+                    return;
+                }
+
+                if (RunAwayTimer)
+                {
+                    if (RunAwayTimer <= diff)
+                        me->DespawnOrUnsummon();
+                    else
+                        RunAwayTimer -= diff;
+
+                    return;
+                }
+
+                if (SayHelpTimer <= diff)
+                {
+                    CanSayHelp = true;
+                    SayHelpTimer = 20000;
+                } else SayHelpTimer -= diff;
+            }
+        };
+
+        CreatureAI* GetAI(Creature* creature) const override
+        {
+            return new npc_draenei_survivorAI(creature);
+        }
 };
 
 /*######

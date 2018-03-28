@@ -1123,7 +1123,7 @@ class spell_pal_seal_of_vengeance : public SpellScriptLoader
                 Unit* target = eventInfo.GetProcTarget();
 
                 // get current aura on target, if any
-                AuraEffect const* sealDot = target->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_PALADIN, 0x00000000, 0x00000800, 0x00000000, caster->GetGUID());
+                AuraEffect const* sealDot = target->GetAuraEffectByFamilyFlags(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_PALADIN, 0x00000000, 0x00000800, caster->GetGUID());
                 if (!sealDot)
                     return;
 

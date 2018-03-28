@@ -51,7 +51,6 @@ enum MageSpells
     SPELL_MAGE_ARCANE_SURGE                      = 37436,
     SPELL_MAGE_COMBUSTION                        = 11129,
     SPELL_MAGE_COMBUSTION_PROC                   = 28682,
-    SPELL_MAGE_T8_4P_BONUS                       = 64869,
     SPELL_MAGE_MISSILE_BARRAGE                   = 44401,
     SPELL_MAGE_FINGERS_OF_FROST_AURASTATE_AURA   = 44544
 };
@@ -526,50 +525,6 @@ class spell_mage_focus_magic : public SpellScriptLoader
         }
 };
 
-// 44401 - Missile Barrage
-// 48108 - Hot Streak
-// 57761 - Fireball!
-class spell_mage_gen_extra_effects : public SpellScriptLoader
-{
-    public:
-        spell_mage_gen_extra_effects() : SpellScriptLoader("spell_mage_gen_extra_effects") { }
-
-        class spell_mage_gen_extra_effects_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_mage_gen_extra_effects_AuraScript);
-
-            bool Validate(SpellInfo const* /*spellInfo*/) override
-            {
-                return ValidateSpellInfo({ SPELL_MAGE_T8_4P_BONUS });
-            }
-
-            bool CheckProc(ProcEventInfo& eventInfo)
-            {
-                Unit* caster = eventInfo.GetActor();
-                // Prevent double proc for Arcane missiles
-                if (caster == eventInfo.GetProcTarget())
-                    return false;
-
-                // Proc chance is unknown, we'll just use dummy aura amount
-                if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_MAGE_T8_4P_BONUS, EFFECT_0))
-                    if (roll_chance_i(aurEff->GetAmount()))
-                        return false;
-
-                return true;
-            }
-
-            void Register() override
-            {
-                DoCheckProc += AuraCheckProcFn(spell_mage_gen_extra_effects_AuraScript::CheckProc);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_mage_gen_extra_effects_AuraScript();
-        }
-};
-
 // -44445 - Hot Streak
 class spell_mage_hot_streak : public SpellScriptLoader
 {
@@ -972,7 +927,6 @@ void AddSC_mage_spell_scripts()
     new spell_mage_fingers_of_frost();
     new spell_mage_fire_frost_ward();
     new spell_mage_focus_magic();
-    new spell_mage_gen_extra_effects();
     new spell_mage_hot_streak();
     new spell_mage_ice_barrier();
     new spell_mage_ignite();

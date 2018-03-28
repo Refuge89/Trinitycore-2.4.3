@@ -1347,33 +1347,10 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                         break;
                 }
                 break;
-            case SPELLFAMILY_WARRIOR:
-                if (!caster)
-                    break;
-                // Spell Reflection
-                if (GetSpellInfo()->SpellFamilyFlags[1] & 0x2)
-                {
-                    if (removeMode != AURA_REMOVE_BY_DEFAULT)
-                    {
-                        // Improved Spell Reflection
-                        if (caster->GetDummyAuraEffect(SPELLFAMILY_WARRIOR, 1935, 1))
-                        {
-                            // aura remove - remove auras from all party members
-                            std::list<Unit*> PartyMembers;
-                            target->GetPartyMembers(PartyMembers);
-                            for (std::list<Unit*>::iterator itr = PartyMembers.begin(); itr != PartyMembers.end(); ++itr)
-                            {
-                                if ((*itr)!= target)
-                                    (*itr)->RemoveAurasWithFamily(SPELLFAMILY_WARRIOR, 0, 0x2, 0, GetCasterGUID());
-                            }
-                        }
-                    }
-                }
-                break;
             case SPELLFAMILY_ROGUE:
                 // Remove Vanish on stealth remove
                 if (GetId() == 1784)
-                    target->RemoveAurasWithFamily(SPELLFAMILY_ROGUE, 0x0000800, 0, 0, target->GetGUID());
+                    target->RemoveAurasWithFamily(SPELLFAMILY_ROGUE, 0x0000800, 0, target->GetGUID());
                 break;
         }
     }

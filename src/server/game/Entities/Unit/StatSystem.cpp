@@ -403,7 +403,7 @@ void Player::UpdateAttackPowerAndDamage(bool ranged)
                 float weaponBonus = 0.0f;
                 if (IsInFeralForm())
                 {
-                    if (AuraEffect const* levelMod = GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_DRUID, 1563, EFFECT_0))
+                    if (AuraEffect const* levelMod = GetDummyAuraEffect(SPELLFAMILY_DRUID, 1563, EFFECT_0))
                         levelBonus = CalculatePct(1.0f, levelMod->GetAmount());
 
                     // = 0 if removing the weapon, do not calculate bonus (uses template)
@@ -411,7 +411,7 @@ void Player::UpdateAttackPowerAndDamage(bool ranged)
                     {
                         if (Item const* weapon = m_items[EQUIPMENT_SLOT_MAINHAND])
                         {
-                            if (AuraEffect const* weaponMod = GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_DRUID, 1563, EFFECT_1))
+                            if (AuraEffect const* weaponMod = GetDummyAuraEffect(SPELLFAMILY_DRUID, 1563, EFFECT_1))
                             {
                                 ItemTemplate const* itemTemplate = weapon->GetTemplate();
                                 int32 bonusAP = itemTemplate->GetTotalAPBonus() + m_baseFeralAP;

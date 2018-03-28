@@ -2723,16 +2723,8 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
                             if (!spellInfo->Effects[j].CalcValue() && !((spellInfo->Effects[j].Effect == SPELL_EFFECT_INTERRUPT_CAST || spellInfo->HasAttribute(SPELL_ATTR0_CU_AURA_CC)) && !spellInfo->HasAttribute(SPELL_ATTR0_UNAFFECTED_BY_INVULNERABILITY)))
                                 break;
 
-                            // Sindragosa Frost Breath
-                            if (spellInfo->Id == 69649 || spellInfo->Id == 71056 || spellInfo->Id == 71057 || spellInfo->Id == 71058 || spellInfo->Id == 73061 || spellInfo->Id == 73062 || spellInfo->Id == 73063 || spellInfo->Id == 73064)
-                                break;
-
                             // Frostbolt
                             if (spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && (spellInfo->SpellFamilyFlags[0] & 0x20))
-                                break;
-
-                            // Frost Fever
-                            if (spellInfo->Id == 55095)
                                 break;
 
                             // Haunt
@@ -2977,7 +2969,7 @@ void SpellMgr::LoadSpellInfoCorrections()
         37557  // Mark of Light
     }, [](SpellInfo* spellInfo)
     {
-        spellInfo->SpellFamilyFlags = flag96();
+        spellInfo->SpellFamilyFlags = flag64();
     });
 
     ApplySpellFix({

@@ -170,7 +170,7 @@ class spell_rog_cut_to_the_chase : public SpellScriptLoader
                 // "refresh your Slice and Dice duration to its 5 combo point maximum"
                 Unit* caster = eventInfo.GetActor();
                 // lookup Slice and Dice
-                if (AuraEffect const* snd = caster->GetAuraEffect(SPELL_AURA_MOD_MELEE_HASTE, SPELLFAMILY_ROGUE, 0x00040000, 0x00000000, 0x00000000, caster->GetGUID()))
+                if (AuraEffect const* snd = caster->GetAuraEffectByFamilyFlags(SPELL_AURA_MOD_MELEE_HASTE, SPELLFAMILY_ROGUE, 0x00040000, 0x00000000, caster->GetGUID()))
                 {
                     // Max 5 cp duration
                     uint32 countMax = snd->GetSpellInfo()->GetMaxDuration();
@@ -245,7 +245,7 @@ class spell_rog_deadly_poison : public SpellScriptLoader
             {
                 if (Unit* target = GetHitUnit())
                     // Deadly Poison
-                    if (AuraEffect const* aurEff = target->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_ROGUE, 0x10000, 0x80000, 0, GetCaster()->GetGUID()))
+                    if (AuraEffect const* aurEff = target->GetAuraEffectByFamilyFlags(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_ROGUE, 0x10000, 0x80000, GetCaster()->GetGUID()))
                         _stackAmount = aurEff->GetBase()->GetStackAmount();
             }
 
@@ -291,7 +291,7 @@ class spell_rog_deadly_poison : public SpellScriptLoader
                                 continue;
 
                             // Do not reproc deadly
-                            if (spellInfo->SpellFamilyFlags.IsEqual(0x10000, 0x80000, 0))
+                            if (spellInfo->SpellFamilyFlags.IsEqual(0x10000, 0x80000))
                                 continue;
 
                             if (spellInfo->IsPositive())

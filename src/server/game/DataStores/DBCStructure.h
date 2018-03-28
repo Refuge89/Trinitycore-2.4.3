@@ -939,7 +939,7 @@ struct SpellEntry
     uint32    StartRecoveryTime;                            // 197      m_startRecoveryTime
     uint32    MaxTargetLevel;                               // 198      m_maxTargetLevel
     uint32    SpellFamilyName;                              // 199      m_spellClassSet
-    uint64    SpellFamilyFlags;                             // 200-201
+    flag64    SpellFamilyFlags;                             // 200-201
     uint32    MaxAffectedTargets;                           // 202      m_maxTargets
     uint32    DmgClass;                                     // 203      m_defenseType
     uint32    PreventionType;                               // 204      m_preventionType

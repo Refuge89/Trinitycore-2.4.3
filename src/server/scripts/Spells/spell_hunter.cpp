@@ -96,13 +96,13 @@ class spell_hun_chimera_shot : public SpellScriptLoader
                             continue;
 
                         // Search only Serpent Sting, Viper Sting, Scorpid Sting auras
-                        flag96 familyFlag = aura->GetSpellInfo()->SpellFamilyFlags;
+                        flag64 familyFlag = aura->GetSpellInfo()->SpellFamilyFlags;
                         if (!(familyFlag[1] & 0x00000080 || familyFlag[0] & 0x0000C000))
                             continue;
                         if (AuraEffect const* aurEff = aura->GetEffect(EFFECT_0))
                         {
                             // Serpent Sting - Instantly deals 40% of the damage done by your Serpent Sting.
-                            if (familyFlag[0] & 0x4000)
+                            if (familyFlag[0] & 0x00004000)
                             {
                                 spellId = SPELL_HUNTER_CHIMERA_SHOT_SERPENT;
 
@@ -1230,22 +1230,7 @@ class spell_hun_thrill_of_the_hunt : public SpellScriptLoader
                     return;
 
                 Unit* caster = eventInfo.GetActor();
-                int32 amount = 0;
-
-                // Explosive Shot
-                if (spellInfo->SpellFamilyFlags[2] & 0x200)
-                {
-                    if (AuraEffect const* explosiveShot = eventInfo.GetProcTarget()->GetAuraEffect(SPELL_AURA_PERIODIC_DUMMY, SPELLFAMILY_HUNTER, 0x00000000, 0x80000000, 0x00000000, caster->GetGUID()))
-                    {
-                        // due to Lock and Load SpellInfo::CalcPowerCost might return 0, so just calculate it manually
-                        amount = CalculatePct(static_cast<int32>(CalculatePct(caster->GetCreateMana(), explosiveShot->GetSpellInfo()->ManaCostPercentage)), aurEff->GetAmount());
-
-                        ASSERT(explosiveShot->GetSpellInfo()->GetMaxTicks() > 0);
-                        amount /= explosiveShot->GetSpellInfo()->GetMaxTicks();
-                    }
-                }
-                else
-                    amount = CalculatePct(static_cast<int32>(spellInfo->CalcPowerCost(caster, spellInfo->GetSchoolMask())), aurEff->GetAmount());
+                int32 amount = CalculatePct(static_cast<int32>(spellInfo->CalcPowerCost(caster, spellInfo->GetSchoolMask())), aurEff->GetAmount());
 
                 if (!amount)
                     return;

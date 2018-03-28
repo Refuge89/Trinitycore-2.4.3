@@ -20117,8 +20117,8 @@ void Player::AddSpellMod(SpellModifier* mod, bool apply)
     TC_LOG_DEBUG("spells", "Player::AddSpellMod: Player '%s' (%s), SpellID: %d", GetName().c_str(), GetGUID().ToString().c_str(), mod->spellId);
     uint16 Opcode = (mod->type == SPELLMOD_FLAT) ? SMSG_SET_FLAT_SPELL_MODIFIER : SMSG_SET_PCT_SPELL_MODIFIER;
 
-    flag96 modMask;
-    for (uint8 i = 0; i < 3; ++i)
+    flag64 modMask;
+    for (uint8 i = 0; i < 2; ++i)
     {
         for (uint32 eff = 0; eff < 32; ++eff)
         {

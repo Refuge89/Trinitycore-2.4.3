@@ -77,8 +77,6 @@ enum ShamanSpells
     SPELL_SHAMAN_CHAIN_LIGHTNING_OVERLOAD_R1    = 45297,
     SPELL_SHAMAN_LIGHTNING_SHIELD_DAMAGE_R1     = 26364,
     SPELL_SHAMAN_SHAMANISTIC_RAGE_PROC          = 30824,
-    SPELL_SHAMAN_MAELSTROM_POWER                = 70831,
-    SPELL_SHAMAN_T10_ENHANCEMENT_4P_BONUS       = 70832,
     SPELL_SHAMAN_BLESSING_OF_THE_ETERNALS_R1    = 51554,
 };
 
@@ -277,57 +275,6 @@ class spell_sha_astral_shift_visual_dummy : public AuraScript
     {
         OnEffectPeriodic += AuraEffectPeriodicFn(spell_sha_astral_shift_visual_dummy::PeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
-};
-
-// -1064 - Chain Heal
-class spell_sha_chain_heal : public SpellScriptLoader
-{
-    public:
-        spell_sha_chain_heal() : SpellScriptLoader("spell_sha_chain_heal") { }
-
-        class spell_sha_chain_heal_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_sha_chain_heal_SpellScript);
-
-        public:
-            spell_sha_chain_heal_SpellScript()
-            {
-                firstHeal = true;
-                riptide = false;
-            }
-
-        private:
-            void HandleHeal(SpellEffIndex /*effIndex*/)
-            {
-                if (firstHeal)
-                {
-                    // Check if the target has Riptide
-                    if (AuraEffect* aurEff = GetHitUnit()->GetAuraEffect(SPELL_AURA_PERIODIC_HEAL, SPELLFAMILY_SHAMAN, 0, 0, 0x10, GetCaster()->GetGUID()))
-                    {
-                        riptide = true;
-                        // Consume it
-                        GetHitUnit()->RemoveAura(aurEff->GetBase());
-                    }
-                    firstHeal = false;
-                }
-                // Riptide increases the Chain Heal effect by 25%
-                if (riptide)
-                    SetHitHeal(GetHitHeal() * 1.25f);
-            }
-
-            void Register() override
-            {
-                OnEffectHitTarget += SpellEffectFn(spell_sha_chain_heal_SpellScript::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
-            }
-
-            bool firstHeal;
-            bool riptide;
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_sha_chain_heal_SpellScript();
-        }
 };
 
 // -974 - Earth Shield
@@ -930,7 +877,7 @@ class spell_sha_lava_lash : public SpellScriptLoader
                     if (Item* offhand = caster->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))
                     {
                         // Damage is increased by 25% if your off-hand weapon is enchanted with Flametongue.
-                        if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_SHAMAN, 0x200000, 0, 0))
+                        if (AuraEffect const* aurEff = caster->GetAuraEffectByFamilyFlags(SPELL_AURA_DUMMY, SPELLFAMILY_SHAMAN, 0x200000, 0))
                             if (aurEff->GetBase()->GetCastItemGUID() == offhand->GetGUID())
                                 AddPct(hitDamage, damage);
                         SetHitDamage(hitDamage);
@@ -992,50 +939,6 @@ public:
     {
         return new spell_sha_lightning_shield_AuraScript();
     }
-};
-
-// 53817 - Maelstrom Weapon
-class spell_sha_maelstrom_weapon : public SpellScriptLoader
-{
-    public:
-        spell_sha_maelstrom_weapon() : SpellScriptLoader("spell_sha_maelstrom_weapon") { }
-
-        class spell_sha_maelstrom_weapon_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_sha_maelstrom_weapon_AuraScript);
-
-            bool Validate(SpellInfo const* /*spellInfo*/) override
-            {
-                return ValidateSpellInfo(
-                {
-                    SPELL_SHAMAN_MAELSTROM_POWER,
-                    SPELL_SHAMAN_T10_ENHANCEMENT_4P_BONUS
-                });
-            }
-
-            void HandleBonus(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
-            {
-                if (GetStackAmount() < GetSpellInfo()->StackAmount)
-                    return;
-
-                Unit* caster = GetUnitOwner();
-                AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_SHAMAN_T10_ENHANCEMENT_4P_BONUS, EFFECT_0);
-                if (!aurEff || !roll_chance_i(aurEff->GetAmount()))
-                    return;
-
-                caster->CastSpell(nullptr, SPELL_SHAMAN_MAELSTROM_POWER, aurEff);
-            }
-
-            void Register() override
-            {
-                OnEffectApply += AuraEffectApplyFn(spell_sha_maelstrom_weapon_AuraScript::HandleBonus, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_CHANGE_AMOUNT);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_sha_maelstrom_weapon_AuraScript();
-        }
 };
 
 // 52031, 52033, 52034, 52035, 52036, 58778, 58779, 58780 - Mana Spring Totem
@@ -1354,7 +1257,7 @@ class spell_sha_static_shock : public SpellScriptLoader
                 Unit* caster = eventInfo.GetActor();
 
                 // Get Lightning Shield
-                AuraEffect const* lightningShield = caster->GetAuraEffect(SPELL_AURA_PROC_TRIGGER_SPELL, SPELLFAMILY_SHAMAN, 0x00000400, 0x00000000, 0x00000000, caster->GetGUID());
+                AuraEffect const* lightningShield = caster->GetAuraEffectByFamilyFlags(SPELL_AURA_PROC_TRIGGER_SPELL, SPELLFAMILY_SHAMAN, 0x00000400, 0x00000000, caster->GetGUID());
                 if (!lightningShield)
                     return;
 
@@ -1523,7 +1426,7 @@ class spell_sha_t3_8p_bonus : public AuraScript
         PreventDefaultAction();
 
         // Need remove self if Lightning Shield not active
-        if (!GetTarget()->GetAuraEffect(SPELL_AURA_PROC_TRIGGER_SPELL, SPELLFAMILY_SHAMAN, 0x400, 0, 0))
+        if (!GetTarget()->GetAuraEffectByFamilyFlags(SPELL_AURA_PROC_TRIGGER_SPELL, SPELLFAMILY_SHAMAN, 0x400, 0))
             Remove();
     }
 
@@ -1688,7 +1591,6 @@ void AddSC_shaman_spell_scripts()
     new spell_sha_astral_shift();
     new spell_sha_astral_shift_aura();
     RegisterAuraScript(spell_sha_astral_shift_visual_dummy);
-    new spell_sha_chain_heal();
     new spell_sha_earth_shield();
     new spell_sha_earthbind_totem();
     new spell_sha_earthen_power();
@@ -1703,7 +1605,6 @@ void AddSC_shaman_spell_scripts()
     new spell_sha_item_t6_trinket();
     new spell_sha_lava_lash();
     new spell_sha_lightning_shield();
-    new spell_sha_maelstrom_weapon();
     new spell_sha_mana_spring_totem();
     RegisterAuraScript(spell_sha_mana_tide);
     new spell_sha_mana_tide_totem();
