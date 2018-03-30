@@ -743,15 +743,11 @@ void WorldSession::SetAccountData(AccountDataType type, time_t tm, std::string c
     m_accountData[type].Data = data;
 }
 
-void WorldSession::SendAccountDataTimes(uint32 mask)
+void WorldSession::SendAccountDataTimes()
 {
-    WorldPacket data(SMSG_ACCOUNT_DATA_TIMES, 4 + 1 + 4 + NUM_ACCOUNT_DATA_TYPES * 4);
-    data << uint32(GameTime::GetGameTime());                             // Server time
-    data << uint8(1);
-    data << uint32(mask);                                   // type mask
-    for (uint32 i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
-        if (mask & (1 << i))
-            data << uint32(GetAccountData(AccountDataType(i))->Time);// also unix time
+    WorldPacket data(SMSG_ACCOUNT_DATA_TIMES, 32 * 4);
+    for (uint32 i = 0; i < 32; ++i)
+        data << uint32(0);
     SendPacket(&data);
 }
 

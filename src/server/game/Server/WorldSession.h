@@ -364,7 +364,7 @@ class TC_GAME_API WorldSession
         // Account Data
         AccountData* GetAccountData(AccountDataType type) { return &m_accountData[type]; }
         void SetAccountData(AccountDataType type, time_t tm, std::string const& data);
-        void SendAccountDataTimes(uint32 mask);
+        void SendAccountDataTimes();
         void LoadAccountData(PreparedQueryResult result, uint32 mask);
 
         void LoadTutorialsData(PreparedQueryResult result);

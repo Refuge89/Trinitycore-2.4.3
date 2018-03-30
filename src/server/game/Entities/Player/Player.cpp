@@ -21570,13 +21570,17 @@ void Player::SetGroup(Group* group, int8 subgroup)
 
 void Player::SendInitialPacketsBeforeAddToMap()
 {
+    WorldPacket data(SMSG_SET_REST_START, 4);
+    data << uint32(0);
+    SendDirectMessage(&data);
+
     /// Pass 'this' as argument because we're not stored in ObjectAccessor yet
     GetSocial()->SendSocialList(this, SOCIAL_FLAG_ALL);
 
     // guild bank list wtf?
 
     // Homebind
-    WorldPacket data(SMSG_BINDPOINTUPDATE, 5 * 4);
+    data.Initialize(SMSG_BINDPOINTUPDATE, 5 * 4);
     data << m_homebindX << m_homebindY << m_homebindZ;
     data << (uint32) m_homebindMapId;
     data << (uint32) m_homebindAreaId;
