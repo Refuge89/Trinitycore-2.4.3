@@ -18,8 +18,6 @@
 // This is where scripts' loading functions should be declared:
 void AddSC_generic_pet_scripts();
 void AddSC_hunter_pet_scripts();
-void AddSC_mage_pet_scripts();
-void AddSC_priest_pet_scripts();
 void AddSC_shaman_pet_scripts();
 
 // The name of this function should match:
@@ -28,7 +26,5 @@ void AddPetScripts()
 {
     AddSC_generic_pet_scripts();
     AddSC_hunter_pet_scripts();
-    AddSC_mage_pet_scripts();
-    AddSC_priest_pet_scripts();
     AddSC_shaman_pet_scripts();
 }
