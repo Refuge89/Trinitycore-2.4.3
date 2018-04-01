@@ -4,7 +4,7 @@
 
 master
 :------------:
-[![master Build Status](https://travis-ci.org/gecko32/Trinitycore.svg?branch=master)](https://travis-ci.org/gecko32/Trinitycore)
+[![master Build Status](https://travis-ci.org/gecko32/Trinitycore-2.4.3.svg?branch=master)](https://travis-ci.org/gecko32/Trinitycore-2.4.3)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/15339/badge.svg)](https://scan.coverity.com/projects/15339)
 
 ## Introduction
