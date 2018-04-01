@@ -64,8 +64,8 @@ public:
     bool operator!=(Position const& a) { return !(operator==(a)); }
 
     void Relocate(float x, float y) { m_positionX = x; m_positionY = y; }
-    void Relocate(float x, float y, float z) { m_positionX = x; m_positionY = y; m_positionZ = z; }
-    void Relocate(float x, float y, float z, float o) { *this = { x,y,z,o }; }
+    void Relocate(float x, float y, float z) { Relocate(x, y); m_positionZ = z; }
+    void Relocate(float x, float y, float z, float o) { Relocate(x, y, z); SetOrientation(o); }
     void Relocate(Position const& pos) { *this = pos; }
     void Relocate(Position const* pos) { *this = *pos; }
 
@@ -99,9 +99,9 @@ public:
 
     float GetExactDist2dSq(const float x, const float y) const
     {
-        float dx = m_positionX - x;
-        float dy = m_positionY - y;
-        return dx*dx + dy*dy;
+        float dx = x - m_positionX;
+        float dy = y - m_positionY;
+        return dx * dx + dy * dy;
     }
     float GetExactDist2dSq(Position const& pos) const { return GetExactDist2dSq(pos.m_positionX, pos.m_positionY); }
     float GetExactDist2dSq(Position const* pos) const { return GetExactDist2dSq(*pos); }
@@ -112,8 +112,8 @@ public:
 
     float GetExactDistSq(float x, float y, float z) const
     {
-        float dz = m_positionZ - z;
-        return GetExactDist2dSq(x, y) + dz*dz;
+        float dz = z - m_positionZ;
+        return GetExactDist2dSq(x, y) + dz * dz;
     }
     float GetExactDistSq(Position const& pos) const { return GetExactDistSq(pos.m_positionX, pos.m_positionY, pos.m_positionZ); }
     float GetExactDistSq(Position const* pos) const { return GetExactDistSq(*pos); }
@@ -125,19 +125,20 @@ public:
     void GetPositionOffsetTo(Position const & endPos, Position & retOffset) const;
     Position GetPositionWithOffset(Position const& offset) const;
 
-    float GetAngle(float x, float y) const
+    float GetAbsoluteAngle(float x, float y) const
     {
-        float dx = m_positionX - x;
-        float dy = m_positionY - y;
+        float dx = x - m_positionX;
+        float dy = y - m_positionY;
         return NormalizeOrientation(std::atan2(dy, dx));
     }
-    float GetAngle(Position const& pos) const { return GetAngle(pos.m_positionX, pos.m_positionY); }
-    float GetAngle(Position const* pos) const { return GetAngle(*pos); }
+    float GetAbsoluteAngle(Position const& pos) const { return GetAbsoluteAngle(pos.m_positionX, pos.m_positionY); }
+    float GetAbsoluteAngle(Position const* pos) const { return GetAbsoluteAngle(*pos); }
+    float ToAbsoluteAngle(float relAngle) const { return NormalizeOrientation(relAngle + m_orientation); }
 
-    float GetAbsoluteAngle(float relAngle) const { return NormalizeOrientation(relAngle + m_orientation); }
-    float GetRelativeAngle(float absAngle) const { return NormalizeOrientation(absAngle - m_orientation); }
-    float GetRelativeAngle(float x, float y) const { return GetRelativeAngle(GetAngle(x, y)); }
-    float GetRelativeAngle(Position const* pos) const { return GetRelativeAngle(GetAngle(pos)); }
+    float ToRelativeAngle(float absAngle) const { return NormalizeOrientation(absAngle - m_orientation); }
+    float GetRelativeAngle(float x, float y) const { return ToRelativeAngle(GetAbsoluteAngle(x, y)); }
+    float GetRelativeAngle(Position const& pos) const { return ToRelativeAngle(GetAbsoluteAngle(pos)); }
+    float GetRelativeAngle(Position const* pos) const { return ToRelativeAngle(GetAbsoluteAngle(pos)); }
 
     void GetSinCos(float x, float y, float &vsin, float &vcos) const;
 
