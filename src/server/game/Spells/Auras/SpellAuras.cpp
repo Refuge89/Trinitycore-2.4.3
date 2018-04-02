@@ -1073,6 +1073,10 @@ bool Aura::CanBeSaved() const
             return false;
     }
 
+    // don't save liquid auras
+    if (GetSpellInfo()->HasAttribute(SPELL_ATTR0_CU_LIQUID_AURA))
+        return false;
+
     // No point in saving this, since the stable dialog can't be open on aura load anyway.
     if (HasEffectType(SPELL_AURA_OPEN_STABLE))
         return false;
