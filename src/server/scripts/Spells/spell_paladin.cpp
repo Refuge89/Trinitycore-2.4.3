@@ -43,25 +43,13 @@ enum PaladinSpells
     SPELL_PALADIN_BLESSING_OF_LOWER_CITY_PRIEST  = 37880,
     SPELL_PALADIN_BLESSING_OF_LOWER_CITY_SHAMAN  = 37881,
 
-    SPELL_PALADIN_BEACON_OF_LIGHT                = 53563,
-    SPELL_PALADIN_BEACON_OF_LIGHT_HEAL_1         = 53652,
-    SPELL_PALADIN_BEACON_OF_LIGHT_HEAL_2         = 53653,
-    SPELL_PALADIN_BEACON_OF_LIGHT_HEAL_3         = 53654,
-    SPELL_PALADIN_HOLY_LIGHT                     = 635,
-
-    SPELL_PALADIN_DIVINE_STORM                   = 53385,
-    SPELL_PALADIN_DIVINE_STORM_DUMMY             = 54171,
-    SPELL_PALADIN_DIVINE_STORM_HEAL              = 54172,
-
     SPELL_PALADIN_EYE_FOR_AN_EYE_DAMAGE          = 25997,
 
     SPELL_PALADIN_FORBEARANCE                    = 25771,
 
     SPELL_PALADIN_ITEM_HEALING_TRANCE            = 37706,
 
-    SPELL_PALADIN_JUDGEMENT_OF_JUSTICE           = 20184,
     SPELL_PALADIN_JUDGEMENT_OF_LIGHT             = 20185,
-    SPELL_PALADIN_JUDGEMENT_OF_WISDOM            = 20186,
 
     SPELL_PALADIN_JUDGEMENT_OF_LIGHT_HEAL        = 20267,
     SPELL_PALADIN_JUDGEMENT_OF_WISDOM_MANA       = 20268,
@@ -70,11 +58,7 @@ enum PaladinSpells
 
     SPELL_PALADIN_SEAL_OF_RIGHTEOUSNESS          = 25742,
 
-    SPELL_PALADIN_CONCENTRACTION_AURA            = 19746,
-    SPELL_PALADIN_SANCTIFIED_RETRIBUTION_R1      = 31869,
-
     SPELL_PALADIN_JUDGEMENTS_OF_THE_WISE_MANA    = 31930,
-    SPELL_PALADIN_HEART_OF_THE_CRUSADER_EFF_R1   = 21183,
 
     SPELL_PALADIN_HOLY_POWER_ARMOR               = 28790,
     SPELL_PALADIN_HOLY_POWER_ATTACK_POWER        = 28791,
@@ -92,7 +76,6 @@ enum PaladinSpells
 
 enum PaladinSpellIcons
 {
-    PALADIN_ICON_ID_RETRIBUTION_AURA             = 555,
     PALADIN_ICON_ID_HAMMER_OF_THE_RIGHTEOUS      = 3023
 };
 
@@ -153,95 +136,6 @@ class spell_pal_blessing_of_faith : public SpellScriptLoader
         SpellScript* GetSpellScript() const override
         {
             return new spell_pal_blessing_of_faith_SpellScript();
-        }
-};
-
-// 53385 - Divine Storm
-class spell_pal_divine_storm : public SpellScriptLoader
-{
-    public:
-        spell_pal_divine_storm() : SpellScriptLoader("spell_pal_divine_storm") { }
-
-        class spell_pal_divine_storm_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_pal_divine_storm_SpellScript);
-
-            uint32 _healPct = 0;
-
-            bool Validate(SpellInfo const* /*spellInfo*/) override
-            {
-                return ValidateSpellInfo({ SPELL_PALADIN_DIVINE_STORM_DUMMY });
-            }
-
-            bool Load() override
-            {
-                _healPct = GetSpellInfo()->Effects[EFFECT_1].CalcValue(GetCaster());
-                return true;
-            }
-
-            void TriggerHeal()
-            {
-                Unit* caster = GetCaster();
-                CastSpellExtraArgs args(TRIGGERED_FULL_MASK);
-                args.AddSpellBP0(CalculatePct(GetHitDamage(), _healPct));
-                caster->CastSpell(caster, SPELL_PALADIN_DIVINE_STORM_DUMMY, args);
-            }
-
-            void Register() override
-            {
-                AfterHit += SpellHitFn(spell_pal_divine_storm_SpellScript::TriggerHeal);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_pal_divine_storm_SpellScript();
-        }
-};
-
-// 54171 - Divine Storm (Dummy)
-class spell_pal_divine_storm_dummy : public SpellScriptLoader
-{
-    public:
-        spell_pal_divine_storm_dummy() : SpellScriptLoader("spell_pal_divine_storm_dummy") { }
-
-        class spell_pal_divine_storm_dummy_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_pal_divine_storm_dummy_SpellScript);
-
-
-            bool Validate(SpellInfo const* /*spellInfo*/) override
-            {
-                return ValidateSpellInfo({ SPELL_PALADIN_DIVINE_STORM_HEAL });
-            }
-
-            void CountTargets(std::list<WorldObject*>& targetList)
-            {
-                _targetCount = targetList.size();
-            }
-
-            void HandleDummy(SpellEffIndex /*effIndex*/)
-            {
-                if (!_targetCount || ! GetHitUnit())
-                    return;
-
-                CastSpellExtraArgs args(TRIGGERED_FULL_MASK);
-                args.AddSpellBP0(GetEffectValue() / _targetCount);
-                GetCaster()->CastSpell(GetHitUnit(), SPELL_PALADIN_DIVINE_STORM_HEAL, args);
-            }
-
-            uint32 _targetCount = 0;
-
-            void Register() override
-            {
-                OnEffectHitTarget += SpellEffectFn(spell_pal_divine_storm_dummy_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
-                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_pal_divine_storm_dummy_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_CASTER_AREA_RAID);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_pal_divine_storm_dummy_SpellScript();
         }
 };
 
@@ -620,9 +514,7 @@ class spell_pal_item_t6_trinket : public SpellScriptLoader
         }
 };
 
-// 53407 - Judgement of Justice
 // 20271 - Judgement of Light
-// 53408 - Judgement of Wisdom
 class spell_pal_judgement : public SpellScriptLoader
 {
     public:
@@ -748,7 +640,7 @@ class spell_pal_judgement_of_light_heal : public SpellScriptLoader
         }
 };
 
-// 20186 - Judgement of Wisdom
+// -20186 - Judgement of Wisdom
 class spell_pal_judgement_of_wisdom_mana : public SpellScriptLoader
 {
     public:
@@ -873,75 +765,6 @@ class spell_pal_lay_on_hands : public SpellScriptLoader
         SpellScript* GetSpellScript() const override
         {
             return new spell_pal_lay_on_hands_SpellScript();
-        }
-};
-
-// 53651 - Light's Beacon - Beacon of Light
-class spell_pal_light_s_beacon : public SpellScriptLoader
-{
-    public:
-        spell_pal_light_s_beacon() : SpellScriptLoader("spell_pal_light_s_beacon") { }
-
-        class spell_pal_light_s_beacon_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_pal_light_s_beacon_AuraScript);
-
-            bool Validate(SpellInfo const* /*spellInfo*/) override
-            {
-                return ValidateSpellInfo(
-                {
-                    SPELL_PALADIN_BEACON_OF_LIGHT,
-                    SPELL_PALADIN_BEACON_OF_LIGHT_HEAL_1,
-                    SPELL_PALADIN_BEACON_OF_LIGHT_HEAL_2,
-                    SPELL_PALADIN_BEACON_OF_LIGHT_HEAL_3,
-                    SPELL_PALADIN_HOLY_LIGHT
-                });
-            }
-
-            bool CheckProc(ProcEventInfo& eventInfo)
-            {
-                if (GetTarget()->HasAura(SPELL_PALADIN_BEACON_OF_LIGHT, eventInfo.GetActor()->GetGUID()))
-                    return false;
-                return true;
-            }
-
-            void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
-            {
-                PreventDefaultAction();
-
-                SpellInfo const* procSpell = eventInfo.GetSpellInfo();
-                if (!procSpell)
-                    return;
-
-                HealInfo* healInfo = eventInfo.GetHealInfo();
-                if (!healInfo || !healInfo->GetHeal())
-                    return;
-
-                uint32 healSpellId = procSpell->IsRankOf(sSpellMgr->AssertSpellInfo(SPELL_PALADIN_HOLY_LIGHT)) ? SPELL_PALADIN_BEACON_OF_LIGHT_HEAL_1 : SPELL_PALADIN_BEACON_OF_LIGHT_HEAL_3;
-                uint32 heal = CalculatePct(healInfo->GetHeal(), aurEff->GetAmount());
-
-                Unit* beaconTarget = GetCaster();
-                if (!beaconTarget || !beaconTarget->HasAura(SPELL_PALADIN_BEACON_OF_LIGHT, eventInfo.GetActor()->GetGUID()))
-                    return;
-
-                /// @todo: caster must be the healed unit to perform distance checks correctly
-                ///        but that will break animation on clientside
-                ///        caster in spell packets must be the healing unit
-                CastSpellExtraArgs args(aurEff);
-                args.AddSpellBP0(heal);
-                eventInfo.GetActor()->CastSpell(beaconTarget, healSpellId, args);
-            }
-
-            void Register() override
-            {
-                DoCheckProc += AuraCheckProcFn(spell_pal_light_s_beacon_AuraScript::CheckProc);
-                OnEffectProc += AuraEffectProcFn(spell_pal_light_s_beacon_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_pal_light_s_beacon_AuraScript();
         }
 };
 
@@ -1310,8 +1133,6 @@ class spell_pal_t3_6p_bonus : public SpellScriptLoader
 void AddSC_paladin_spell_scripts()
 {
     new spell_pal_blessing_of_faith();
-    new spell_pal_divine_storm();
-    new spell_pal_divine_storm_dummy();
     new spell_pal_exorcism_and_holy_wrath_damage();
     new spell_pal_eye_for_an_eye();
     new spell_pal_holy_shock();
@@ -1320,15 +1141,12 @@ void AddSC_paladin_spell_scripts()
     new spell_pal_improved_lay_of_hands();
     new spell_pal_item_healing_discount();
     new spell_pal_item_t6_trinket();
-    new spell_pal_judgement("spell_pal_judgement_of_justice", SPELL_PALADIN_JUDGEMENT_OF_JUSTICE);
     new spell_pal_judgement("spell_pal_judgement_of_light", SPELL_PALADIN_JUDGEMENT_OF_LIGHT);
-    new spell_pal_judgement("spell_pal_judgement_of_wisdom", SPELL_PALADIN_JUDGEMENT_OF_WISDOM);
     new spell_pal_judgement_of_command();
     new spell_pal_judgement_of_light_heal();
     new spell_pal_judgement_of_wisdom_mana();
     new spell_pal_judgements_of_the_wise();
     new spell_pal_lay_on_hands();
-    new spell_pal_light_s_beacon();
     new spell_pal_righteous_defense();
     new spell_pal_seal_of_righteousness();
     new spell_pal_seal_of_vengeance<SPELL_PALADIN_HOLY_VENGEANCE, SPELL_PALADIN_SEAL_OF_VENGEANCE_DAMAGE>("spell_pal_seal_of_vengeance");

@@ -31,33 +31,22 @@
 enum PriestSpells
 {
     SPELL_PRIEST_BLESSED_RECOVERY_R1                = 27813,
-    SPELL_PRIEST_GUARDIAN_SPIRIT_HEAL               = 48153,
     SPELL_PRIEST_ITEM_EFFICIENCY                    = 37595,
     SPELL_PRIEST_MANA_LEECH_PROC                    = 34650,
-    SPELL_PRIEST_PENANCE_R1                         = 47540,
-    SPELL_PRIEST_PENANCE_R1_DAMAGE                  = 47758,
-    SPELL_PRIEST_PENANCE_R1_HEAL                    = 47757,
     SPELL_PRIEST_REFLECTIVE_SHIELD_TRIGGERED        = 33619,
     SPELL_PRIEST_REFLECTIVE_SHIELD_R1               = 33201,
     SPELL_PRIEST_SHADOW_WORD_DEATH                  = 32409,
-    SPELL_REPLENISHMENT                             = 57669,
-    SPELL_PRIEST_BODY_AND_SOUL_POISON_TRIGGER       = 64136,
-    SPELL_PRIEST_ABOLISH_DISEASE                    = 552,
     SPELL_PRIEST_VAMPIRIC_EMBRACE_HEAL              = 15290,
     SPELL_PRIEST_DIVINE_BLESSING                    = 40440,
     SPELL_PRIEST_DIVINE_WRATH                       = 40441,
     SPELL_PRIEST_ORACULAR_HEAL                      = 26170,
-    SPELL_PRIEST_ARMOR_OF_FAITH                     = 28810,
-    SPELL_PRIEST_MIND_BLAST_R1                      = 8092,
-    SPELL_PRIEST_SHADOW_WORD_DEATH_R1               = 32379,
-    SPELL_PRIEST_MIND_FLAY_DAMAGE                   = 58381
+    SPELL_PRIEST_ARMOR_OF_FAITH                     = 28810
 };
 
 enum PriestSpellIcons
 {
     PRIEST_ICON_ID_BORROWED_TIME                    = 2899,
-    PRIEST_ICON_ID_EMPOWERED_RENEW_TALENT           = 3021,
-    PRIEST_ICON_ID_PAIN_AND_SUFFERING               = 2874,
+    PRIEST_ICON_ID_PAIN_AND_SUFFERING               = 2874
 };
 
 class PowerCheck
@@ -183,128 +172,6 @@ public:
     {
         return new spell_pri_blessed_recovery_AuraScript();
     }
-};
-
-// 47788 - Guardian Spirit
-class spell_pri_guardian_spirit : public SpellScriptLoader
-{
-    public:
-        spell_pri_guardian_spirit() : SpellScriptLoader("spell_pri_guardian_spirit") { }
-
-        class spell_pri_guardian_spirit_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_pri_guardian_spirit_AuraScript);
-
-            uint32 healPct = 0;
-
-            bool Validate(SpellInfo const* /*spellInfo*/) override
-            {
-                return ValidateSpellInfo({ SPELL_PRIEST_GUARDIAN_SPIRIT_HEAL });
-            }
-
-            bool Load() override
-            {
-                healPct = GetSpellInfo()->Effects[EFFECT_1].CalcValue();
-                return true;
-            }
-
-            void CalculateAmount(AuraEffect const* /*aurEff*/, int32 & amount, bool & /*canBeRecalculated*/)
-            {
-                // Set absorbtion amount to unlimited
-                amount = -1;
-            }
-
-            void Absorb(AuraEffect* /*aurEff*/, DamageInfo & dmgInfo, uint32 & absorbAmount)
-            {
-                Unit* target = GetTarget();
-                if (dmgInfo.GetDamage() < target->GetHealth())
-                    return;
-
-                int32 healAmount = int32(target->CountPctFromMaxHealth(healPct));
-                // remove the aura now, we don't want 40% healing bonus
-                Remove(AURA_REMOVE_BY_ENEMY_SPELL);
-                CastSpellExtraArgs args(TRIGGERED_FULL_MASK);
-                args.AddSpellBP0(healAmount);
-                target->CastSpell(target, SPELL_PRIEST_GUARDIAN_SPIRIT_HEAL, args);
-                absorbAmount = dmgInfo.GetDamage();
-            }
-
-            void Register() override
-            {
-                DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_pri_guardian_spirit_AuraScript::CalculateAmount, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB);
-                OnEffectAbsorb += AuraEffectAbsorbFn(spell_pri_guardian_spirit_AuraScript::Absorb, EFFECT_1);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_pri_guardian_spirit_AuraScript();
-        }
-};
-
-// 64904 - Hymn of Hope
-class spell_pri_hymn_of_hope : public SpellScriptLoader
-{
-    public:
-        spell_pri_hymn_of_hope() : SpellScriptLoader("spell_pri_hymn_of_hope") { }
-
-        class spell_pri_hymn_of_hope_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_pri_hymn_of_hope_SpellScript);
-
-            void FilterTargets(std::list<WorldObject*>& targets)
-            {
-                targets.remove_if(PowerCheck(POWER_MANA));
-                targets.remove_if(RaidCheck(GetCaster()));
-
-                uint32 const maxTargets = 3;
-
-                if (targets.size() > maxTargets)
-                {
-                    targets.sort(Trinity::PowerPctOrderPred(POWER_MANA));
-                    targets.resize(maxTargets);
-                }
-            }
-
-            void Register() override
-            {
-                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_pri_hymn_of_hope_SpellScript::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ALLY);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_pri_hymn_of_hope_SpellScript();
-        }
-};
-
-// -47569 - Improved Shadowform
-class spell_pri_imp_shadowform : public SpellScriptLoader
-{
-    public:
-        spell_pri_imp_shadowform() : SpellScriptLoader("spell_pri_imp_shadowform") { }
-
-        class spell_pri_imp_shadowform_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_pri_imp_shadowform_AuraScript);
-
-            void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
-            {
-                PreventDefaultAction();
-                if (roll_chance_i(aurEff->GetAmount()))
-                    eventInfo.GetActor()->RemoveMovementImpairingAuras(true);
-            }
-
-            void Register() override
-            {
-                OnEffectProc += AuraEffectProcFn(spell_pri_imp_shadowform_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_pri_imp_shadowform_AuraScript();
-        }
 };
 
 // 40438 - Priest Tier 6 Trinket
@@ -435,175 +302,6 @@ class spell_pri_mana_leech : public SpellScriptLoader
         AuraScript* GetAuraScript() const override
         {
             return new spell_pri_mana_leech_AuraScript();
-        }
-};
-
-// -49821 - Mind Sear
-class spell_pri_mind_sear : public SpellScriptLoader
-{
-    public:
-        spell_pri_mind_sear() : SpellScriptLoader("spell_pri_mind_sear") { }
-
-        class spell_pri_mind_sear_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_pri_mind_sear_SpellScript);
-
-            void FilterTargets(std::list<WorldObject*>& unitList)
-            {
-                unitList.remove_if(Trinity::ObjectGUIDCheck(GetCaster()->GetChannelObjectGuid()));
-            }
-
-            void Register() override
-            {
-                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_pri_mind_sear_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_pri_mind_sear_SpellScript();
-        }
-};
-
-// -47580 - Pain and Suffering (dummy aura)
-class spell_pri_pain_and_suffering_dummy : public SpellScriptLoader
-{
-    public:
-        spell_pri_pain_and_suffering_dummy() : SpellScriptLoader("spell_pri_pain_and_suffering_dummy") { }
-
-        class spell_pri_pain_and_suffering_dummy_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_pri_pain_and_suffering_dummy_AuraScript);
-
-            bool CheckDummy(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
-            {
-                return false;
-            }
-
-            void Register() override
-            {
-                DoCheckEffectProc += AuraCheckEffectProcFn(spell_pri_pain_and_suffering_dummy_AuraScript::CheckDummy, EFFECT_1, SPELL_AURA_DUMMY);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_pri_pain_and_suffering_dummy_AuraScript;
-        }
-};
-
-// 47948 - Pain and Suffering (Proc)
-class spell_pri_pain_and_suffering_proc : public SpellScriptLoader
-{
-    public:
-        spell_pri_pain_and_suffering_proc() : SpellScriptLoader("spell_pri_pain_and_suffering_proc") { }
-
-        class spell_pri_pain_and_suffering_proc_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_pri_pain_and_suffering_proc_SpellScript);
-
-            void HandleEffectScriptEffect(SpellEffIndex /*effIndex*/)
-            {
-                Unit* caster = GetCaster();
-                // Refresh Shadow Word: Pain on target
-                if (Unit* target = GetHitUnit())
-                {
-                    if (AuraEffect* aur = target->GetAuraEffectByFamilyFlags(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_PRIEST, 0x8000, 0, caster->GetGUID()))
-                    {
-                        aur->ChangeAmount(aur->CalculateAmount(aur->GetCaster()), false);
-                        aur->CalculatePeriodic(caster, false, false);
-                        aur->GetBase()->RefreshDuration();
-                    }
-                }
-            }
-
-            void Register() override
-            {
-                OnEffectHitTarget += SpellEffectFn(spell_pri_pain_and_suffering_proc_SpellScript::HandleEffectScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_pri_pain_and_suffering_proc_SpellScript;
-        }
-};
-
-// -47540 - Penance
-class spell_pri_penance : public SpellScriptLoader
-{
-    public:
-        spell_pri_penance() : SpellScriptLoader("spell_pri_penance") { }
-
-        class spell_pri_penance_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_pri_penance_SpellScript);
-
-            bool Load() override
-            {
-                return GetCaster()->GetTypeId() == TYPEID_PLAYER;
-            }
-
-            bool Validate(SpellInfo const* spellInfo) override
-            {
-                SpellInfo const* firstRankSpellInfo = sSpellMgr->GetSpellInfo(SPELL_PRIEST_PENANCE_R1);
-                if (!firstRankSpellInfo)
-                    return false;
-
-                // can't use other spell than this penance due to spell_ranks dependency
-                if (!spellInfo->IsRankOf(firstRankSpellInfo))
-                    return false;
-
-                uint8 rank = spellInfo->GetRank();
-                if (!sSpellMgr->GetSpellWithRank(SPELL_PRIEST_PENANCE_R1_DAMAGE, rank, true))
-                    return false;
-                if (!sSpellMgr->GetSpellWithRank(SPELL_PRIEST_PENANCE_R1_HEAL, rank, true))
-                    return false;
-
-                return true;
-            }
-
-            void HandleDummy(SpellEffIndex /*effIndex*/)
-            {
-                Unit* caster = GetCaster();
-                if (Unit* unitTarget = GetHitUnit())
-                {
-                    if (!unitTarget->IsAlive())
-                        return;
-
-                    uint8 rank = GetSpellInfo()->GetRank();
-
-                    if (caster->IsFriendlyTo(unitTarget))
-                        caster->CastSpell(unitTarget, sSpellMgr->GetSpellWithRank(SPELL_PRIEST_PENANCE_R1_HEAL, rank), TRIGGERED_DISALLOW_PROC_EVENTS);
-                    else
-                        caster->CastSpell(unitTarget, sSpellMgr->GetSpellWithRank(SPELL_PRIEST_PENANCE_R1_DAMAGE, rank), TRIGGERED_DISALLOW_PROC_EVENTS);
-                }
-            }
-
-            SpellCastResult CheckCast()
-            {
-                Player* caster = GetCaster()->ToPlayer();
-                if (Unit* target = GetExplTargetUnit())
-                    if (!caster->IsFriendlyTo(target))
-                    {
-                        if (!caster->IsValidAttackTarget(target))
-                            return SPELL_FAILED_BAD_TARGETS;
-                        if (!caster->isInFront(target))
-                            return SPELL_FAILED_UNIT_NOT_INFRONT;
-                    }
-                return SPELL_CAST_OK;
-            }
-
-            void Register() override
-            {
-                OnEffectHitTarget += SpellEffectFn(spell_pri_penance_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
-                OnCheckCast += SpellCheckCastFn(spell_pri_penance_SpellScript::CheckCast);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_pri_penance_SpellScript;
         }
 };
 
@@ -842,16 +540,9 @@ void AddSC_priest_spell_scripts()
 {
     new spell_pri_aq_3p_bonus();
     new spell_pri_blessed_recovery();
-    new spell_pri_guardian_spirit();
-    new spell_pri_hymn_of_hope();
-    new spell_pri_imp_shadowform();
     new spell_pri_item_t6_trinket();
     new spell_pri_lightwell_renew();
     new spell_pri_mana_leech();
-    new spell_pri_mind_sear();
-    new spell_pri_pain_and_suffering_dummy();
-    new spell_pri_pain_and_suffering_proc();
-    new spell_pri_penance();
     new spell_pri_power_word_shield();
     new spell_pri_shadow_word_death();
     new spell_pri_vampiric_embrace();

@@ -1623,67 +1623,6 @@ public:
     }
 };
 
-/*######
-## npc_experience
-######*/
-
-enum BehstenSlahtz
-{
-    MENU_ID_XP_ON_OFF  = 10638,
-    NPC_TEXT_XP_ON_OFF = 14736,
-    OPTION_ID_XP_OFF   = 0,     // "I no longer wish to gain experience."
-    OPTION_ID_XP_ON    = 1      // "I wish to start gaining experience again."
-};
-
-class npc_experience : public CreatureScript
-{
-    public:
-        npc_experience() : CreatureScript("npc_experience") { }
-
-        struct npc_experienceAI : public ScriptedAI
-        {
-            npc_experienceAI(Creature* creature) : ScriptedAI(creature) { }
-
-            bool GossipHello(Player* player) override
-            {
-                if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_NO_XP_GAIN)) // not gaining XP
-                {
-                    AddGossipItemFor(player, MENU_ID_XP_ON_OFF, OPTION_ID_XP_ON, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-                    SendGossipMenuFor(player, NPC_TEXT_XP_ON_OFF, me->GetGUID());
-                }
-                else // currently gaining XP
-                {
-                    AddGossipItemFor(player, MENU_ID_XP_ON_OFF, OPTION_ID_XP_OFF, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-                    SendGossipMenuFor(player, NPC_TEXT_XP_ON_OFF, me->GetGUID());
-                }
-                return true;
-            }
-
-            bool GossipSelect(Player* player, uint32 /*menuId*/, uint32 gossipListId) override
-            {
-                uint32 const action = player->PlayerTalkClass->GetGossipOptionAction(gossipListId);
-                ClearGossipMenuFor(player);
-
-                switch (action)
-                {
-                    case GOSSIP_ACTION_INFO_DEF + 1: // XP ON selected
-                        player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_NO_XP_GAIN); // turn on XP gain
-                        break;
-                    case GOSSIP_ACTION_INFO_DEF + 2: // XP OFF selected
-                        player->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_NO_XP_GAIN); // turn off XP gain
-                        break;
-                }
-                CloseGossipMenuFor(player);
-                return true;
-            }
-        };
-
-        CreatureAI* GetAI(Creature* creature) const override
-        {
-            return new npc_experienceAI(creature);
-        }
-};
-
 enum Fireworks
 {
     NPC_OMEN                = 15467,
@@ -2100,7 +2039,6 @@ void AddSC_npcs_special()
     new npc_brewfest_reveler();
     new npc_training_dummy();
     new npc_pet_trainer();
-    new npc_experience();
     new npc_firework();
     new npc_imp_in_a_ball();
     new npc_stable_master();

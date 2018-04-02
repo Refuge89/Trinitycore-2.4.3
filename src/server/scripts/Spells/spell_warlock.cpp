@@ -55,8 +55,7 @@ enum WarlockSpells
 enum WarlockSpellIcons
 {
     WARLOCK_ICON_ID_IMPROVED_LIFE_TAP               = 208,
-    WARLOCK_ICON_ID_MANA_FEED                       = 1982,
-    WARLOCK_ICON_ID_DEMONIC_PACT                    = 3220
+    WARLOCK_ICON_ID_MANA_FEED                       = 1982
 };
 
 // -710 - Banish
@@ -238,36 +237,6 @@ class spell_warl_curse_of_doom : public SpellScriptLoader
         }
 };
 
-class spell_warl_decimation : public SpellScriptLoader
-{
-    public:
-        spell_warl_decimation() : SpellScriptLoader("spell_warl_decimation") { }
-
-        class spell_warl_decimation_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_warl_decimation_AuraScript);
-
-            bool CheckProc(ProcEventInfo& eventInfo)
-            {
-                if (SpellInfo const* spellInfo = eventInfo.GetSpellInfo())
-                    if (eventInfo.GetActionTarget()->HasAuraState(AURA_STATE_HEALTHLESS_35_PERCENT, spellInfo, eventInfo.GetActor()))
-                        return true;
-
-                return false;
-            }
-
-            void Register() override
-            {
-                DoCheckProc += AuraCheckProcFn(spell_warl_decimation_AuraScript::CheckProc);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_warl_decimation_AuraScript();
-        }
-};
-
 // -1120 - Drain Soul
 class spell_warl_drain_soul : public SpellScriptLoader
 {
@@ -312,43 +281,6 @@ class spell_warl_drain_soul : public SpellScriptLoader
         AuraScript* GetAuraScript() const override
         {
             return new spell_warl_drain_soul_AuraScript();
-        }
-};
-
-// 47422 - Everlasting Affliction
-class spell_warl_everlasting_affliction : public SpellScriptLoader
-{
-    public:
-        spell_warl_everlasting_affliction() : SpellScriptLoader("spell_warl_everlasting_affliction") { }
-
-        class spell_warl_everlasting_affliction_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_warl_everlasting_affliction_SpellScript);
-
-            void HandleScriptEffect(SpellEffIndex /*effIndex*/)
-            {
-                Unit* caster = GetCaster();
-                if (Unit* target = GetHitUnit())
-                {
-                    // Refresh corruption on target
-                    if (AuraEffect* aur = target->GetAuraEffectByFamilyFlags(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_WARLOCK, 0x2, 0, caster->GetGUID()))
-                    {
-                        aur->ChangeAmount(aur->CalculateAmount(aur->GetCaster()), false);
-                        aur->CalculatePeriodic(caster, false, false);
-                        aur->GetBase()->RefreshDuration(true);
-                    }
-                }
-            }
-
-            void Register() override
-            {
-                OnEffectHitTarget += SpellEffectFn(spell_warl_everlasting_affliction_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_warl_everlasting_affliction_SpellScript();
         }
 };
 
@@ -808,9 +740,7 @@ void AddSC_warlock_spell_scripts()
     new spell_warl_banish();
     new spell_warl_create_healthstone();
     new spell_warl_curse_of_doom();
-    new spell_warl_decimation();
     new spell_warl_drain_soul();
-    new spell_warl_everlasting_affliction();
     new spell_warl_glyph_of_corruption_nightfall();
     new spell_warl_life_tap();
     new spell_warl_seed_of_corruption();

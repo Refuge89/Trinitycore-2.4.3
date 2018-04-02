@@ -37,10 +37,8 @@ enum RogueSpells
 {
     SPELL_ROGUE_BLADE_FLURRY_EXTRA_ATTACK       = 22482,
     SPELL_ROGUE_CHEAT_DEATH_COOLDOWN            = 31231,
-    SPELL_ROGUE_PREY_ON_THE_WEAK                = 58670,
     SPELL_ROGUE_SHIV_TRIGGERED                  =  5940,
     SPELL_ROGUE_QUICK_RECOVERY_ENERGY           = 31663,
-    SPELL_ROGUE_CRIPPLING_POISON                =  3409,
     SPELL_ROGUE_MASTER_OF_SUBTLETY_BUFF         = 31665,
     SPELL_ROGUE_STEALTH                         =  1784
 };
@@ -150,78 +148,6 @@ class spell_rog_cheat_death : public SpellScriptLoader
         AuraScript* GetAuraScript() const override
         {
             return new spell_rog_cheat_death_AuraScript();
-        }
-};
-
-// -51664 - Cut to the Chase
-class spell_rog_cut_to_the_chase : public SpellScriptLoader
-{
-    public:
-        spell_rog_cut_to_the_chase() : SpellScriptLoader("spell_rog_cut_to_the_chase") { }
-
-        class spell_rog_cut_to_the_chase_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_rog_cut_to_the_chase_AuraScript);
-
-            void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
-            {
-                PreventDefaultAction();
-
-                // "refresh your Slice and Dice duration to its 5 combo point maximum"
-                Unit* caster = eventInfo.GetActor();
-                // lookup Slice and Dice
-                if (AuraEffect const* snd = caster->GetAuraEffectByFamilyFlags(SPELL_AURA_MOD_MELEE_HASTE, SPELLFAMILY_ROGUE, 0x00040000, 0x00000000, caster->GetGUID()))
-                {
-                    // Max 5 cp duration
-                    uint32 countMax = snd->GetSpellInfo()->GetMaxDuration();
-
-                    snd->GetBase()->SetDuration(countMax, true);
-                    snd->GetBase()->SetMaxDuration(snd->GetBase()->GetDuration());
-                }
-            }
-
-            void Register() override
-            {
-                OnEffectProc += AuraEffectProcFn(spell_rog_cut_to_the_chase_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_rog_cut_to_the_chase_AuraScript();
-        }
-};
-
-// -51625 - Deadly Brew
-class spell_rog_deadly_brew : public SpellScriptLoader
-{
-    public:
-        spell_rog_deadly_brew() : SpellScriptLoader("spell_rog_deadly_brew") { }
-
-        class spell_rog_deadly_brew_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_rog_deadly_brew_AuraScript);
-
-            bool Validate(SpellInfo const* /*spellInfo*/) override
-            {
-                return ValidateSpellInfo({ SPELL_ROGUE_CRIPPLING_POISON });
-            }
-
-            void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
-            {
-                PreventDefaultAction();
-                eventInfo.GetActor()->CastSpell(eventInfo.GetProcTarget(), SPELL_ROGUE_CRIPPLING_POISON, aurEff);
-            }
-
-            void Register() override
-            {
-                OnEffectProc += AuraEffectProcFn(spell_rog_deadly_brew_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_rog_deadly_brew_AuraScript();
         }
 };
 
@@ -596,8 +522,6 @@ void AddSC_rogue_spell_scripts()
 {
     new spell_rog_blade_flurry();
     new spell_rog_cheat_death();
-    new spell_rog_cut_to_the_chase();
-    new spell_rog_deadly_brew();
     new spell_rog_deadly_poison();
     new spell_rog_overkill_mos<SPELL_ROGUE_MASTER_OF_SUBTLETY_BUFF>("spell_rog_master_of_subtlety");
     new spell_rog_preparation();
