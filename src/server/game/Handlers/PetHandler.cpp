@@ -728,13 +728,11 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPacket& recvPacket)
     TC_LOG_DEBUG("network.opcode", "WORLD: Received CMSG_PET_CAST_SPELL");
 
     ObjectGuid guid;
-    uint8  castCount;
     uint32 spellId;
-    uint8  castFlags;
 
-    recvPacket >> guid >> castCount >> spellId >> castFlags;
+    recvPacket >> guid >> spellId;
 
-    TC_LOG_DEBUG("entities.pet", "WORLD: CMSG_PET_CAST_SPELL, %s, castCount: %u, spellId %u, castFlags %u", guid.ToString().c_str(), castCount, spellId, castFlags);
+    TC_LOG_DEBUG("entities.pet", "WORLD: CMSG_PET_CAST_SPELL, %s, spellId %u", guid.ToString().c_str(), spellId);
 
     // This opcode is also sent from charmed and possessed units (players and creatures)
     if (!_player->GetGuardianPet() && !_player->GetCharm())
@@ -761,12 +759,10 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPacket& recvPacket)
 
     SpellCastTargets targets;
     targets.Read(recvPacket, caster);
-    HandleClientCastFlags(recvPacket, castFlags, targets);
 
     caster->ClearUnitState(UNIT_STATE_FOLLOW);
 
     Spell* spell = new Spell(caster, spellInfo, TRIGGERED_NONE);
-    spell->m_cast_count = castCount;                    // probably pending spell cast
     spell->m_targets = targets;
 
     SpellCastResult result = spell->CheckPetCast(nullptr);

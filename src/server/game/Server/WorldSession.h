@@ -351,9 +351,6 @@ class TC_GAME_API WorldSession
 
         void SendPetitionQueryOpcode(ObjectGuid petitionguid);
 
-        // Spell
-        void HandleClientCastFlags(WorldPacket& recvPacket, uint8 castFlags, SpellCastTargets& targets);
-
         // Pet
         void SendPetNameQuery(ObjectGuid guid, uint32 petnumber);
         void SendStablePet(ObjectGuid guid);
