@@ -37,29 +37,6 @@
 #include "World.h"
 #include "WorldPacket.h"
 
-void WorldSession::HandleClientCastFlags(WorldPacket& recvPacket, uint8 castFlags, SpellCastTargets& targets)
-{
-    // some spell cast packet including more data (for projectiles?)
-    if (castFlags & 0x02)
-    {
-        // not sure about these two
-        float elevation, speed;
-        recvPacket >> elevation;
-        recvPacket >> speed;
-
-        targets.SetElevation(elevation);
-        targets.SetSpeed(speed);
-
-        uint8 hasMovementData;
-        recvPacket >> hasMovementData;
-        if (hasMovementData)
-        {
-            recvPacket.SetOpcode(recvPacket.read<uint32>());
-            HandleMovementOpcodes(recvPacket);
-        }
-    }
-}
-
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {
     /// @todo add targets.read() check
@@ -69,12 +46,10 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     if (pUser->m_unitMovedByMe != pUser)
         return;
 
-    uint8 bagIndex, slot, castFlags;
-    uint8 castCount;                                        // next cast if exists (single or not)
+    uint8 bagIndex, slot, spellCount, castCount;
     ObjectGuid itemGUID;
-    uint32 spellId;                                         // cast spell id
 
-    recvPacket >> bagIndex >> slot >> castCount >> spellId >> itemGUID  >> castFlags;
+    recvPacket >> bagIndex >> slot >> spellCount >> castCount >> itemGUID;
 
     Item* pItem = pUser->GetUseableItemByPos(bagIndex, slot);
     if (!pItem)
@@ -89,7 +64,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    TC_LOG_DEBUG("network", "WORLD: CMSG_USE_ITEM packet, bagIndex: %u, slot: %u, castCount: %u, spellId: %u, Item: %u, data length = %i", bagIndex, slot, castCount, spellId, pItem->GetEntry(), (uint32)recvPacket.size());
+    TC_LOG_DEBUG("network", "WORLD: CMSG_USE_ITEM packet, bagIndex: %u, slot: %u, castCount: %u, Item: %u, data length = %i", bagIndex, slot, castCount, pItem->GetEntry(), (uint32)recvPacket.size());
 
     ItemTemplate const* proto = pItem->GetTemplate();
     if (!proto)
@@ -153,7 +128,6 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 
     SpellCastTargets targets;
     targets.Read(recvPacket, pUser);
-    HandleClientCastFlags(recvPacket, castFlags, targets);
 
     // Note: If script stop casting it must send appropriate data to client to prevent stuck item in gray state.
     if (!sScriptMgr->OnItemUse(pUser, pItem, targets))
@@ -301,10 +275,10 @@ void WorldSession::HandleGameObjectUseOpcode(WorldPacket& recvData)
 void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 {
     uint32 spellId;
-    uint8  castCount, castFlags;
-    recvPacket >> castCount >> spellId >> castFlags;
+    uint8  castCount;
+    recvPacket >> castCount >> spellId;
 
-    TC_LOG_DEBUG("network", "WORLD: got cast spell packet, castCount: %u, spellId: %u, castFlags: %u, data length = %u", castCount, spellId, castFlags, (uint32)recvPacket.size());
+    TC_LOG_DEBUG("network", "WORLD: got cast spell packet, castCount: %u, spellId: %u, data length = %u", castCount, spellId, (uint32)recvPacket.size());
 
     // ignore for remote control state (for player case)
     Unit* mover = _player->m_unitMovedByMe;
@@ -352,7 +326,6 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     // client provided targets
     SpellCastTargets targets;
     targets.Read(recvPacket, caster);
-    HandleClientCastFlags(recvPacket, castFlags, targets);
 
     // Client is resending autoshot cast opcode when other spell is cast during shoot rotation
     // Skip it to prevent "interrupt" message
@@ -387,8 +360,6 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
 {
     uint32 spellId;
-
-    recvPacket.read_skip<uint8>();                          // counter, increments with every CANCEL packet, don't use for now
     recvPacket >> spellId;
 
     if (_player->IsNonMeleeSpellCast(false))
@@ -583,7 +554,6 @@ void WorldSession::HandleMirrorImageDataRequest(WorldPacket& recvData)
     data << uint32(creator->GetDisplayId());
     data << uint8(creator->getRace());
     data << uint8(creator->getGender());
-    data << uint8(creator->getClass());
 
     if (creator->GetTypeId() == TYPEID_PLAYER)
     {
