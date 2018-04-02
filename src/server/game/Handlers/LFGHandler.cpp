@@ -26,26 +26,6 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 
-void BuildPlayerLockDungeonBlock(WorldPacket& data, lfg::LfgLockMap const& lock)
-{
-    data << uint32(lock.size());                           // Size of lock dungeons
-    for (lfg::LfgLockMap::const_iterator it = lock.begin(); it != lock.end(); ++it)
-    {
-        data << uint32(it->first);                         // Dungeon entry (id + type)
-        data << uint32(it->second);                        // Lock status
-    }
-}
-
-void BuildPartyLockDungeonBlock(WorldPacket& data, lfg::LfgLockPartyMap const& lockMap)
-{
-    data << uint8(lockMap.size());
-    for (lfg::LfgLockPartyMap::const_iterator it = lockMap.begin(); it != lockMap.end(); ++it)
-    {
-        data << uint64(it->first);                         // Player guid
-        BuildPlayerLockDungeonBlock(data, it->second);
-    }
-}
-
 void WorldSession::HandleLfgJoinOpcode(WorldPacket& /*recvData*/)
 {
     TC_LOG_DEBUG("lfg", "CMSG_LFG_JOIN %s", GetPlayerInfo().c_str());

@@ -179,13 +179,13 @@ uint32 UnitUpdateFieldFlags[PLAYER_END] =
     UF_FLAG_PUBLIC,                                         // UNIT_FIELD_PERSUADED + 1
     UF_FLAG_PUBLIC,                                         // UNIT_FIELD_CHANNEL_OBJECT
     UF_FLAG_PUBLIC,                                         // UNIT_FIELD_CHANNEL_OBJECT+1
-    UF_FLAG_PUBLIC,                                         // UNIT_FIELD_HEALTH
+    UF_FLAG_DYNAMIC,                                        // UNIT_FIELD_HEALTH
     UF_FLAG_PUBLIC,                                         // UNIT_FIELD_POWER1
     UF_FLAG_PUBLIC,                                         // UNIT_FIELD_POWER2
     UF_FLAG_PUBLIC,                                         // UNIT_FIELD_POWER3
     UF_FLAG_PUBLIC,                                         // UNIT_FIELD_POWER4
     UF_FLAG_PUBLIC,                                         // UNIT_FIELD_POWER5
-    UF_FLAG_PUBLIC,                                         // UNIT_FIELD_MAXHEALTH
+    UF_FLAG_DYNAMIC,                                        // UNIT_FIELD_MAXHEALTH
     UF_FLAG_PUBLIC,                                         // UNIT_FIELD_MAXPOWER1
     UF_FLAG_PUBLIC,                                         // UNIT_FIELD_MAXPOWER2
     UF_FLAG_PUBLIC,                                         // UNIT_FIELD_MAXPOWER3

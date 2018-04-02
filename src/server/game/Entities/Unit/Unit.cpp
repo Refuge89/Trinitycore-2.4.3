@@ -296,7 +296,7 @@ Unit::Unit(bool isWorldObject) :
     m_objectType |= TYPEMASK_UNIT;
     m_objectTypeId = TYPEID_UNIT;
 
-    m_updateFlag = (UPDATEFLAG_LIVING | UPDATEFLAG_STATIONARY_POSITION);
+    _updateFlag = (UPDATEFLAG_LIVING | UPDATEFLAG_STATIONARY_POSITION);
 
     m_attackTimer[BASE_ATTACK] = 0;
     m_attackTimer[OFF_ATTACK] = 0;
@@ -11656,17 +11656,16 @@ void Unit::BuildMovementPacket(ByteBuffer *data) const
 void Unit::BuildMovementPacket(Position const& pos, Position const& transportPos, MovementInfo const& movementInfo, ByteBuffer* data)
 {
     *data << uint32(movementInfo.GetMovementFlags());
-    *data << uint16(movementInfo.GetExtraMovementFlags());
+    *data << uint8(movementInfo.GetExtraMovementFlags());
     *data << uint32(GameTime::GetGameTimeMS());         // time / counter
     *data << TaggedPosition<Position::XYZO>(pos);
 
     // 0x00000200
     if (movementInfo.HasMovementFlag(MOVEMENTFLAG_ONTRANSPORT))
     {
-        *data << movementInfo.transport.guid.WriteAsPacked();
+        *data << movementInfo.transport.guid;
         *data << TaggedPosition<Position::XYZO>(transportPos);
         *data << uint32(movementInfo.transport.time);
-        *data << int8(movementInfo.transport.seat);
 
         if (movementInfo.HasExtraMovementFlag(MOVEMENTFLAG2_INTERPOLATED_MOVEMENT))
             *data << uint32(movementInfo.transport.time2);

@@ -89,7 +89,7 @@ class TC_GAME_API Object
 
         void BuildValuesUpdateBlockForPlayer(UpdateData* data, Player* target) const;
         void BuildOutOfRangeUpdateBlock(UpdateData* data) const;
-        void BuildMovementUpdateBlock(UpdateData* data, uint32 flags = 0) const;
+        void BuildMovementUpdateBlock(UpdateData* data, uint8 flags = 0) const;
 
         virtual void DestroyForPlayer(Player* target, bool onDeath = false) const;
 
@@ -183,13 +183,13 @@ class TC_GAME_API Object
 
         uint32 GetUpdateFieldData(Player const* target, uint32*& flags) const;
 
-        void BuildMovementUpdate(ByteBuffer* data, uint16 flags) const;
+        void BuildMovementUpdate(ByteBuffer* data, uint8 flags) const;
         virtual void BuildValuesUpdate(uint8 updatetype, ByteBuffer* data, Player* target) const;
 
         uint16 m_objectType;
 
         TypeID m_objectTypeId;
-        uint16 m_updateFlag;
+        uint8 _updateFlag;
 
         union
         {

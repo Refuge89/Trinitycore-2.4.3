@@ -49,7 +49,7 @@ Object::Object() : m_PackGUID(sizeof(uint64)+1)
 {
     m_objectTypeId      = TYPEID_OBJECT;
     m_objectType        = TYPEMASK_OBJECT;
-    m_updateFlag        = UPDATEFLAG_NONE;
+    _updateFlag         = UPDATEFLAG_NONE;
 
     m_uint32Values      = nullptr;
     m_valuesCount       = 0;
@@ -148,7 +148,7 @@ void Object::RemoveFromWorld()
     ClearUpdateMask(true);
 }
 
-void Object::BuildMovementUpdateBlock(UpdateData* data, uint32 flags) const
+void Object::BuildMovementUpdateBlock(UpdateData* data, uint8 flags) const
 {
     ByteBuffer buf(500);
 
@@ -165,8 +165,8 @@ void Object::BuildCreateUpdateBlockForPlayer(UpdateData* data, Player* target) c
     if (!target)
         return;
 
-    uint8  updateType = UPDATETYPE_CREATE_OBJECT;
-    uint16 flags      = m_updateFlag;
+    uint8 updateType = UPDATETYPE_CREATE_OBJECT;
+    uint8 flags = _updateFlag;
 
     /** lower flag1 **/
     if (target == this)                                      // building packet for yourself
@@ -226,10 +226,8 @@ void Object::BuildCreateUpdateBlockForPlayer(UpdateData* data, Player* target) c
         }
 
         if (isType(TYPEMASK_UNIT))
-        {
             if (ToUnit()->GetVictim())
                 flags |= UPDATEFLAG_HAS_TARGET;
-        }
     }
 
     //TC_LOG_DEBUG("BuildCreateUpdate: update-type: %u, object-type: %u got flags: %X, flags2: %X", updateType, m_objectTypeId, flags, flags2);
@@ -279,11 +277,8 @@ void Object::DestroyForPlayer(Player* target, bool onDeath) const
 {
     ASSERT(target);
 
-    WorldPacket data(SMSG_DESTROY_OBJECT, 8 + 1);
+    WorldPacket data(SMSG_DESTROY_OBJECT, 8);
     data << uint64(GetGUID());
-    //! If the following bool is true, the client will call "void CGUnit_C::OnDeath()" for this object.
-    //! OnDeath() does for eg trigger death animation and interrupts certain spells/missiles/auras/sounds...
-    data << uint8(onDeath ? 1 : 0);
     target->SendDirectMessage(&data);
 }
 
@@ -331,7 +326,7 @@ ObjectGuid Object::GetGuidValue(uint16 index) const
     return *((ObjectGuid*)&(m_uint32Values[index]));
 }
 
-void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
+void Object::BuildMovementUpdate(ByteBuffer* data, uint8 flags) const
 {
     Unit const* unit = nullptr;
     WorldObject const* object = nullptr;
@@ -341,7 +336,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
     else
         object = (WorldObject const*)this;
 
-    *data << uint16(flags);                                  // update flags
+    *data << uint8(flags);                                  // update flags
 
     // 0x20
     if (flags & UPDATEFLAG_LIVING)
@@ -356,8 +351,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
               << unit->GetSpeed(MOVE_SWIM_BACK)
               << unit->GetSpeed(MOVE_FLIGHT)
               << unit->GetSpeed(MOVE_FLIGHT_BACK)
-              << unit->GetSpeed(MOVE_TURN_RATE)
-              << unit->GetSpeed(MOVE_PITCH_RATE);
+              << unit->GetSpeed(MOVE_TURN_RATE);
 
         // 0x08000000
         if (unit->m_movementInfo.GetMovementFlags() & MOVEMENTFLAG_SPLINE_ENABLED)
@@ -365,61 +359,18 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
     }
     else
     {
-        if (flags & UPDATEFLAG_POSITION)
+        // 0x40
+        if (flags & UPDATEFLAG_STATIONARY_POSITION)
         {
             ASSERT(object);
-            Transport* transport = object->GetTransport();
-
-            if (transport)
-                *data << transport->GetPackGUID();
-            else
-                *data << uint8(0);
-
-            *data << object->GetPositionX();
-            *data << object->GetPositionY();
-            *data << object->GetPositionZ();
-
-            if (transport)
-            {
-                *data << object->GetTransOffsetX();
-                *data << object->GetTransOffsetY();
-                *data << object->GetTransOffsetZ();
-            }
-            else
-            {
-                *data << object->GetPositionX();
-                *data << object->GetPositionY();
-                *data << object->GetPositionZ();
-            }
-
-            *data << object->GetOrientation();
-
-            if (GetTypeId() == TYPEID_CORPSE)
-                *data << float(object->GetOrientation());
-            else
-                *data << float(0);
-        }
-        else
-        {
-            // 0x40
-            if (flags & UPDATEFLAG_STATIONARY_POSITION)
-            {
-                ASSERT(object);
-                *data << object->GetStationaryX();
-                *data << object->GetStationaryY();
-                *data << object->GetStationaryZ();
-                *data << object->GetStationaryO();
-            }
+            *data << object->GetStationaryX();
+            *data << object->GetStationaryY();
+            *data << object->GetStationaryZ();
+            *data << object->GetStationaryO();
         }
     }
 
-    // 0x8
-    if (flags & UPDATEFLAG_UNKNOWN)
-    {
-        *data << uint32(0);
-    }
-
-    // 0x10
+    // 0x08
     if (flags & UPDATEFLAG_LOWGUID)
     {
         switch (GetTypeId())
@@ -439,9 +390,28 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
                 break;
             case TYPEID_PLAYER:
                 if (flags & UPDATEFLAG_SELF)
-                    *data << uint32(0x0000002F);            // unk
+                    *data << uint32(0x00000015);            // unk
                 else
                     *data << uint32(0x00000008);            // unk
+                break;
+            default:
+                *data << uint32(0x00000000);                // unk
+                break;
+        }
+    }
+
+    // 0x10
+    if (flags & UPDATEFLAG_HIGHGUID)
+    {
+        switch (GetTypeId())
+        {
+            case TYPEID_OBJECT:
+            case TYPEID_ITEM:
+            case TYPEID_CONTAINER:
+            case TYPEID_GAMEOBJECT:
+            case TYPEID_DYNAMICOBJECT:
+            case TYPEID_CORPSE:
+                *data << uint32(GetGUID().GetHigh());
                 break;
             default:
                 *data << uint32(0x00000000);                // unk
@@ -473,10 +443,6 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
         else
             *data << uint32(GameTime::GetGameTimeMS());
     }
-
-    // 0x200
-    if (flags & UPDATEFLAG_ROTATION)
-        *data << int64(ToGameObject()->GetPackedWorldRotation());
 }
 
 void Object::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* target) const

@@ -19,8 +19,6 @@
 #ifndef _UPDATEFIELDS_AUTO_H
 #define _UPDATEFIELDS_AUTO_H
 
-// Auto generated for version 3, 3, 5, 12340
-
 enum EObjectFields
 {
     OBJECT_FIELD_GUID                         = 0x0000, // Size: 2, Type: LONG, Flags: PUBLIC
@@ -89,13 +87,13 @@ enum EUnitFields
     UNIT_FIELD_TARGET                         = OBJECT_END + 0x000A, // Size: 2, Type: LONG, Flags: PUBLIC
     UNIT_FIELD_PERSUADED                      = OBJECT_END + 0x000C, // Size: 2, Type: LONG, Flags: PUBLIC
     UNIT_FIELD_CHANNEL_OBJECT                 = OBJECT_END + 0x000E, // Size: 2, Type: LONG, Flags: PUBLIC
-    UNIT_FIELD_HEALTH                         = OBJECT_END + 0x0010, // Size: 1, Type: INT, Flags: PUBLIC
+    UNIT_FIELD_HEALTH                         = OBJECT_END + 0x0010, // Size: 1, Type: INT, Flags: DYNAMIC
     UNIT_FIELD_POWER1                         = OBJECT_END + 0x0011, // Size: 1, Type: INT, Flags: PUBLIC
     UNIT_FIELD_POWER2                         = OBJECT_END + 0x0012, // Size: 1, Type: INT, Flags: PUBLIC
     UNIT_FIELD_POWER3                         = OBJECT_END + 0x0013, // Size: 1, Type: INT, Flags: PUBLIC
     UNIT_FIELD_POWER4                         = OBJECT_END + 0x0014, // Size: 1, Type: INT, Flags: PUBLIC
     UNIT_FIELD_POWER5                         = OBJECT_END + 0x0015, // Size: 1, Type: INT, Flags: PUBLIC
-    UNIT_FIELD_MAXHEALTH                      = OBJECT_END + 0x0016, // Size: 1, Type: INT, Flags: PUBLIC
+    UNIT_FIELD_MAXHEALTH                      = OBJECT_END + 0x0016, // Size: 1, Type: INT, Flags: DYNAMIC
     UNIT_FIELD_MAXPOWER1                      = OBJECT_END + 0x0017, // Size: 1, Type: INT, Flags: PUBLIC
     UNIT_FIELD_MAXPOWER2                      = OBJECT_END + 0x0018, // Size: 1, Type: INT, Flags: PUBLIC
     UNIT_FIELD_MAXPOWER3                      = OBJECT_END + 0x0019, // Size: 1, Type: INT, Flags: PUBLIC
