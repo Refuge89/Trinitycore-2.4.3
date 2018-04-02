@@ -1446,9 +1446,9 @@ void SpellMgr::LoadSpellProcs()
 
     mSpellProcMap.clear();                             // need for reload case
 
-    //                                                     0           1                2                 3                 4                 5
-    QueryResult result = WorldDatabase.Query("SELECT SpellId, SchoolMask, SpellFamilyName, SpellFamilyMask0, SpellFamilyMask1, SpellFamilyMask2, "
-    //           6              7               8        9              10              11      12        13      14
+    //                                                     0           1                2                 3                 4
+    QueryResult result = WorldDatabase.Query("SELECT SpellId, SchoolMask, SpellFamilyName, SpellFamilyMask0, SpellFamilyMask1, "
+    //           5              6               7        8              9              10      11        12      13
         "ProcFlags, SpellTypeMask, SpellPhaseMask, HitMask, AttributesMask, ProcsPerMinute, Chance, Cooldown, Charges FROM spell_proc");
 
     uint32 count = 0;
@@ -1492,16 +1492,15 @@ void SpellMgr::LoadSpellProcs()
             baseProcEntry.SpellFamilyName = fields[2].GetUInt16();
             baseProcEntry.SpellFamilyMask[0] = fields[3].GetUInt32();
             baseProcEntry.SpellFamilyMask[1] = fields[4].GetUInt32();
-            baseProcEntry.SpellFamilyMask[2] = fields[5].GetUInt32();
-            baseProcEntry.ProcFlags = fields[6].GetUInt32();
-            baseProcEntry.SpellTypeMask = fields[7].GetUInt32();
-            baseProcEntry.SpellPhaseMask = fields[8].GetUInt32();
-            baseProcEntry.HitMask = fields[9].GetUInt32();
-            baseProcEntry.AttributesMask = fields[10].GetUInt32();
-            baseProcEntry.ProcsPerMinute = fields[11].GetFloat();
-            baseProcEntry.Chance = fields[12].GetFloat();
-            baseProcEntry.Cooldown = Milliseconds(fields[13].GetUInt32());
-            baseProcEntry.Charges = fields[14].GetUInt8();
+            baseProcEntry.ProcFlags = fields[5].GetUInt32();
+            baseProcEntry.SpellTypeMask = fields[6].GetUInt32();
+            baseProcEntry.SpellPhaseMask = fields[7].GetUInt32();
+            baseProcEntry.HitMask = fields[8].GetUInt32();
+            baseProcEntry.AttributesMask = fields[9].GetUInt32();
+            baseProcEntry.ProcsPerMinute = fields[10].GetFloat();
+            baseProcEntry.Chance = fields[11].GetFloat();
+            baseProcEntry.Cooldown = Milliseconds(fields[12].GetUInt32());
+            baseProcEntry.Charges = fields[13].GetUInt8();
 
             while (spellInfo)
             {
