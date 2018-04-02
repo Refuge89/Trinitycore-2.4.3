@@ -32,6 +32,8 @@
 
 enum HunterSpells
 {
+    SPELL_HUNTER_IMPROVED_ASPECT_OF_THE_VIPER       = 38390,
+    SPELL_HUNTER_ASPECT_OF_THE_VIPER_MANA           = 34075,
     SPELL_HUNTER_BESTIAL_WRATH                      = 19574,
     SPELL_HUNTER_IMPROVED_MEND_PET                  = 24406,
     SPELL_HUNTER_MISDIRECTION                       = 34477,
@@ -39,6 +41,43 @@ enum HunterSpells
     SPELL_HUNTER_READINESS                          = 23989,
     SPELL_HUNTER_KILL_COMMAND_HUNTER                = 34027,
     SPELL_HUNTER_THRILL_OF_THE_HUNT_MANA            = 34720
+};
+
+// 34074 - Aspect of the Viper
+class spell_hun_aspect_of_the_viper : public AuraScript
+{
+    PrepareAuraScript(spell_hun_aspect_of_the_viper);
+
+    bool Load() override
+    {
+        return GetUnitOwner()->GetPowerType() == POWER_MANA;
+    }
+
+    void PeriodicTick(AuraEffect const* aurEff)
+    {
+        if (Unit* target = GetUnitOwner())
+        {
+            int32 amount = 0;
+            float manaPct = target->GetPower(POWER_MANA) / target->GetMaxPower(POWER_MANA);
+            int32 intPct = manaPct < 0.2f ? aurEff->GetAmount() : (manaPct > 0.9f ? 11.0f : (1.2f - 1.1f * manaPct) * aurEff->GetAmount());
+            if (AuraEffect const* iAurEff = target->GetAuraEffect(SPELL_HUNTER_IMPROVED_ASPECT_OF_THE_VIPER, EFFECT_0))
+                intPct += iAurEff->GetAmount();
+
+            amount = CalculatePct(target->GetStat(STAT_INTELLECT), intPct) + CalculatePct(target->getLevel(), aurEff->GetSpellInfo()->Effects[EFFECT_1].CalcValue());
+
+            if (amount > 0)
+            {
+                CastSpellExtraArgs args(TRIGGERED_FULL_MASK);
+                args.AddSpellBP0(amount);
+                target->CastSpell(target, SPELL_HUNTER_ASPECT_OF_THE_VIPER_MANA, args);
+            }
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_hun_aspect_of_the_viper::PeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+    }
 };
 
 // 781 - Disengage
@@ -387,6 +426,7 @@ class spell_hun_thrill_of_the_hunt : public SpellScriptLoader
 
 void AddSC_hunter_spell_scripts()
 {
+    RegisterAuraScript(spell_hun_aspect_of_the_viper);
     new spell_hun_disengage();
     new spell_hun_improved_mend_pet();
     new spell_hun_misdirection();
