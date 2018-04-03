@@ -5955,26 +5955,17 @@ int16 Player::GetSkillTempBonusValue(uint32 skill) const
     return SKILL_TEMP_BONUS(GetUInt32Value(PLAYER_SKILL_BONUS_INDEX(itr->second.pos)));
 }
 
-void Player::SendActionButtons(uint32 state) const
+void Player::SendActionButtons() const
 {
-    WorldPacket data(SMSG_ACTION_BUTTONS, 1 + (MAX_ACTION_BUTTONS * 4));
-    data << uint8(state);
-    /*
-        state can be 0, 1, 2
-        0 - Looks to be sent when initial action buttons get sent, however on Trinity we use 1 since 0 had some difficulties
-        1 - Used in any SMSG_ACTION_BUTTONS packet with button data on Trinity. Only used after spec swaps on retail.
-        2 - Clears the action bars client sided. This is sent during spec swap before unlearning and before sending the new buttons
-    */
-    if (state != 2)
+    WorldPacket data(SMSG_ACTION_BUTTONS, MAX_ACTION_BUTTONS * 4);
+
+    for (uint8 button = 0; button < MAX_ACTION_BUTTONS; ++button)
     {
-        for (uint8 button = 0; button < MAX_ACTION_BUTTONS; ++button)
-        {
-            ActionButtonList::const_iterator itr = m_actionButtons.find(button);
-            if (itr != m_actionButtons.end() && itr->second.uState != ACTIONBUTTON_DELETED)
-                data << uint32(itr->second.packedData);
-            else
-                data << uint32(0);
-        }
+        ActionButtonList::const_iterator itr = m_actionButtons.find(button);
+        if (itr != m_actionButtons.end() && itr->second.uState != ACTIONBUTTON_DELETED)
+            data << uint32(itr->second.packedData);
+        else
+            data << uint32(0);
     }
 
     SendDirectMessage(&data);
@@ -21607,7 +21598,7 @@ void Player::SendInitialPacketsBeforeAddToMap()
     data << uint32(0);                                      // count, for (count) uint32;
     SendDirectMessage(&data);
 
-    SendInitialActionButtons();
+    SendActionButtons();
     m_reputationMgr->SendInitialReputations();
 
     data.Initialize(SMSG_LOGIN_SETTIMESPEED, 4 + 4);
@@ -24198,7 +24189,7 @@ void Player::ActivateSpec(uint8 spec)
     //RemoveAllAuras(GetGUID(), nullptr, false, true); // removes too many auras
 
     // Let client clear his current Actions
-    SendActionButtons(2);
+    SendActionButtons();
     // m_actionButtons.clear() is called in the next _LoadActionButtons
     for (uint32 talentId = 0; talentId < sTalentStore.GetNumRows(); ++talentId)
     {
@@ -24308,7 +24299,7 @@ void Player::LoadActions(PreparedQueryResult result)
     if (result)
         _LoadActions(result);
 
-    SendActionButtons(1);
+    SendActionButtons();
 }
 
 void Player::ResetTimeSync()

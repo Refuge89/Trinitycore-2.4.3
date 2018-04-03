@@ -212,7 +212,7 @@ struct ActionButton
     }
 };
 
-#define  MAX_ACTION_BUTTONS 144                             //checked in 3.2.0
+#define  MAX_ACTION_BUTTONS 132
 
 typedef std::map<uint8, ActionButton> ActionButtonList;
 
@@ -1424,8 +1424,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         ActionButton* addActionButton(uint8 button, uint32 action, uint8 type);
         void removeActionButton(uint8 button);
         ActionButton const* GetActionButton(uint8 button);
-        void SendInitialActionButtons() const { SendActionButtons(1); }
-        void SendActionButtons(uint32 state) const;
+        void SendActionButtons() const;
         bool IsActionButtonDataValid(uint8 button, uint32 action, uint8 type) const;
 
         PvPInfo pvpInfo;
