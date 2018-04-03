@@ -70,7 +70,15 @@ void WorldSession::HandleIgnoreTradeOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::HandleBusyTradeOpcode(WorldPacket& /*recvPacket*/)
 {
     TC_LOG_DEBUG("network", "WORLD: Busy Trade %u", _player->GetGUID().GetCounter());
-    // recvPacket.print_storage();
+
+    TradeData* trade = _player->m_trade;
+    if (!trade)
+        return;
+
+    TradeStatusInfo info;
+    info.Status = TRADE_STATUS_BUSY_2;
+    trade->GetTrader()->GetSession()->SendTradeStatus(info);
+    _player->TradeCancel(true);
 }
 
 void WorldSession::SendUpdateTrade(bool trader_data /*= true*/)
