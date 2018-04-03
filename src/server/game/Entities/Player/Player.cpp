@@ -15268,7 +15268,12 @@ QuestGiverStatus Player::GetQuestDialogStatus(Object* questgiver)
                             result2 = DIALOG_STATUS_AVAILABLE;
                     }
                     else
-                        result2 = DIALOG_STATUS_LOW_LEVEL_AVAILABLE;
+                    {
+                        if (quest->IsDaily())
+                            result2 = DIALOG_STATUS_LOW_LEVEL_AVAILABLE_REP;
+                        else
+                            result2 = DIALOG_STATUS_LOW_LEVEL_AVAILABLE;
+                    }
                 }
                 else
                     result2 = DIALOG_STATUS_UNAVAILABLE;
@@ -19449,7 +19454,7 @@ void Player::SendAutoRepeatCancel(Unit* target)
 {
     WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, target->GetPackGUID().size());
     data << target->GetPackGUID();                     // may be it's target guid
-    SendMessageToSet(&data, true);
+    SendDirectMessage(&data);
 }
 
 void Player::SendExplorationExperience(uint32 Area, uint32 Experience) const
