@@ -1212,6 +1212,16 @@ class TC_GAME_API ObjectMgr
         void LoadTrainerSpell();
         void AddSpellToTrainer(uint32 ID, uint32 SpellID, uint32 MoneyCost, uint32 ReqSkillLine, uint32 ReqSkillRank, uint32 ReqLevel);
 
+        void LoadMailTexts();
+        void SetMailText(uint32 textId, std::string body) { _mailTextStore[textId] = body; }
+        std::string GetMailText(uint32 textId) const
+        {
+            MailTextContainer::const_iterator itr = _mailTextStore.find(textId);
+            if (itr != _mailTextStore.end())
+                return itr->second;
+            return "";
+        }
+
         void InitializeQueriesData(QueryDataGroup mask);
 
         std::string GeneratePetName(uint32 entry);
@@ -1240,6 +1250,7 @@ class TC_GAME_API ObjectMgr
         uint32 GenerateAuctionID();
         uint64 GenerateEquipmentSetGuid();
         uint32 GenerateMailID();
+        uint32 GenerateMailTextID();
         uint32 GeneratePetNumber();
         ObjectGuid::LowType GenerateCreatureSpawnId();
         ObjectGuid::LowType GenerateGameObjectSpawnId();
@@ -1517,6 +1528,7 @@ class TC_GAME_API ObjectMgr
         uint32 _auctionId;
         uint64 _equipmentSetGuid;
         std::atomic<uint32> _mailId;
+        std::atomic<uint32> _mailtextId;
         std::atomic<uint32> _hiPetNumber;
 
         ObjectGuid::LowType _creatureSpawnId;
@@ -1540,6 +1552,7 @@ class TC_GAME_API ObjectMgr
         typedef std::unordered_map<uint32, uint32> QuestAreaTriggerContainer;
         typedef std::set<uint32> TavernAreaTriggerContainer;
         typedef std::set<uint32> GameObjectForQuestContainer;
+        typedef std::unordered_map<uint32, std::string> MailTextContainer;
 
         QuestAreaTriggerContainer _questAreaTriggerStore;
         TavernAreaTriggerContainer _tavernAreaTriggerStore;
@@ -1550,6 +1563,8 @@ class TC_GAME_API ObjectMgr
         AreaTriggerScriptContainer _areaTriggerScriptStore;
         AccessRequirementContainer _accessRequirementStore;
         DungeonEncounterContainer _dungeonEncounterStore;
+
+        MailTextContainer _mailTextStore;
 
         RepRewardRateContainer _repRewardRateStore;
         RepOnKillContainer _repOnKillStore;

@@ -3941,7 +3941,7 @@ void Player::DeleteFromDB(ObjectGuid playerguid, uint32 accountId, bool updateRe
                     uint16 mailTemplateId= mailFields[2].GetUInt16();
                     uint32 sender        = mailFields[3].GetUInt32();
                     std::string subject  = mailFields[4].GetString();
-                    std::string body     = mailFields[5].GetString();
+                    uint32 mailTextId    = mailFields[5].GetUInt32();
                     uint32 money         = mailFields[6].GetUInt32();
                     bool has_items       = mailFields[7].GetBool();
 
@@ -3963,7 +3963,7 @@ void Player::DeleteFromDB(ObjectGuid playerguid, uint32 accountId, bool updateRe
                         continue;
                     }
 
-                    MailDraft draft(subject, body);
+                    MailDraft draft(subject, mailTextId);
                     if (mailTemplateId)
                         draft = MailDraft(mailTemplateId, false);    // items are already included
 
@@ -17504,7 +17504,7 @@ void Player::_LoadMail()
             m->sender         = fields[2].GetUInt32();
             m->receiver       = fields[3].GetUInt32();
             m->subject        = fields[4].GetString();
-            m->body           = fields[5].GetString();
+            m->mailTextId     = fields[5].GetUInt32();
             bool has_items    = fields[6].GetBool();
             m->expire_time    = time_t(fields[7].GetUInt32());
             m->deliver_time   = time_t(fields[8].GetUInt32());

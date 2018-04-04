@@ -1248,24 +1248,27 @@ void WorldSession::HandleCancelTempEnchantmentOpcode(WorldPacket& recvData)
  *
  * This function is called when player clicks on item which has some flag set
  */
-void WorldSession::HandleItemTextQuery(WorldPacket& recvData )
+void WorldSession::HandleItemTextQuery(WorldPacket& recvData)
 {
-    ObjectGuid itemGuid;
-    recvData >> itemGuid;
+    uint32 itemTextId;
+    uint32 itemId;
+    uint32 unk;
+    recvData >> itemTextId >> itemId >> unk;
 
-    TC_LOG_DEBUG("network", "CMSG_ITEM_TEXT_QUERY %s", itemGuid.ToString().c_str());
+    TC_LOG_DEBUG("network", "CMSG_ITEM_TEXT_QUERY %u", itemId);
 
     WorldPacket data(SMSG_ITEM_TEXT_QUERY_RESPONSE, 4 + 10);    // guess size
 
-    if (Item* item = _player->GetItemByGuid(itemGuid))
+    if (Item* item = _player->GetItemByEntry(itemId))
     {
-        data << uint8(0);                                       // has text
-        data << uint64(itemGuid);                               // item guid
+        data << uint32(itemTextId);
         data << item->GetText();
     }
     else
     {
-        data << uint8(1);                                       // no text
+        std::string text = sObjectMgr->GetMailText(itemTextId);
+        data << uint32(itemTextId);
+        data << text;
     }
 
     SendPacket(&data);

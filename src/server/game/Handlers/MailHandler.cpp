@@ -419,7 +419,7 @@ void WorldSession::HandleMailReturnToSender(WorldPacket& recvData)
     // only return mail if the player exists (and delete if not existing)
     if (m->messageType == MAIL_NORMAL && m->sender)
     {
-        MailDraft draft(m->subject, m->body);
+        MailDraft draft(m->subject, m->mailTextId);
         if (m->mailTemplateId)
             draft = MailDraft(m->mailTemplateId, false);     // items already included
 
@@ -604,25 +604,16 @@ void WorldSession::HandleGetMailList(WorldPacket& recvData)
     if (!player->m_mailsLoaded)
         player->_LoadMail();
 
-    // client can't work with packets > max int16 value
-    const uint32 maxPacketSize = 32767;
-
     uint32 mailsCount = 0;                                 // real send to client mails amount
-    uint32 realCount  = 0;                                 // real mails amount
 
     WorldPacket data(SMSG_MAIL_LIST_RESULT, (200));         // guess size
-    data << uint32(0);                                      // real mail's count
     data << uint8(0);                                       // mail's count
     time_t cur_time = GameTime::GetGameTime();
 
     for (PlayerMails::iterator itr = player->GetMailBegin(); itr != player->GetMailEnd(); ++itr)
     {
-        // Only first 50 mails are displayed
-        if (mailsCount >= 50)
-        {
-            realCount += 1;
-            continue;
-        }
+        if (mailsCount >= 254)
+            break;
 
         // skip deleted or not delivered (deliver delay not expired) mails
         if ((*itr)->state == MAIL_STATE_DELETED || cur_time < (*itr)->deliver_time)
@@ -630,13 +621,7 @@ void WorldSession::HandleGetMailList(WorldPacket& recvData)
 
         uint8 item_count = (*itr)->items.size();            // max count is MAX_MAIL_ITEMS (12)
 
-        size_t next_mail_size = 2 + 4 + 1 + ((*itr)->messageType == MAIL_NORMAL ? 8 : 4) + 4 * 8 + ((*itr)->subject.size() + 1) + ((*itr)->body.size() + 1) + 1 + item_count * (1 + 4 + 4 + MAX_INSPECTED_ENCHANTMENT_SLOT * 3 * 4 + 4 + 4 + 4 + 4 + 4 + 4 + 1);
-
-        if (data.wpos()+next_mail_size > maxPacketSize)
-        {
-            realCount += 1;
-            continue;
-        }
+        size_t next_mail_size = 2 + 4 + 1 + ((*itr)->messageType == MAIL_NORMAL ? 8 : 4) + 4 * 8 + ((*itr)->subject.size() + 1) + 1 + item_count * (1 + 4 + 4 + MAX_INSPECTED_ENCHANTMENT_SLOT * 3 * 4 + 4 + 4 + 1 + 4 + 4 + 4);
 
         data << uint16(next_mail_size);                    // Message size
         data << uint32((*itr)->messageID);                 // Message ID
@@ -655,6 +640,7 @@ void WorldSession::HandleGetMailList(WorldPacket& recvData)
         }
 
         data << uint32((*itr)->COD);                         // COD
+        data << uint32((*itr)->mailTextId);                  // item text
         data << uint32(0);                                   // package (Package.dbc)
         data << uint32((*itr)->stationery);                  // stationery (Stationery.dbc)
         data << uint32((*itr)->money);                       // Gold
@@ -662,7 +648,6 @@ void WorldSession::HandleGetMailList(WorldPacket& recvData)
         data << float(float((*itr)->expire_time - GameTime::GetGameTime())/DAY); // Time
         data << uint32((*itr)->mailTemplateId);              // mail template (MailTemplate.dbc)
         data << (*itr)->subject;                             // Subject string - once 00, when mail type = 3, max 256
-        data << (*itr)->body;                                // message? max 8000
         data << uint8(item_count);                           // client limit is 0x10
 
         for (uint8 i = 0; i < item_count; ++i)
@@ -685,23 +670,19 @@ void WorldSession::HandleGetMailList(WorldPacket& recvData)
             // unk
             data << uint32((item ? item->GetItemSuffixFactor() : 0));
             // stack count
-            data << uint32((item ? item->GetCount() : 0));
+            data << uint8((item ? item->GetCount() : 0));
             // charges
             data << uint32((item ? item->GetSpellCharges() : 0));
             // durability
             data << uint32((item ? item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY) : 0));
             // durability
             data << uint32((item ? item->GetUInt32Value(ITEM_FIELD_DURABILITY) : 0));
-            // unknown wotlk
-            data << uint8((item && !item->IsLocked() ? 1 : 0));
         }
 
-        ++realCount;
         ++mailsCount;
     }
 
-    data.put<uint32>(0, realCount);                         // this will display warning about undelivered mail to player if realCount > mailsCount
-    data.put<uint8>(4, mailsCount);                        // set real send mails to client
+    data.put<uint8>(0, mailsCount);                        // set real send mails to client
     SendPacket(&data);
 
     // recalculate m_nextMailDelivereTime and unReadMails
@@ -723,7 +704,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recvData)
     Player* player = _player;
 
     Mail* m = player->GetMail(mailId);
-    if (!m || (m->body.empty() && !m->mailTemplateId) || m->state == MAIL_STATE_DELETED || m->deliver_time > GameTime::GetGameTime() || (m->checked & MAIL_CHECK_MASK_COPIED))
+    if (!m || (!m->mailTextId && !m->mailTemplateId) || m->state == MAIL_STATE_DELETED || m->deliver_time > GameTime::GetGameTime() || (m->checked & MAIL_CHECK_MASK_COPIED))
     {
         player->SendMailResult(mailId, MAIL_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR);
         return;
@@ -744,7 +725,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recvData)
         bodyItem->SetText(mailTemplateEntry->content[GetSessionDbcLocale()]);
     }
     else
-        bodyItem->SetText(m->body);
+        bodyItem->SetUInt32Value(ITEM_FIELD_ITEM_TEXT_ID, m->mailTextId);
 
     if (m->messageType == MAIL_NORMAL)
         bodyItem->SetGuidValue(ITEM_FIELD_CREATOR, ObjectGuid(HighGuid::Player, m->sender));

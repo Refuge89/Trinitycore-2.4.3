@@ -231,6 +231,7 @@ ObjectMgr::ObjectMgr():
     _auctionId(1),
     _equipmentSetGuid(1),
     _mailId(1),
+    _mailtextId(1),
     _hiPetNumber(1),
     _creatureSpawnId(1),
     _gameObjectSpawnId(1),
@@ -6578,6 +6579,37 @@ void ObjectMgr::LoadAccessRequirements()
     TC_LOG_INFO("server.loading", ">> Loaded %u access requirement definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
+void ObjectMgr::LoadMailTexts()
+{
+    uint32 oldMSTime = getMSTime();
+
+    _mailTextStore.clear();                                  // need for reload case
+
+    //                                                    0    1
+    QueryResult result = CharacterDatabase.Query("SELECT id, body FROM mail_text");
+
+    if (!result)
+    {
+        TC_LOG_INFO("server.loading", ">> Loaded 0 mail texts. DB table `mail_text` is empty.");
+        return;
+    }
+
+    uint32 count = 0;
+
+    do
+    {
+        Field* fields = result->Fetch();
+
+        ++count;
+
+        uint32 textId = fields[0].GetUInt32();
+        std::string body = fields[1].GetString();
+        _mailTextStore[textId] = body;
+    } while (result->NextRow());
+
+    TC_LOG_INFO("server.loading", ">> Loaded %u mail texts in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+}
+
 /*
  * Searches for the areatrigger which teleports players out of the given map with instance_template.parent field support
  */
@@ -6656,6 +6688,10 @@ void ObjectMgr::SetHighestGuids()
     if (result)
         _mailId = (*result)[0].GetUInt32()+1;
 
+    result = CharacterDatabase.Query("SELECT MAX(id) FROM mail_text");
+    if (result)
+        _mailtextId =  (*result)[0].GetUInt32() + 1;
+
     result = CharacterDatabase.Query("SELECT MAX(arenateamid) FROM arena_team");
     if (result)
         sArenaTeamMgr->SetNextArenaTeamId((*result)[0].GetUInt32()+1);
@@ -6709,6 +6745,16 @@ uint32 ObjectMgr::GenerateMailID()
         World::StopNow(ERROR_EXIT_CODE);
     }
     return _mailId++;
+}
+
+uint32 ObjectMgr::GenerateMailTextID()
+{
+    if (_mailtextId >= 0xFFFFFFFE)
+    {
+        TC_LOG_ERROR("misc", "Mail text ids overflow!! Can't continue, shutting down server. Search on forum for TCE00007 for more info. ");
+        World::StopNow(ERROR_EXIT_CODE);
+    }
+    return _mailtextId++;
 }
 
 uint32 ObjectMgr::GeneratePetNumber()

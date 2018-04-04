@@ -123,12 +123,15 @@ class TC_GAME_API MailDraft
         { }
         MailDraft(std::string const& subject, std::string const& body)
             : m_mailTemplateId(0), m_mailTemplateItemsNeed(false), m_subject(subject), m_body(body), m_money(0), m_COD(0) { }
+        MailDraft(std::string const& subject, uint32 const& mailTextId)
+            : m_mailTemplateId(0), m_mailTemplateItemsNeed(false), m_subject(subject), _mailTextId(mailTextId), m_money(0), m_COD(0) { }
     public:                                                 // Accessors
         uint16 GetMailTemplateId() const { return m_mailTemplateId; }
         std::string const& GetSubject() const { return m_subject; }
         uint32 GetMoney() const { return m_money; }
         uint32 GetCOD() const { return m_COD; }
         std::string const& GetBody() const { return m_body; }
+        uint32 GetMailTextId() const;
 
     public:                                                 // modifiers
         MailDraft& AddItem(Item* item);
@@ -147,6 +150,7 @@ class TC_GAME_API MailDraft
         bool        m_mailTemplateItemsNeed;
         std::string m_subject;
         std::string m_body;
+        uint32 _mailTextId;
 
         MailItemMap m_items;                                // Keep the items in a map to avoid duplicate guids (which can happen), store only low part of guid
 
@@ -170,7 +174,6 @@ struct TC_GAME_API Mail
     ObjectGuid::LowType sender;
     ObjectGuid::LowType receiver;
     std::string subject;
-    std::string body;
     std::vector<MailItemInfo> items;
     std::vector<ObjectGuid::LowType> removedItems;
     time_t expire_time;
@@ -178,6 +181,7 @@ struct TC_GAME_API Mail
     uint32 money;
     uint32 COD;
     uint32 checked;
+    uint32 mailTextId;
     MailState state;
 
     void AddItem(ObjectGuid::LowType itemGuidLow, uint32 item_template)

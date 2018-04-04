@@ -184,6 +184,7 @@ void MailDraft::SendMailTo(SQLTransaction& trans, MailReceiver const& receiver, 
         prepareItems(pReceiver, trans);                            // generate mail template items
 
     uint32 mailId = sObjectMgr->GenerateMailID();
+    uint32 mailTextId = GetMailTextId();
 
     time_t deliver_time = GameTime::GetGameTime() + deliver_delay;
 
@@ -217,7 +218,7 @@ void MailDraft::SendMailTo(SQLTransaction& trans, MailReceiver const& receiver, 
     stmt->setUInt32(++index, sender.GetSenderId());
     stmt->setUInt32(++index, receiver.GetPlayerGUIDLow());
     stmt->setString(++index, GetSubject());
-    stmt->setString(++index, GetBody());
+    stmt->setUInt32(++index, mailTextId);
     stmt->setBool  (++index, !m_items.empty());
     stmt->setUInt64(++index, uint64(expire_time));
     stmt->setUInt64(++index, uint64(deliver_time));
@@ -236,6 +237,16 @@ void MailDraft::SendMailTo(SQLTransaction& trans, MailReceiver const& receiver, 
         trans->Append(stmt);
     }
 
+    if (!GetBody().empty())
+    {
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_MAIL_TEXT);
+        stmt->setUInt32(0, mailTextId);
+        stmt->setString(0, GetBody());
+        trans->Append(stmt);
+
+        sObjectMgr->SetMailText(mailTextId, GetBody());
+    }
+
     // For online receiver update in game mail status and data
     if (pReceiver)
     {
@@ -247,7 +258,7 @@ void MailDraft::SendMailTo(SQLTransaction& trans, MailReceiver const& receiver, 
             m->messageID = mailId;
             m->mailTemplateId = GetMailTemplateId();
             m->subject = GetSubject();
-            m->body = GetBody();
+            m->mailTextId = mailTextId;
             m->money = GetMoney();
             m->COD = GetCOD();
 
@@ -285,4 +296,14 @@ void MailDraft::SendMailTo(SQLTransaction& trans, MailReceiver const& receiver, 
         SQLTransaction temp = SQLTransaction(nullptr);
         deleteIncludedItems(temp);
     }
+}
+
+uint32 MailDraft::GetMailTextId() const
+{
+    if (_mailTextId)
+        return _mailTextId;
+    else if (!GetBody().empty())
+        return sObjectMgr->GenerateMailTextID();
+
+    return 0;
 }
