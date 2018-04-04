@@ -3853,17 +3853,6 @@ void Spell::WriteCastResultInfo(WorldPacket& data, Player* caster, SpellInfo con
         {
             if (param1)
                 data << uint32(*param1);
-            else
-            {
-                uint32 item = 0;
-                for (uint8 effIndex = 0; effIndex < MAX_SPELL_EFFECTS && !item; ++effIndex)
-                    if (uint32 itemType = spellInfo->Effects[effIndex].ItemType)
-                        item = itemType;
-
-                ItemTemplate const* proto = sObjectMgr->GetItemTemplate(item);
-                if (proto && proto->ItemLimitCategory)
-                    data << uint32(proto->ItemLimitCategory);
-            }
             break;
         }
         case SPELL_FAILED_CUSTOM_ERROR:
@@ -6199,7 +6188,7 @@ SpellCastResult Spell::CheckItems(uint32* param1 /*= nullptr*/, uint32* param2 /
                     {
                         ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(m_spellInfo->Effects[i].ItemType);
                         /// @todo Needs review
-                        if (itemTemplate && !itemTemplate->ItemLimitCategory)
+                        if (itemTemplate)
                         {
                             player->SendEquipError(msg, nullptr, nullptr, m_spellInfo->Effects[i].ItemType);
                             return SPELL_FAILED_DONT_REPORT;

@@ -267,7 +267,6 @@ WorldPacket ItemTemplate::BuildQueryData(LocaleConstant loc) const
     response.Stats.RequiredDisenchantSkill = RequiredDisenchantSkill;
     response.Stats.ArmorDamageModifier = ArmorDamageModifier;
     response.Stats.Duration = Duration;
-    response.Stats.ItemLimitCategory = ItemLimitCategory;
     response.Stats.HolidayId = HolidayId;
 
     return *response.Write();

@@ -898,29 +898,6 @@ uint8 Item::GetGemCountWithID(uint32 GemID) const
     return count;
 }
 
-uint8 Item::GetGemCountWithLimitCategory(uint32 limitCategory) const
-{
-    uint8 count = 0;
-    for (uint32 enchant_slot = SOCK_ENCHANTMENT_SLOT; enchant_slot < SOCK_ENCHANTMENT_SLOT+MAX_GEM_SOCKETS; ++enchant_slot)
-    {
-        uint32 enchant_id = GetEnchantmentId(EnchantmentSlot(enchant_slot));
-        if (!enchant_id)
-            continue;
-
-        SpellItemEnchantmentEntry const* enchantEntry = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
-        if (!enchantEntry)
-            continue;
-
-        ItemTemplate const* gemProto = sObjectMgr->GetItemTemplate(enchantEntry->GemID);
-        if (!gemProto)
-            continue;
-
-        if (gemProto->ItemLimitCategory == limitCategory)
-            ++count;
-    }
-    return count;
-}
-
 bool Item::IsLimitedToAnotherMapOrZone(uint32 cur_mapId, uint32 cur_zoneId) const
 {
     ItemTemplate const* proto = GetTemplate();

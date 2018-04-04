@@ -113,7 +113,6 @@ class TC_GAME_API Item : public Object
         void SetCount(uint32 value);
         uint32 GetMaxStackCount() const { return GetTemplate()->GetMaxStackSize(); }
         uint8 GetGemCountWithID(uint32 GemID) const;
-        uint8 GetGemCountWithLimitCategory(uint32 limitCategory) const;
         InventoryResult CanBeMergedPartlyWith(ItemTemplate const* proto) const;
 
         uint8 GetSlot() const {return m_slot;}

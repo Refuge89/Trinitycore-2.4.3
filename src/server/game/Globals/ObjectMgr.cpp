@@ -2498,9 +2498,9 @@ void ObjectMgr::LoadItemTemplates()
                                              "startquest, lockid, Material, sheath, RandomProperty, RandomSuffix, block, itemset, MaxDurability, area, Map, BagFamily, "
     //                                            118             119             120             121             122            123              124            125
                                              "TotemCategory, socketColor_1, socketContent_1, socketColor_2, socketContent_2, socketColor_3, socketContent_3, socketBonus, "
-    //                                            126                 127                     128            129            130            131         132         133
-                                             "GemProperties, RequiredDisenchantSkill, ArmorDamageModifier, duration, ItemLimitCategory, HolidayId, ScriptName, DisenchantID, "
-    //                                           134        135            136
+    //                                            126                 127                     128            129       130         131         132
+                                             "GemProperties, RequiredDisenchantSkill, ArmorDamageModifier, duration, HolidayId, ScriptName, DisenchantID, "
+    //                                           133        134            135        136
                                              "FoodType, minMoneyLoot, maxMoneyLoot, flagsCustom FROM item_template");
 
     if (!result)
@@ -2623,14 +2623,13 @@ void ObjectMgr::LoadItemTemplates()
         itemTemplate.RequiredDisenchantSkill = uint32(fields[127].GetInt16());
         itemTemplate.ArmorDamageModifier     = fields[128].GetFloat();
         itemTemplate.Duration                = fields[129].GetUInt32();
-        itemTemplate.ItemLimitCategory       = uint32(fields[130].GetInt16());
-        itemTemplate.HolidayId               = fields[131].GetUInt32();
-        itemTemplate.ScriptId                = sObjectMgr->GetScriptId(fields[132].GetString());
-        itemTemplate.DisenchantID            = fields[133].GetUInt32();
-        itemTemplate.FoodType                = uint32(fields[134].GetUInt8());
-        itemTemplate.MinMoneyLoot            = fields[135].GetUInt32();
-        itemTemplate.MaxMoneyLoot            = fields[136].GetUInt32();
-        itemTemplate.FlagsCu                 = fields[137].GetUInt32();
+        itemTemplate.HolidayId               = fields[130].GetUInt32();
+        itemTemplate.ScriptId                = sObjectMgr->GetScriptId(fields[131].GetString());
+        itemTemplate.DisenchantID            = fields[132].GetUInt32();
+        itemTemplate.FoodType                = uint32(fields[133].GetUInt8());
+        itemTemplate.MinMoneyLoot            = fields[134].GetUInt32();
+        itemTemplate.MaxMoneyLoot            = fields[135].GetUInt32();
+        itemTemplate.FlagsCu                 = fields[136].GetUInt32();
 
         // Checks
 

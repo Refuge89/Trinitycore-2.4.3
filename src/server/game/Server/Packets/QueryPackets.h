@@ -206,7 +206,6 @@ namespace WorldPackets
             uint32 RequiredDisenchantSkill = 0;
             float ArmorDamageModifier = 0.0f;
             uint32 Duration = 0;
-            uint32 ItemLimitCategory = 0;
             uint32 HolidayId = 0;
         };
 
