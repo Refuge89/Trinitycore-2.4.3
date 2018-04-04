@@ -69,7 +69,6 @@ WorldPacket const* WorldPackets::Query::QueryGameObjectResponse::Write()
         _worldPacket << Stats.UnkString;                            // 2.0.3, string
         _worldPacket.append(Stats.Data, MAX_GAMEOBJECT_DATA);
         _worldPacket << float(Stats.Size);                          // go size
-        _worldPacket.append(Stats.QuestItems, MAX_GAMEOBJECT_QUEST_ITEMS);
     }
 
     return &_worldPacket;

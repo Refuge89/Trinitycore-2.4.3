@@ -5088,17 +5088,15 @@ void Unit::SendAttackStateUpdate(CalcDamageInfo* damageInfo)
         data << uint32(damageInfo->Damages[i].DamageSchoolMask);       // School of sub damage
         data << float(damageInfo->Damages[i].Damage);                  // sub damage
         data << uint32(damageInfo->Damages[i].Damage);                 // Sub Damage
-    }
 
-    if (damageInfo->HitInfo & (HITINFO_FULL_ABSORB | HITINFO_PARTIAL_ABSORB))
-        for (uint32 i = 0; i < count; ++i)
+        if (damageInfo->HitInfo & (HITINFO_FULL_ABSORB | HITINFO_PARTIAL_ABSORB))
             data << uint32(damageInfo->Damages[i].Absorb);             // Absorb
 
-    if (damageInfo->HitInfo & (HITINFO_FULL_RESIST | HITINFO_PARTIAL_RESIST))
-        for (uint32 i = 0; i < count; ++i)
+        if (damageInfo->HitInfo & (HITINFO_FULL_RESIST | HITINFO_PARTIAL_RESIST))
             data << uint32(damageInfo->Damages[i].Resist);             // Resist
+    }
 
-    data << uint8(damageInfo->TargetState);
+    data << uint32(damageInfo->TargetState);
     data << uint32(0);  // Unknown attackerstate
     data << uint32(0);  // Melee spellid
 
