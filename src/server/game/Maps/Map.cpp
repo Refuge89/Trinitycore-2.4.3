@@ -4020,7 +4020,7 @@ void InstanceMap::UnloadAll()
 void InstanceMap::SendResetWarnings(uint32 timeLeft) const
 {
     for (MapRefManager::const_iterator itr = m_mapRefManager.begin(); itr != m_mapRefManager.end(); ++itr)
-        itr->GetSource()->SendInstanceResetWarning(GetId(), itr->GetSource()->GetDifficulty(), timeLeft, false);
+        itr->GetSource()->SendInstanceResetWarning(GetId(), timeLeft, false);
 }
 
 void InstanceMap::SetResetSchedule(bool on)

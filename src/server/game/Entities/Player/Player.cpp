@@ -16520,7 +16520,7 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
 
         // fix crash (because of if (Map* map = _FindMap(instanceId)) in MapInstanced::CreateInstance)
         if (instanceId)
-            if (InstanceSave* save = GetInstanceSave(mapId, mapEntry->IsRaid()))
+            if (InstanceSave* save = GetInstanceSave(mapId))
                 if (save->GetInstanceId() != instanceId)
                     instanceId = 0;
     }
@@ -17827,7 +17827,7 @@ InstancePlayerBind* Player::GetBoundInstance(uint32 mapid, Difficulty difficulty
     return nullptr;
 }
 
-InstanceSave* Player::GetInstanceSave(uint32 mapid, bool raid)
+InstanceSave* Player::GetInstanceSave(uint32 mapid)
 {
     InstancePlayerBind* pBind = GetBoundInstance(mapid, GetDifficulty());
     InstanceSave* pSave = pBind ? pBind->save : nullptr;
@@ -21603,7 +21603,7 @@ void Player::SendTransferAborted(uint32 mapid, TransferAbortReason reason, uint8
     SendDirectMessage(&data);
 }
 
-void Player::SendInstanceResetWarning(uint32 mapid, Difficulty difficulty, uint32 time, bool welcome) const
+void Player::SendInstanceResetWarning(uint32 mapid, uint32 time, bool welcome) const
 {
     // type of warning, based on the time remaining until reset
     uint32 type;
