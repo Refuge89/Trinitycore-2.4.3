@@ -247,7 +247,7 @@ class boss_archmage_arugal : public CreatureScript
                     Talk(SAY_SLAY);
             }
 
-            void SpellHitTarget(Unit* /*target*/, SpellInfo const* spell) override
+            void SpellHitUnitTarget(Unit* /*target*/, SpellInfo const* spell) override
             {
                 if (spell->Id == SPELL_ARUGAL_CURSE)
                     Talk(SAY_TRANSFORM);

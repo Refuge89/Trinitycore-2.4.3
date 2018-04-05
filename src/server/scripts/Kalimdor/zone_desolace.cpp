@@ -78,7 +78,7 @@ public:
             }
         }
 
-        void SpellHit(Unit* caster, SpellInfo const* spell) override
+        void SpellHitByUnit(Unit* caster, SpellInfo const* spell) override
         {
             if (spell->Id == SPELL_KODO_KOMBO_ITEM)
             {

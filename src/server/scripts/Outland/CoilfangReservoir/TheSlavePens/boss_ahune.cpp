@@ -568,7 +568,7 @@ public:
             DoCast(me, SPELL_FIND_OPENING_CHANNEL);
         }
 
-        void SpellHit(Unit* /*caster*/, SpellInfo const* spellInfo) override
+        void SpellHitByUnit(Unit* /*caster*/, SpellInfo const* spellInfo) override
         {
             switch (spellInfo->Id)
             {

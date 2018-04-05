@@ -619,7 +619,7 @@ public:
                 refreshBeam = true;
             }
 
-            void SpellHit(Unit* caster, SpellInfo const* spell) override
+            void SpellHitByUnit(Unit* caster, SpellInfo const* spell) override
             {
                 if (!caster)
                     return;
@@ -878,7 +878,7 @@ public:
                 refreshBeam = true;
             }
 
-            void SpellHit(Unit* caster, SpellInfo const* spell) override
+            void SpellHitByUnit(Unit* caster, SpellInfo const* spell) override
             {
                 if (!caster)
                     return;

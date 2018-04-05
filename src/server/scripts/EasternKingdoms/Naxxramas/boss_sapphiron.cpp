@@ -186,7 +186,7 @@ class boss_sapphiron : public CreatureScript
                 EnterPhaseGround(true);
             }
 
-            void SpellHitTarget(Unit* target, SpellInfo const* spell) override
+            void SpellHitUnitTarget(Unit* target, SpellInfo const* spell) override
             {
                 switch(spell->Id)
                 {

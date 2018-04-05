@@ -59,7 +59,7 @@ class boss_grobbulus : public CreatureScript
                 events.ScheduleEvent(EVENT_BERSERK, Minutes(12));
             }
 
-            void SpellHitTarget(Unit* target, SpellInfo const* spell) override
+            void SpellHitUnitTarget(Unit* target, SpellInfo const* spell) override
             {
                 if (spell->Id == SPELL_SLIME_SPRAY)
                     DoCast(target, SPELL_FALLOUT_SLIME, true);

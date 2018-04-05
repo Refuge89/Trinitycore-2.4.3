@@ -123,7 +123,7 @@ class boss_gruul : public CreatureScript
                 Talk(SAY_DEATH);
             }
 
-            void SpellHitTarget(Unit* target, SpellInfo const* pSpell) override
+            void SpellHitUnitTarget(Unit* target, SpellInfo const* pSpell) override
             {
                 //This to emulate effect1 (77) of SPELL_GROUND_SLAM, knock back to any direction
                 //It's initially wrong, since this will cause fall damage, which is by comments, not intended.

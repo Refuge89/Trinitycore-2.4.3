@@ -279,7 +279,7 @@ public:
                     damage = 0;
             }
 
-            void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
+            void SpellHitByUnit(Unit* /*caster*/, SpellInfo const* spell) override
             {
                 if (spell->Id == SPELL_CHAINS_DUMMY)
                 {

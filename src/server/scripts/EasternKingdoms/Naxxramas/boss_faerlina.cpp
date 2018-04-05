@@ -121,7 +121,7 @@ class boss_faerlina : public CreatureScript
                 Talk(SAY_DEATH);
             }
 
-            void SpellHit(Unit* caster, SpellInfo const* spell) override
+            void SpellHitByUnit(Unit* caster, SpellInfo const* spell) override
             {
                 if (spell->Id == SPELL_WIDOWS_EMBRACE)
                 {

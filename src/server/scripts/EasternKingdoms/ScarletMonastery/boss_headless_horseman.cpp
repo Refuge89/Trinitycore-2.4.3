@@ -189,7 +189,7 @@ public:
                 DoCast(me, _spell);
         }
 
-        void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
+        void SpellHitByUnit(Unit* /*caster*/, SpellInfo const* spell) override
         {
             if (spell->Id == SPELL_WISP_FLIGHT_PORT && Creaturetype == 4)
                 me->SetDisplayId(2027);
@@ -304,7 +304,7 @@ public:
             }
         }
 
-        void SpellHit(Unit* caster, SpellInfo const* spell) override
+        void SpellHitByUnit(Unit* caster, SpellInfo const* spell) override
         {
             if (!withbody)
                 return;
@@ -561,7 +561,7 @@ public:
             return nullptr;
         }
 
-        void SpellHitTarget(Unit* unit, SpellInfo const* spell) override
+        void SpellHitUnitTarget(Unit* unit, SpellInfo const* spell) override
         {
             if (spell->Id == SPELL_CONFLAGRATION && unit->HasAura(SPELL_CONFLAGRATION))
                 SaySound(SAY_CONFLAGRATION, unit);
@@ -587,7 +587,7 @@ public:
             }
         }
 
-        void SpellHit(Unit* caster, SpellInfo const* spell) override
+        void SpellHitByUnit(Unit* caster, SpellInfo const* spell) override
         {
             if (withhead)
                 return;
@@ -818,7 +818,7 @@ public:
 
         void JustEngagedWith(Unit* /*who*/) override { }
 
-        void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
+        void SpellHitByUnit(Unit* /*caster*/, SpellInfo const* spell) override
         {
             if (spell->Id == SPELL_SPROUTING)
             {

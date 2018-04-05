@@ -474,7 +474,7 @@ struct boss_sathrovarr : public BossAI
             kalecgos->AI()->EnterEvadeMode(why);
     }
 
-    void SpellHit(Unit* caster, SpellInfo const* spell) override
+    void SpellHitByUnit(Unit* caster, SpellInfo const* spell) override
     {
         if (spell->Id == SPELL_TAP_CHECK_DAMAGE)
         {

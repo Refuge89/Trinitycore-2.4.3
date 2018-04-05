@@ -106,7 +106,7 @@ class npc_forest_frog : public CreatureScript
                 me->UpdateEntry(cEntry);
             }
 
-            void SpellHit(Unit* caster, SpellInfo const* spell) override
+            void SpellHitByUnit(Unit* caster, SpellInfo const* spell) override
             {
                 if (spell->Id == SPELL_REMOVE_AMANI_CURSE && caster->GetTypeId() == TYPEID_PLAYER && me->GetEntry() == NPC_FOREST_FROG)
                 {
@@ -295,7 +295,7 @@ class npc_harrison_jones : public CreatureScript
                return false;
             }
 
-            void SpellHit(Unit*, SpellInfo const* spell) override
+            void SpellHitByUnit(Unit*, SpellInfo const* spell) override
             {
                 if (spell->Id == SPELL_COSMETIC_SPEAR_THROW)
                 {

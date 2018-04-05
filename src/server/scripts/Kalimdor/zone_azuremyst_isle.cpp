@@ -115,7 +115,7 @@ class npc_draenei_survivor : public CreatureScript
                 }
             }
 
-            void SpellHit(Unit* Caster, SpellInfo const* Spell) override
+            void SpellHitByUnit(Unit* Caster, SpellInfo const* Spell) override
             {
                 if (Spell->Id == SPELL_GIFT_OF_NAARU)
                 {

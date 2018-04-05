@@ -101,10 +101,10 @@ class TC_GAME_API SmartAI : public CreatureAI
         void MoveInLineOfSight(Unit* who) override;
 
         // Called when hit by a spell
-        void SpellHit(Unit* unit, SpellInfo const* spellInfo) override;
+        void SpellHitByUnit(Unit* unit, SpellInfo const* spellInfo) override;
 
         // Called when spell hits a target
-        void SpellHitTarget(Unit* target, SpellInfo const* spellInfo) override;
+        void SpellHitUnitTarget(Unit* target, SpellInfo const* spellInfo) override;
 
         // Called at any Damage from any attacker (before damage apply)
         void DamageTaken(Unit* doneBy, uint32& damage) override;
@@ -260,7 +260,7 @@ class TC_GAME_API SmartGameObjectAI : public GameObjectAI
         void OnGameEvent(bool start, uint16 eventId) override;
         void OnLootStateChanged(uint32 state, Unit* unit) override;
         void EventInform(uint32 eventId) override;
-        void SpellHit(Unit* unit, SpellInfo const* spellInfo) override;
+        void SpellHitByUnit(Unit* unit, SpellInfo const* spellInfo) override;
 
         void SetGossipReturn(bool val) { _gossipReturn = val; }
 

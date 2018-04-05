@@ -913,7 +913,7 @@ public:
 
             return nullptr;
         }
-        void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
+        void SpellHitByUnit(Unit* /*caster*/, SpellInfo const* spell) override
         {
             if (!spell)
                 return;

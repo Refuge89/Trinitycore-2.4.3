@@ -117,7 +117,7 @@ class boss_ossirian : public CreatureScript
                 Initialize();
             }
 
-            void SpellHit(Unit* caster, SpellInfo const* spell) override
+            void SpellHitByUnit(Unit* caster, SpellInfo const* spell) override
             {
                 for (uint8 i = 0; i < NUM_WEAKNESS; ++i)
                 {

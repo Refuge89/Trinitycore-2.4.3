@@ -163,7 +163,7 @@ public:
                 caster->AI()->SetData(TYPE_INFERNAL, DATA_DIED);
         }
 
-        void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
+        void SpellHitByUnit(Unit* /*caster*/, SpellInfo const* spell) override
         {
             if (spell->Id == SPELL_SUMMON_INFERNAL)
             {
@@ -251,7 +251,7 @@ public:
             Initialize();
         }
 
-        void SpellHit(Unit* pCaster, SpellInfo const* spell) override
+        void SpellHitByUnit(Unit* pCaster, SpellInfo const* spell) override
         {
             if (bCanEat || bIsEating)
                 return;
@@ -383,7 +383,7 @@ public:
             me->SetDisableGravity(false);
         }
 
-        void SpellHit(Unit* caster, SpellInfo const* spell) override
+        void SpellHitByUnit(Unit* caster, SpellInfo const* spell) override
         {
             if (!caster)
                 return;
@@ -510,7 +510,7 @@ public:
             Initialize();
         }
 
-        void SpellHit(Unit* caster, SpellInfo const* spell) override
+        void SpellHitByUnit(Unit* caster, SpellInfo const* spell) override
         {
             if (!caster)
                 return;
@@ -1663,7 +1663,7 @@ public:
             }
         }
 
-        void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
+        void SpellHitByUnit(Unit* /*caster*/, SpellInfo const* spell) override
         {
             if (spell->Id == SPELL_WHISTLE)
             {
