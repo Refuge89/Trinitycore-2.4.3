@@ -1270,7 +1270,7 @@ void WorldSession::HandleSetDungeonDifficultyOpcode(WorldPacket& recvData)
     uint32 mode;
     recvData >> mode;
 
-    if (mode >= MAX_DUNGEON_DIFFICULTY)
+    if (mode >= MAX_DIFFICULTY)
     {
         TC_LOG_DEBUG("network", "WorldSession::HandleSetDungeonDifficultyOpcode: player %d sent an invalid instance mode %d!", _player->GetGUID().GetCounter(), mode);
         return;

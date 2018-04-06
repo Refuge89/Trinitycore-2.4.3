@@ -1526,7 +1526,7 @@ public:
             return true;
         }
         int32 difficulty = difficulty_str ? atoi(difficulty_str) : -1;
-        if (difficulty >= MAX_DUNGEON_DIFFICULTY || difficulty < -1)
+        if (difficulty >= MAX_DIFFICULTY || difficulty < -1)
         {
             handler->PSendSysMessage("Invalid difficulty %d - specify in range [0,%d).", difficulty, MAX_DIFFICULTY);
             return false;
@@ -1540,7 +1540,7 @@ public:
         if (difficulty == -1)
         {
             handler->PSendSysMessage("Resetting all difficulties for '%s'.", mEntry->name[LOCALE_enUS]);
-            for (uint8 diff = 1; diff < MAX_DUNGEON_DIFFICULTY; ++diff)
+            for (uint8 diff = 1; diff < MAX_DIFFICULTY; ++diff)
             {
                 if (GetMapDifficultyData(mEntry->MapID, Difficulty(diff)))
                 {

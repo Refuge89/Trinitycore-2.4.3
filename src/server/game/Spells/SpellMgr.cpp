@@ -200,6 +200,17 @@ SpellInfo const* SpellMgr::GetSpellForDifficultyFromSpell(SpellInfo const* spell
     if (!spell)
         return nullptr;
 
+    if (!caster || !caster->GetMap() || !caster->GetMap()->IsDungeon())
+        return spell;
+
+    uint32 mode = uint32(caster->GetMap()->GetSpawnMode());
+    if (mode >= MAX_DIFFICULTY)
+        return spell; //return source spell
+
+    uint32 difficultyId = GetSpellDifficultyId(spell->id);
+    if (!difficultyId)
+        return spell;
+
     return spell;
 }
 

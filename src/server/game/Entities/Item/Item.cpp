@@ -1062,7 +1062,7 @@ uint32 Item::GetPlayedTime()
 
 bool Item::IsRefundExpired()
 {
-    return (GetPlayedTime() > 2*HOUR);
+    return (GetPlayedTime() > 2 * HOUR);
 }
 
 void Item::SetSoulboundTradeable(GuidSet const& allowedLooters)

@@ -124,8 +124,6 @@ LFGDungeonData const* LFGMgr::GetLFGDungeon(uint32 id)
 
 void LFGMgr::LoadLFGDungeons(bool reload /* = false */)
 {
-    uint32 oldMSTime = getMSTime();
-
     LfgDungeonStore.clear();
 
     // Initialize Dungeon map with data from dbcs
@@ -174,9 +172,7 @@ void LFGMgr::LoadLFGDungeons(bool reload /* = false */)
     }
 
     if (reload)
-    {
         CachedDungeonMapStore.clear();
-    }
 }
 
 LFGMgr* LFGMgr::instance()

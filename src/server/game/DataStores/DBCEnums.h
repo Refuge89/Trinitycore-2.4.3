@@ -112,7 +112,6 @@ enum Difficulty : uint8
     DUNGEON_DIFFICULTY_HEROIC    = 1
 };
 
-#define MAX_DUNGEON_DIFFICULTY     3
 #define MAX_DIFFICULTY             2
 
 enum SpawnMask

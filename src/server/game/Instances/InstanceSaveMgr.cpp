@@ -92,7 +92,7 @@ InstanceSave* InstanceSaveManager::AddInstanceSave(uint32 mapId, uint32 instance
         return nullptr;
     }
 
-    if (difficulty >= MAX_DUNGEON_DIFFICULTY)
+    if (difficulty >= MAX_DIFFICULTY)
     {
         TC_LOG_ERROR("misc", "InstanceSaveManager::AddInstanceSave: mapid = %d, instanceid = %d, wrong dificalty %u!", mapId, instanceId, difficulty);
         return nullptr;

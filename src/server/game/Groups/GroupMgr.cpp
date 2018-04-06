@@ -231,7 +231,7 @@ void GroupMgr::LoadGroups()
             }
 
             uint32 diff = fields[4].GetUInt8();
-            if (diff >= uint32(MAX_DUNGEON_DIFFICULTY))
+            if (diff >= uint32(MAX_DIFFICULTY))
             {
                 TC_LOG_ERROR("sql.sql", "Wrong dungeon difficulty use in group_instance table: %d", diff + 1);
                 diff = 0;                                   // default for both difficaly types
