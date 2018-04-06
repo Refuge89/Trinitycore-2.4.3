@@ -435,7 +435,7 @@ class TC_COMMON_API flag64
 
         inline operator bool() const
         {
-            return (part[0] != 0 || part[1] != 0 || part[2] != 0);
+            return (part[0] != 0 || part[1] != 0);
         }
 
         inline bool operator !() const
