@@ -1913,7 +1913,7 @@ TempSummon* WorldObject::SummonCreature(uint32 entry, Position const& pos, TempS
     {
         if (TempSummon* summon = map->SummonCreature(entry, pos, nullptr, despawnTime, ToUnit(), spellId))
         {
-            summon->SetTempSummonType(spwtype);
+            summon->SetTempSummonType(despawnType);
             return summon;
         }
     }

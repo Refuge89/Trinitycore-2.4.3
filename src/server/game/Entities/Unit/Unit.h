@@ -20,8 +20,6 @@
 #define __UNIT_H
 
 #include "Object.h"
-#include "FollowerReference.h"
-#include "FollowerRefManager.h"
 #include "CombatManager.h"
 #include "OptionalFwd.h"
 #include "SpellAuraDefines.h"
@@ -60,6 +58,7 @@ enum InventorySlot
     NULL_SLOT                  = 255
 };
 
+struct AbstractFollower;
 struct FactionTemplateEntry;
 struct LiquidData;
 struct LiquidTypeEntry;
@@ -781,7 +780,8 @@ class TC_GAME_API Unit : public WorldObject
         virtual void SetCanDualWield(bool value) { m_canDualWield = value; }
         float GetCombatReach() const override { return m_floatValues[UNIT_FIELD_COMBATREACH]; }
         bool IsWithinCombatRange(Unit const* obj, float dist2compare) const;
-        bool IsWithinMeleeRange(Unit const* obj) const;
+        bool IsWithinMeleeRange(Unit const* obj) const { return IsWithinMeleeRangeAt(GetPosition(), obj); }
+        bool IsWithinMeleeRangeAt(Position const& pos, Unit const* obj) const;
         float GetMeleeRange(Unit const* target) const;
         virtual SpellSchoolMask GetMeleeDamageSchoolMask(WeaponAttackType attackType = BASE_ATTACK, uint8 damageIndex = 0) const = 0;
         uint32 m_extraAttacks;
@@ -1511,8 +1511,9 @@ class TC_GAME_API Unit : public WorldObject
 
         float CalculateSpellpowerCoefficientLevelPenalty(SpellInfo const* spellInfo) const;
 
-        void addFollower(FollowerReference* pRef) { m_FollowingRefManager.insertFirst(pRef); }
-        void removeFollower(FollowerReference* /*pRef*/) { /* nothing to do yet */ }
+        void FollowerAdded(AbstractFollower* f) { m_followingMe.insert(f); }
+        void FollowerRemoved(AbstractFollower* f) { m_followingMe.erase(f); }
+        void RemoveAllFollowers();
 
         MotionMaster* GetMotionMaster() { return i_motionMaster; }
         MotionMaster const* GetMotionMaster() const { return i_motionMaster; }
@@ -1740,7 +1741,7 @@ class TC_GAME_API Unit : public WorldObject
         friend class ThreatManager;
         ThreatManager m_threatManager;
 
-        FollowerRefManager m_FollowingRefManager;
+        std::unordered_set<AbstractFollower*> m_followingMe;
 
         Unit* m_comboTarget;
         int8 m_comboPoints;
