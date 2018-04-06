@@ -54,9 +54,9 @@ enum LfgUpdateType
 
 enum LfgState
 {
-    LFG_STATE_NONE,                                        // Not using LFG / LFR
-    LFG_STATE_ROLECHECK,                                   // Rolecheck active
-    LFG_STATE_QUEUED,                                      // Queued
+    LFG_STATE_NONE,                                 // Not using LFG / LFR
+    //LFG_STATE_ROLECHECK,                          // Rolecheck active
+    LFG_STATE_QUEUED = 2,                                      // Queued
     LFG_STATE_PROPOSAL,                                    // Proposal active
     //LFG_STATE_BOOT,                                      // Vote kick active
     LFG_STATE_DUNGEON = 5,                                 // In LFG Group, in a Dungeon

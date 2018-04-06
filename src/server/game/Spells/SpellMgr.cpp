@@ -207,7 +207,7 @@ SpellInfo const* SpellMgr::GetSpellForDifficultyFromSpell(SpellInfo const* spell
     if (mode >= MAX_DIFFICULTY)
         return spell; //return source spell
 
-    uint32 difficultyId = GetSpellDifficultyId(spell->id);
+    uint32 difficultyId = GetSpellDifficultyId(spell->Id);
     if (!difficultyId)
         return spell;
 

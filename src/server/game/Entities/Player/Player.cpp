@@ -16311,7 +16311,7 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
     uint32 instanceId = fields[63].GetUInt32();
 
     uint32 dungeonDiff = fields[43].GetUInt8() & 0x0F;
-    if (dungeonDiff >= MAX_DUNGEON_DIFFICULTY)
+    if (dungeonDiff >= MAX_DIFFICULTY)
         dungeonDiff = DUNGEON_DIFFICULTY_NORMAL;
     SetDungeonDifficulty(Difficulty(dungeonDiff));          // may be changed in _LoadGroup
 

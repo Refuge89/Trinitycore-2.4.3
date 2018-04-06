@@ -1049,10 +1049,6 @@ void Item::SetNotRefundable(Player* owner, bool changestate /*=true*/, SQLTransa
     owner->DeleteRefundReference(GetGUID());
 }
 
-void Item::UpdatePlayedTime(Player* owner)
-{
-}
-
 uint32 Item::GetPlayedTime()
 {
     time_t curtime = GameTime::GetGameTime();
