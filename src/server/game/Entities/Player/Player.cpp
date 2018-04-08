@@ -18700,31 +18700,6 @@ void Player::_SaveInventory(SQLTransaction& trans)
                 sLootItemStorage->RemoveStoredLootForContainer(item->GetGUID().GetCounter());
     }
 
-    // Updated played time for refundable items. We don't do this in Player::Update because there's simply no need for it,
-    // the client auto counts down in real time after having received the initial played time on the first
-    // SMSG_ITEM_REFUND_INFO_RESPONSE packet.
-    // Item::UpdatePlayedTime is only called when needed, which is in DB saves, and item refund info requests.
-    GuidSet::iterator i_next;
-    for (GuidSet::iterator itr = m_refundableItems.begin(); itr!= m_refundableItems.end(); itr = i_next)
-    {
-        // use copy iterator because itr may be invalid after operations in this loop
-        i_next = itr;
-        ++i_next;
-
-        Item* iPtr = GetItemByGuid(*itr);
-        if (iPtr)
-        {
-            iPtr->UpdatePlayedTime(this);
-            continue;
-        }
-        else
-        {
-            TC_LOG_ERROR("entities.player", "Player::_SaveInventory: Can't find item (%s) in refundable storage for player '%s' (%s), removing.",
-                itr->ToString().c_str(), GetName().c_str(), GetGUID().ToString().c_str());
-            m_refundableItems.erase(itr);
-        }
-    }
-
     // update enchantment durations
     for (EnchantDurationList::iterator itr = m_enchantDuration.begin(); itr != m_enchantDuration.end(); ++itr)
         itr->item->SetEnchantmentDuration(itr->slot, itr->leftduration, this);
@@ -24662,7 +24637,7 @@ void Player::SendSupercededSpell(uint32 oldSpell, uint32 newSpell) const
 
 bool Player::ValidateAppearance(uint8 race, uint8 gender, uint8 hairID, uint8 hairColor, uint8 faceID, uint8 facialHair, uint8 skinColor)
 {
-    auto validateCharSection = (CharSectionsEntry const* entry) -> bool
+    auto validateCharSection = [](CharSectionsEntry const* entry) -> bool
     {
         if (!entry)
             return false;

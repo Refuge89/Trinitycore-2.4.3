@@ -472,10 +472,7 @@ void LFGMgr::UpdateProposal(uint32 proposalId, ObjectGuid guid, bool accept)
     if (!allAnswered)
         return;
 
-    bool sendUpdate = proposal.state != LFG_PROPOSAL_SUCCESS;
     proposal.state = LFG_PROPOSAL_SUCCESS;
-    time_t joinTime = GameTime::GetGameTime();
-
     MakeNewGroup(proposal);
     ProposalsStore.erase(itProposal);
 }

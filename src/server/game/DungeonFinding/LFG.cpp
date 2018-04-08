@@ -46,9 +46,6 @@ std::string GetStateString(LfgState state)
         case LFG_STATE_NONE:
             entry = LANG_LFG_STATE_NONE;
             break;
-        case LFG_STATE_ROLECHECK:
-            entry = LANG_LFG_STATE_ROLECHECK;
-            break;
         case LFG_STATE_QUEUED:
             entry = LANG_LFG_STATE_QUEUED;
             break;
