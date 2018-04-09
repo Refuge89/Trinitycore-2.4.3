@@ -87,7 +87,7 @@ class TC_GAME_API BattlegroundMgr
         Battleground* GetBattlegroundThroughClientInstance(uint32 instanceId, BattlegroundTypeId bgTypeId);
         Battleground* GetBattleground(uint32 InstanceID, BattlegroundTypeId bgTypeId);
         Battleground* GetBattlegroundTemplate(BattlegroundTypeId bgTypeId);
-        Battleground* CreateNewBattleground(BattlegroundTypeId bgTypeId, PvPDifficultyEntry const* bracketEntry, uint8 arenaType, bool isRated);
+        Battleground* CreateNewBattleground(BattlegroundTypeId bgTypeId, BattlegroundBracketId bracketId, uint8 arenaType, bool isRated);
 
         void AddBattleground(Battleground* bg);
         void RemoveBattleground(BattlegroundTypeId bgTypeId, uint32 instanceId);
@@ -122,7 +122,7 @@ class TC_GAME_API BattlegroundMgr
         static bool IsBGWeekend(BattlegroundTypeId bgTypeId);
 
         uint32 GetMaxRatingDifference() const;
-        uint32 GetRatingDiscardTimer()  const;
+        uint32 GetRatingDiscardTimer() const;
         void InitAutomaticArenaPointDistribution();
         void LoadBattleMastersEntry();
         void CheckBattleMasters();
@@ -138,7 +138,6 @@ class TC_GAME_API BattlegroundMgr
         bool CreateBattleground(BattlegroundTemplate const* bgTemplate);
         uint32 CreateClientVisibleInstanceId(BattlegroundTypeId bgTypeId, BattlegroundBracketId bracket_id);
         static bool IsArenaType(BattlegroundTypeId bgTypeId);
-        BattlegroundTypeId GetRandomBG(BattlegroundTypeId id);
 
         typedef std::map<BattlegroundTypeId, BattlegroundData> BattlegroundDataContainer;
         BattlegroundDataContainer bgDataStore;
@@ -150,8 +149,8 @@ class TC_GAME_API BattlegroundMgr
         time_t m_NextAutoDistributionTime;
         uint32 m_AutoDistributionTimeChecker;
         uint32 m_UpdateTimer;
-        bool   m_ArenaTesting;
-        bool   m_Testing;
+        bool m_ArenaTesting;
+        bool m_Testing;
         BattleMastersMap mBattleMastersMap;
 
         BattlegroundTemplate const* GetBattlegroundTemplateByTypeId(BattlegroundTypeId id)

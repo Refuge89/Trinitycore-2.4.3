@@ -212,16 +212,16 @@ class BattlegroundWS : public Battleground
         ObjectGuid GetFlagPickerGUID(int32 team) const override
         {
             if (team == TEAM_ALLIANCE || team == TEAM_HORDE)
-                return m_FlagKeepers[team];
+                return _flagKeepers[team];
             return ObjectGuid::Empty;
         }
-        void SetAllianceFlagPicker(ObjectGuid guid) { m_FlagKeepers[TEAM_ALLIANCE] = guid; }
-        void SetHordeFlagPicker(ObjectGuid guid)    { m_FlagKeepers[TEAM_HORDE] = guid; }
-        bool IsAllianceFlagPickedup() const         { return !m_FlagKeepers[TEAM_ALLIANCE].IsEmpty(); }
-        bool IsHordeFlagPickedup() const            { return !m_FlagKeepers[TEAM_HORDE].IsEmpty(); }
+        void SetAllianceFlagPicker(ObjectGuid guid) { _flagKeepers[TEAM_ALLIANCE] = guid; }
+        void SetHordeFlagPicker(ObjectGuid guid) { _flagKeepers[TEAM_HORDE] = guid; }
+        bool IsAllianceFlagPickedup() const { return !_flagKeepers[TEAM_ALLIANCE].IsEmpty(); }
+        bool IsHordeFlagPickedup() const { return !_flagKeepers[TEAM_HORDE].IsEmpty(); }
         void RespawnFlag(uint32 Team, bool captured);
         void RespawnFlagAfterDrop(uint32 Team);
-        uint8 GetFlagState(uint32 team)             { return _flagState[GetTeamIndexByTeamId(team)]; }
+        uint8 GetFlagState(uint32 team) { return _flagState[GetTeamIndexByTeamId(team)]; }
 
         /* Battleground Events */
         void EventPlayerDroppedFlag(Player* player) override;
@@ -237,36 +237,36 @@ class BattlegroundWS : public Battleground
         WorldSafeLocsEntry const* GetClosestGraveyard(Player* player) override;
 
         void UpdateFlagState(uint32 team, uint32 value);
-        void SetLastFlagCapture(uint32 team)                { _lastFlagCaptureTeam = team; }
+        void SetLastFlagCapture(uint32 team) { _lastFlagCaptureTeam = team; }
         void UpdateTeamScore(uint32 team);
         bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;
         void SetDroppedFlagGUID(ObjectGuid guid, int32 team = -1) override
         {
             if (team == TEAM_ALLIANCE || team == TEAM_HORDE)
-                m_DroppedFlagGUID[team] = guid;
+                _droppedFlagGUID[team] = guid;
         }
 
-        ObjectGuid GetDroppedFlagGUID(uint32 TeamID)             { return m_DroppedFlagGUID[GetTeamIndexByTeamId(TeamID)]; }
+        ObjectGuid GetDroppedFlagGUID(uint32 TeamID) { return _droppedFlagGUID[GetTeamIndexByTeamId(TeamID)]; }
         void FillInitialWorldStates(WorldPacket& data) override;
 
         /* Scorekeeping */
-        void AddPoint(uint32 TeamID, uint32 Points = 1)     { m_TeamScores[GetTeamIndexByTeamId(TeamID)] += Points; }
-        void SetTeamPoint(uint32 TeamID, uint32 Points = 0) { m_TeamScores[GetTeamIndexByTeamId(TeamID)] = Points; }
-        void RemovePoint(uint32 TeamID, uint32 Points = 1)  { m_TeamScores[GetTeamIndexByTeamId(TeamID)] -= Points; }
+        void AddPoint(uint32 TeamID, uint32 Points = 1) { _teamScores[GetTeamIndexByTeamId(TeamID)] += Points; }
+        void SetTeamPoint(uint32 TeamID, uint32 Points = 0) { _teamScores[GetTeamIndexByTeamId(TeamID)] = Points; }
+        void RemovePoint(uint32 TeamID, uint32 Points = 1) { _teamScores[GetTeamIndexByTeamId(TeamID)] -= Points; }
 
         uint32 GetPrematureWinner() override;
 
     private:
-        ObjectGuid m_FlagKeepers[2];                            // 0 - alliance, 1 - horde
-        ObjectGuid m_DroppedFlagGUID[2];
+        ObjectGuid _flagKeepers[2];                            // 0 - alliance, 1 - horde
+        ObjectGuid _droppedFlagGUID[2];
         uint8 _flagState[2];                               // for checking flag state
         int32 _flagsTimer[2];
         int32 _flagsDropTimer[2];
         uint32 _lastFlagCaptureTeam;                       // Winner is based on this if score is equal
 
-        uint32 m_ReputationCapture;
-        uint32 m_HonorWinKills;
-        uint32 m_HonorEndKills;
+        uint32 _reputationCapture;
+        uint32 _honorWinKills;
+        uint32 _honorEndKills;
         int32 _flagSpellForceTimer;
         bool _bothFlagsKept;
         uint8 _flagDebuffState;                            // 0 - no debuffs, 1 - focused assault, 2 - brutal assault

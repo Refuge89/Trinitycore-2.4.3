@@ -26,8 +26,8 @@
 enum BG_EY_Misc
 {
     BG_EY_EVENT_START_BATTLE        = 13180,
-    BG_EY_FLAG_RESPAWN_TIME         = (8*IN_MILLISECONDS),
-    BG_EY_FPOINTS_TICK_TIME         = (2*IN_MILLISECONDS)
+    BG_EY_FLAG_RESPAWN_TIME         = (8 * IN_MILLISECONDS),
+    BG_EY_FPOINTS_TICK_TIME         = (2 * IN_MILLISECONDS)
 };
 
 enum BG_EY_WorldStates
@@ -119,7 +119,7 @@ enum EYBattlegroundGaveyards
 {
     EY_GRAVEYARD_MAIN_ALLIANCE     = 1103,
     EY_GRAVEYARD_MAIN_HORDE        = 1104,
-    EY_GRAVEYARD_FEL_REAVER       = 1105,
+    EY_GRAVEYARD_FEL_REAVER        = 1105,
     EY_GRAVEYARD_BLOOD_ELF         = 1106,
     EY_GRAVEYARD_DRAENEI_RUINS     = 1107,
     EY_GRAVEYARD_MAGE_TOWER        = 1108
@@ -127,10 +127,10 @@ enum EYBattlegroundGaveyards
 
 enum EYBattlegroundPoints
 {
-    FEL_REAVER     = 0,
-    BLOOD_ELF       = 1,
-    DRAENEI_RUINS   = 2,
-    MAGE_TOWER      = 3,
+    FEL_REAVER                = 0,
+    BLOOD_ELF                 = 1,
+    DRAENEI_RUINS             = 2,
+    MAGE_TOWER                = 3,
 
     EY_PLAYERS_OUT_OF_POINTS  = 4,
     EY_POINTS_MAX             = 4
@@ -138,7 +138,7 @@ enum EYBattlegroundPoints
 
 enum EYBattlegroundCreaturesTypes
 {
-    EY_SPIRIT_FEL_REAVER      = 0,
+    EY_SPIRIT_FEL_REAVER       = 0,
     EY_SPIRIT_BLOOD_ELF        = 1,
     EY_SPIRIT_DRAENEI_RUINS    = 2,
     EY_SPIRIT_MAGE_TOWER       = 3,
@@ -146,9 +146,9 @@ enum EYBattlegroundCreaturesTypes
     EY_SPIRIT_MAIN_HORDE       = 5,
 
     EY_TRIGGER_FEL_REAVER      = 6,
-    EY_TRIGGER_BLOOD_ELF        = 7,
-    EY_TRIGGER_DRAENEI_RUINS    = 8,
-    EY_TRIGGER_MAGE_TOWER       = 9,
+    EY_TRIGGER_BLOOD_ELF       = 7,
+    EY_TRIGGER_DRAENEI_RUINS   = 8,
+    EY_TRIGGER_MAGE_TOWER      = 9,
 
     BG_EY_CREATURES_MAX        = 10
 };
@@ -157,9 +157,9 @@ enum EYBattlegroundObjectTypes
 {
     BG_EY_OBJECT_DOOR_A                         = 0,
     BG_EY_OBJECT_DOOR_H                         = 1,
-    BG_EY_OBJECT_A_BANNER_FEL_REAVER_CENTER    = 2,
-    BG_EY_OBJECT_A_BANNER_FEL_REAVER_LEFT      = 3,
-    BG_EY_OBJECT_A_BANNER_FEL_REAVER_RIGHT     = 4,
+    BG_EY_OBJECT_A_BANNER_FEL_REAVER_CENTER     = 2,
+    BG_EY_OBJECT_A_BANNER_FEL_REAVER_LEFT       = 3,
+    BG_EY_OBJECT_A_BANNER_FEL_REAVER_RIGHT      = 4,
     BG_EY_OBJECT_A_BANNER_BLOOD_ELF_CENTER      = 5,
     BG_EY_OBJECT_A_BANNER_BLOOD_ELF_LEFT        = 6,
     BG_EY_OBJECT_A_BANNER_BLOOD_ELF_RIGHT       = 7,
@@ -169,9 +169,9 @@ enum EYBattlegroundObjectTypes
     BG_EY_OBJECT_A_BANNER_MAGE_TOWER_CENTER     = 11,
     BG_EY_OBJECT_A_BANNER_MAGE_TOWER_LEFT       = 12,
     BG_EY_OBJECT_A_BANNER_MAGE_TOWER_RIGHT      = 13,
-    BG_EY_OBJECT_H_BANNER_FEL_REAVER_CENTER    = 14,
-    BG_EY_OBJECT_H_BANNER_FEL_REAVER_LEFT      = 15,
-    BG_EY_OBJECT_H_BANNER_FEL_REAVER_RIGHT     = 16,
+    BG_EY_OBJECT_H_BANNER_FEL_REAVER_CENTER     = 14,
+    BG_EY_OBJECT_H_BANNER_FEL_REAVER_LEFT       = 15,
+    BG_EY_OBJECT_H_BANNER_FEL_REAVER_RIGHT      = 16,
     BG_EY_OBJECT_H_BANNER_BLOOD_ELF_CENTER      = 17,
     BG_EY_OBJECT_H_BANNER_BLOOD_ELF_LEFT        = 18,
     BG_EY_OBJECT_H_BANNER_BLOOD_ELF_RIGHT       = 19,
@@ -181,9 +181,9 @@ enum EYBattlegroundObjectTypes
     BG_EY_OBJECT_H_BANNER_MAGE_TOWER_CENTER     = 23,
     BG_EY_OBJECT_H_BANNER_MAGE_TOWER_LEFT       = 24,
     BG_EY_OBJECT_H_BANNER_MAGE_TOWER_RIGHT      = 25,
-    BG_EY_OBJECT_N_BANNER_FEL_REAVER_CENTER    = 26,
-    BG_EY_OBJECT_N_BANNER_FEL_REAVER_LEFT      = 27,
-    BG_EY_OBJECT_N_BANNER_FEL_REAVER_RIGHT     = 28,
+    BG_EY_OBJECT_N_BANNER_FEL_REAVER_CENTER     = 26,
+    BG_EY_OBJECT_N_BANNER_FEL_REAVER_LEFT       = 27,
+    BG_EY_OBJECT_N_BANNER_FEL_REAVER_RIGHT      = 28,
     BG_EY_OBJECT_N_BANNER_BLOOD_ELF_CENTER      = 29,
     BG_EY_OBJECT_N_BANNER_BLOOD_ELF_LEFT        = 30,
     BG_EY_OBJECT_N_BANNER_BLOOD_ELF_RIGHT       = 31,
@@ -193,19 +193,19 @@ enum EYBattlegroundObjectTypes
     BG_EY_OBJECT_N_BANNER_MAGE_TOWER_CENTER     = 35,
     BG_EY_OBJECT_N_BANNER_MAGE_TOWER_LEFT       = 36,
     BG_EY_OBJECT_N_BANNER_MAGE_TOWER_RIGHT      = 37,
-    BG_EY_OBJECT_TOWER_CAP_FEL_REAVER          = 38,
+    BG_EY_OBJECT_TOWER_CAP_FEL_REAVER           = 38,
     BG_EY_OBJECT_TOWER_CAP_BLOOD_ELF            = 39,
     BG_EY_OBJECT_TOWER_CAP_DRAENEI_RUINS        = 40,
     BG_EY_OBJECT_TOWER_CAP_MAGE_TOWER           = 41,
     BG_EY_OBJECT_FLAG_NETHERSTORM               = 42,
-    BG_EY_OBJECT_FLAG_FEL_REAVER               = 43,
+    BG_EY_OBJECT_FLAG_FEL_REAVER                = 43,
     BG_EY_OBJECT_FLAG_BLOOD_ELF                 = 44,
     BG_EY_OBJECT_FLAG_DRAENEI_RUINS             = 45,
     BG_EY_OBJECT_FLAG_MAGE_TOWER                = 46,
     //buffs
-    BG_EY_OBJECT_SPEEDBUFF_FEL_REAVER          = 47,
-    BG_EY_OBJECT_REGENBUFF_FEL_REAVER          = 48,
-    BG_EY_OBJECT_BERSERKBUFF_FEL_REAVER        = 49,
+    BG_EY_OBJECT_SPEEDBUFF_FEL_REAVER           = 47,
+    BG_EY_OBJECT_REGENBUFF_FEL_REAVER           = 48,
+    BG_EY_OBJECT_BERSERKBUFF_FEL_REAVER         = 49,
     BG_EY_OBJECT_SPEEDBUFF_BLOOD_ELF            = 50,
     BG_EY_OBJECT_REGENBUFF_BLOOD_ELF            = 51,
     BG_EY_OBJECT_BERSERKBUFF_BLOOD_ELF          = 52,
@@ -218,8 +218,8 @@ enum EYBattlegroundObjectTypes
     BG_EY_OBJECT_MAX                            = 59
 };
 
-#define BG_EY_NotEYWeekendHonorTicks    260
-#define BG_EY_EYWeekendHonorTicks       160
+#define BG_EY_NotEYWeekendHonorTicks    330
+#define BG_EY_EYWeekendHonorTicks       200
 
 enum BG_EY_Score
 {
@@ -390,10 +390,10 @@ class BattlegroundEY : public Battleground
         void StartingEventOpenDoors() override;
 
         /* BG Flags */
-        ObjectGuid GetFlagPickerGUID(int32 /*team*/ = -1) const override { return m_FlagKeeper; }
-        void SetFlagPicker(ObjectGuid guid) { m_FlagKeeper = guid; }
-        bool IsFlagPickedup() const         { return !m_FlagKeeper.IsEmpty(); }
-        uint8 GetFlagState() const          { return m_FlagState; }
+        ObjectGuid GetFlagPickerGUID(int32 /*team*/ = -1) const override { return _flagKeeper; }
+        void SetFlagPicker(ObjectGuid guid) { _flagKeeper = guid; }
+        bool IsFlagPickedup() const { return !_flagKeeper.IsEmpty(); }
+        uint8 GetFlagState() const { return _flagState; }
         void RespawnFlag(bool send_message);
         void RespawnFlagAfterDrop();
 
@@ -407,8 +407,8 @@ class BattlegroundEY : public Battleground
         void EndBattleground(uint32 winner) override;
         bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;
         void FillInitialWorldStates(WorldPacket& data) override;
-        void SetDroppedFlagGUID(ObjectGuid guid, int32 /*TeamID*/ = -1) override  { m_DroppedFlagGUID = guid; }
-        ObjectGuid GetDroppedFlagGUID() const { return m_DroppedFlagGUID; }
+        void SetDroppedFlagGUID(ObjectGuid guid, int32 /*TeamID*/ = -1) override  { _droppedFlagGUID = guid; }
+        ObjectGuid GetDroppedFlagGUID() const { return _droppedFlagGUID; }
 
         /* Battleground Events */
         void EventPlayerClickedOnFlag(Player* Source, GameObject* target_obj) override;
@@ -432,28 +432,27 @@ class BattlegroundEY : public Battleground
         /* Scorekeeping */
         void AddPoints(uint32 Team, uint32 Points);
 
-        void RemovePoint(uint32 TeamID, uint32 Points = 1) { m_TeamScores[GetTeamIndexByTeamId(TeamID)] -= Points; }
-        void SetTeamPoint(uint32 TeamID, uint32 Points = 0) { m_TeamScores[GetTeamIndexByTeamId(TeamID)] = Points; }
+        void RemovePoint(uint32 TeamID, uint32 Points = 1) { _teamScores[GetTeamIndexByTeamId(TeamID)] -= Points; }
+        void SetTeamPoint(uint32 TeamID, uint32 Points = 0) { _teamScores[GetTeamIndexByTeamId(TeamID)] = Points; }
 
-        uint32 m_HonorScoreTics[2];
-        uint32 m_TeamPointsCount[2];
+        uint32 _honorScoreTics[2];
+        uint32 _teamPointsCount[2];
+        uint32 _pointsTrigger[EY_POINTS_MAX];
 
-        uint32 m_Points_Trigger[EY_POINTS_MAX];
+        ObjectGuid _flagKeeper;                             // keepers guid
+        ObjectGuid _droppedFlagGUID;
+        uint32 _flagCapturedBgObjectType;                   // type that should be despawned when flag is captured
+        uint8 _flagState;                                   // for checking flag state
+        int32 _flagsTimer;
+        int32 _towerCapCheckTimer;
 
-        ObjectGuid m_FlagKeeper;                                // keepers guid
-        ObjectGuid m_DroppedFlagGUID;
-        uint32 m_FlagCapturedBgObjectType;                  // type that should be despawned when flag is captured
-        uint8 m_FlagState;                                  // for checking flag state
-        int32 m_FlagsTimer;
-        int32 m_TowerCapCheckTimer;
+        uint32 _pointOwnedByTeam[EY_POINTS_MAX];
+        uint8 _pointState[EY_POINTS_MAX];
+        int32 _pointBarStatus[EY_POINTS_MAX];
+        GuidVector _playersNearPoint[EY_POINTS_MAX + 1];
+        uint8 _currentPointPlayersCount[2 * EY_POINTS_MAX];
 
-        uint32 m_PointOwnedByTeam[EY_POINTS_MAX];
-        uint8 m_PointState[EY_POINTS_MAX];
-        int32 m_PointBarStatus[EY_POINTS_MAX];
-        GuidVector m_PlayersNearPoint[EY_POINTS_MAX + 1];
-        uint8 m_CurrentPointPlayersCount[2*EY_POINTS_MAX];
-
-        int32 m_PointAddingTimer;
-        uint32 m_HonorTics;
+        int32 _pointAddingTimer;
+        uint32 _honorTics;
 };
 #endif

@@ -64,14 +64,13 @@ void Battleground::BroadcastWorker(Do& _do)
 
 Battleground::Battleground()
 {
-    m_TypeID            = BATTLEGROUND_TYPE_NONE;
-    m_RandomTypeID      = BATTLEGROUND_TYPE_NONE;
+    _typeId             = BATTLEGROUND_TYPE_NONE;
     m_InstanceID        = 0;
     m_Status            = STATUS_NONE;
     m_ClientInstanceID  = 0;
     m_EndTime           = 0;
     m_LastResurrectTime = 0;
-    m_BracketId         = BG_BRACKET_ID_FIRST;
+    _bracketId          = BG_BRACKET_ID_FIRST;
     m_InvitedAlliance   = 0;
     m_InvitedHorde      = 0;
     m_ArenaType         = 0;
@@ -83,8 +82,7 @@ Battleground::Battleground()
     m_Events            = 0;
     m_StartDelayTime    = 0;
     m_IsRated           = false;
-    m_BuffChange        = false;
-    m_IsRandom          = false;
+    _buffChange         = false;
     m_LevelMin          = 0;
     m_LevelMax          = 0;
     m_InBGFreeSlotQueue = false;
@@ -112,8 +110,8 @@ Battleground::Battleground()
     m_PlayersCount[TEAM_ALLIANCE]    = 0;
     m_PlayersCount[TEAM_HORDE]       = 0;
 
-    m_TeamScores[TEAM_ALLIANCE]      = 0;
-    m_TeamScores[TEAM_HORDE]         = 0;
+    _teamScores[TEAM_ALLIANCE] = 0;
+    _teamScores[TEAM_HORDE] = 0;
 
     m_PrematureCountDown = false;
     m_PrematureCountDownTimer = 0;
@@ -461,7 +459,7 @@ inline void Battleground::_ProcessJoin(uint32 diff)
                 {
                     // BG Status packet
                     WorldPacket status;
-                    BattlegroundQueueTypeId bgQueueTypeId = sBattlegroundMgr->BGQueueTypeId(m_TypeID, GetArenaType());
+                    BattlegroundQueueTypeId bgQueueTypeId = sBattlegroundMgr->BGQueueTypeId(_typeId, GetArenaType());
                     uint32 queueSlot = player->GetBattlegroundQueueIndex(bgQueueTypeId);
                     sBattlegroundMgr->BuildBattlegroundStatusPacket(&status, this, queueSlot, STATUS_IN_PROGRESS, 0, GetStartTime(), GetArenaType(), player->GetBGTeam());
                     player->SendDirectMessage(&status);
@@ -717,7 +715,7 @@ void Battleground::EndBattleground(uint32 winner)
         stmt->setUInt64(0, battlegroundId);
         stmt->setUInt8(1, GetWinner());
         stmt->setUInt8(2, GetUniqueBracketId());
-        stmt->setUInt8(3, GetTypeID(true));
+        stmt->setUInt8(3, GetTypeID());
         CharacterDatabase.Execute(stmt);
     }
 
@@ -781,7 +779,7 @@ void Battleground::EndBattleground(uint32 winner)
         // Reward winner team
         if (team == winner)
         {
-            if (IsRandom() || BattlegroundMgr::IsBGWeekend(GetTypeID()))
+            if (BattlegroundMgr::IsBGWeekend(GetTypeID()))
             {
                 UpdatePlayerScore(player, SCORE_BONUS_HONOR, GetBonusHonorFromKill(winner_kills));
                 if (CanAwardArenaPoints())
@@ -790,11 +788,8 @@ void Battleground::EndBattleground(uint32 winner)
                     player->SetRandomWinner(true);
             }
         }
-        else
-        {
-            if (IsRandom() || BattlegroundMgr::IsBGWeekend(GetTypeID()))
-                UpdatePlayerScore(player, SCORE_BONUS_HONOR, GetBonusHonorFromKill(loser_kills));
-        }
+        else if (BattlegroundMgr::IsBGWeekend(GetTypeID()))
+            UpdatePlayerScore(player, SCORE_BONUS_HONOR, GetBonusHonorFromKill(loser_kills));
 
         player->ResetAllPowers();
         player->CombatStopWithPets(true);
@@ -1106,7 +1101,7 @@ void Battleground::AddToBGFreeSlotQueue()
 {
     if (!m_InBGFreeSlotQueue && isBattleground())
     {
-        sBattlegroundMgr->AddToBGFreeSlotQueue(m_TypeID, this);
+        sBattlegroundMgr->AddToBGFreeSlotQueue(_typeId, this);
         m_InBGFreeSlotQueue = true;
     }
 }
@@ -1116,7 +1111,7 @@ void Battleground::RemoveFromBGFreeSlotQueue()
 {
     if (m_InBGFreeSlotQueue)
     {
-        sBattlegroundMgr->RemoveFromBGFreeSlotQueue(m_TypeID, m_InstanceID);
+        sBattlegroundMgr->RemoveFromBGFreeSlotQueue(_typeId, m_InstanceID);
         m_InBGFreeSlotQueue = false;
     }
 }
@@ -1610,7 +1605,7 @@ void Battleground::HandleTriggerBuff(ObjectGuid go_guid)
     // Randomly select new buff
     uint8 buff = urand(0, 2);
     uint32 entry = obj->GetEntry();
-    if (m_BuffChange && entry != Buff_Entries[buff])
+    if (_buffChange && entry != Buff_Entries[buff])
     {
         // Despawn current buff
         SpawnBGObject(index, RESPAWN_ONE_DAY);
@@ -1746,12 +1741,6 @@ WorldSafeLocsEntry const* Battleground::GetClosestGraveyard(Player* player)
     return sObjectMgr->GetClosestGraveyard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), player->GetTeam());
 }
 
-void Battleground::SetBracket(PvPDifficultyEntry const* bracketEntry)
-{
-    m_BracketId = bracketEntry->GetBracketId();
-    SetLevelRange(bracketEntry->minLevel, bracketEntry->maxLevel);
-}
-
 void Battleground::RewardXPAtKill(Player* killer, Player* victim)
 {
     if (sWorld->getBoolConfig(CONFIG_BG_XP_FOR_KILL) && killer && victim)
@@ -1761,7 +1750,7 @@ void Battleground::RewardXPAtKill(Player* killer, Player* victim)
 uint32 Battleground::GetTeamScore(uint32 teamId) const
 {
     if (teamId == TEAM_ALLIANCE || teamId == TEAM_HORDE)
-        return m_TeamScores[teamId];
+        return _teamScores[teamId];
 
     TC_LOG_ERROR("bg.battleground", "GetTeamScore with wrong Team %u for BG %u", teamId, GetTypeID());
     return 0;
@@ -1776,4 +1765,22 @@ void Battleground::HandleAreaTrigger(Player* player, uint32 trigger)
 uint8 Battleground::GetUniqueBracketId() const
 {
     return GetMinLevel() / 10;
+}
+
+uint32 Battleground::GetMinLevelForBattlegroundBracketId(BattlegroundBracketId bracketId)
+{
+    if (bracketId >= 1)
+    {
+        if (bracketId > BG_BRACKET_ID_LAST)
+            bracketId = BG_BRACKET_ID_LAST;
+
+        return 10 * bracketId + GetMinLevel();
+    }
+
+    return 0;
+}
+
+uint32 Battleground::GetMaxLevelForBattlegroundBracketId(BattlegroundBracketId bracketId)
+{
+    return GetMinLevelForBattlegroundBracketId(bracketId) + 10;
 }

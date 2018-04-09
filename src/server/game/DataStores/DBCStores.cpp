@@ -714,18 +714,6 @@ MapDifficulty const* GetDownscaledMapDifficultyData(uint32 mapId, Difficulty &di
     return mapDiff;
 }
 
-PvPDifficultyEntry const* GetBattlegroundBracketByLevel(uint32 mapid, uint32 level)
-{
-    PvPDifficultyEntry const* maxEntry = nullptr;              // used for level > max listed level case
-
-    return maxEntry;
-}
-
-PvPDifficultyEntry const* GetBattlegroundBracketById(uint32 mapid, BattlegroundBracketId id)
-{
-    return nullptr;
-}
-
 uint32 const* GetTalentTabPages(uint8 cls)
 {
     return sTalentTabPages[cls];
@@ -767,12 +755,6 @@ CharStartOutfitEntry const* GetCharStartOutfitEntry(uint8 race, uint8 class_, ui
         return nullptr;
 
     return itr->second;
-}
-
-/// Returns LFGDungeonEntry for a specific map and difficulty. Will return first found entry if multiple dungeons use the same map (such as Scarlet Monastery)
-LFGDungeonEntry const* GetLFGDungeon(uint32 mapId, Difficulty difficulty)
-{
-    return nullptr;
 }
 
 uint32 GetDefaultMapLight(uint32 mapId)

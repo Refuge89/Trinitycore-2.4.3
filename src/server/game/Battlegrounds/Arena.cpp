@@ -27,7 +27,6 @@
 void ArenaScore::AppendToPacket(WorldPacket& data)
 {
     data << uint64(PlayerGuid);
-
     data << uint32(KillingBlows);
     data << uint8(TeamId);
     data << uint32(DamageDone);

@@ -61,9 +61,8 @@ enum BG_AB_WorldStates
 */
 };
 
-const uint32 BG_AB_OP_NODESTATES[5] =    {1767, 1782, 1772, 1792, 1787};
-
-const uint32 BG_AB_OP_NODEICONS[5]  =    {1842, 1846, 1845, 1844, 1843};
+const uint32 BG_AB_OP_NODESTATES[5] = { 1767, 1782, 1772, 1792, 1787 };
+const uint32 BG_AB_OP_NODEICONS[5] = { 1842, 1846, 1845, 1844, 1843 };
 
 /* Note: code uses that these IDs follow each other */
 enum BG_AB_NodeObjectId
@@ -216,46 +215,46 @@ enum BG_AB_Objectives
 
 Position const BG_AB_NodePositions[BG_AB_DYNAMIC_NODES_COUNT] =
 {
-    {1166.785f, 1200.132f, -56.70859f, 0.9075713f},         // stables
-    {977.0156f, 1046.616f, -44.80923f, -2.600541f},         // blacksmith
-    {806.1821f, 874.2723f, -55.99371f, -2.303835f},         // farm
-    {856.1419f, 1148.902f, 11.18469f, -2.303835f},          // lumber mill
-    {1146.923f, 848.1782f, -110.917f, -0.7330382f}          // gold mine
+    { 1166.785f, 1200.132f, -56.70859f, 0.9075713f },         // stables
+    { 977.0156f, 1046.616f, -44.80923f, -2.600541f },         // blacksmith
+    { 806.1821f, 874.2723f, -55.99371f, -2.303835f },         // farm
+    { 856.1419f, 1148.902f, 11.18469f, -2.303835f },          // lumber mill
+    { 1146.923f, 848.1782f, -110.917f, -0.7330382f }          // gold mine
 };
 
 // x, y, z, o, rot0, rot1, rot2, rot3
 const float BG_AB_DoorPositions[2][8] =
 {
-    {1284.597f, 1281.167f, -15.97792f, 0.7068594f, 0.012957f, -0.060288f, 0.344959f, 0.93659f},
-    {708.0903f, 708.4479f, -17.8342f, -2.391099f, 0.050291f, 0.015127f, 0.929217f, -0.365784f}
+    { 1284.597f, 1281.167f, -15.97792f, 0.7068594f, 0.012957f, -0.060288f, 0.344959f, 0.93659f },
+    { 708.0903f, 708.4479f, -17.8342f, -2.391099f, 0.050291f, 0.015127f, 0.929217f, -0.365784f }
 };
 
 // Tick intervals and given points: case 0, 1, 2, 3, 4, 5 captured nodes
-const uint32 BG_AB_TickIntervals[6] = {0, 12000, 9000, 6000, 3000, 1000};
-const uint32 BG_AB_TickPoints[6] = {0, 10, 10, 10, 10, 30};
+const uint32 BG_AB_TickIntervals[6] = { 0, 12000, 9000, 6000, 3000, 1000 };
+const uint32 BG_AB_TickPoints[6] = { 0, 10, 10, 10, 10, 30 };
 
 // WorldSafeLocs ids for 5 nodes, and for ally, and horde starting location
-const uint32 BG_AB_GraveyardIds[BG_AB_ALL_NODES_COUNT] = {895, 894, 893, 897, 896, 898, 899};
+const uint32 BG_AB_GraveyardIds[BG_AB_ALL_NODES_COUNT] = { 895, 894, 893, 897, 896, 898, 899 };
 
 // x, y, z, o
 const float BG_AB_BuffPositions[BG_AB_DYNAMIC_NODES_COUNT][4] =
 {
-    {1185.566f, 1184.629f, -56.36329f, 2.303831f},         // stables
-    {990.1131f, 1008.73f,  -42.60328f, 0.8203033f},         // blacksmith
-    {818.0089f, 842.3543f, -56.54062f, 3.176533f},         // farm
-    {808.8463f, 1185.417f,  11.92161f, 5.619962f},         // lumber mill
-    {1147.091f, 816.8362f, -98.39896f, 6.056293f}          // gold mine
+    { 1185.566f, 1184.629f, -56.36329f, 2.303831f },         // stables
+    { 990.1131f, 1008.73f,  -42.60328f, 0.8203033f },         // blacksmith
+    { 818.0089f, 842.3543f, -56.54062f, 3.176533f },         // farm
+    { 808.8463f, 1185.417f,  11.92161f, 5.619962f },         // lumber mill
+    { 1147.091f, 816.8362f, -98.39896f, 6.056293f }          // gold mine
 };
 
 Position const BG_AB_SpiritGuidePos[BG_AB_ALL_NODES_COUNT] =
 {
-    {1200.03f, 1171.09f, -56.47f, 5.15f},                   // stables
-    {1017.43f, 960.61f, -42.95f, 4.88f},                    // blacksmith
-    {833.00f, 793.00f, -57.25f, 5.27f},                     // farm
-    {775.17f, 1206.40f, 15.79f, 1.90f},                     // lumber mill
-    {1207.48f, 787.00f, -83.36f, 5.51f},                    // gold mine
-    {1354.05f, 1275.48f, -11.30f, 4.77f},                   // alliance starting base
-    {714.61f, 646.15f, -10.87f, 4.34f}                      // horde starting base
+    { 1200.03f, 1171.09f, -56.47f, 5.15f },                   // stables
+    { 1017.43f, 960.61f, -42.95f, 4.88f },                    // blacksmith
+    { 833.00f, 793.00f, -57.25f, 5.27f },                     // farm
+    { 775.17f, 1206.40f, 15.79f, 1.90f },                     // lumber mill
+    { 1207.48f, 787.00f, -83.36f, 5.51f },                    // gold mine
+    { 1354.05f, 1275.48f, -11.30f, 4.77f },                   // alliance starting base
+    { 714.61f, 646.15f, -10.87f, 4.34f }                      // horde starting base
 };
 
 struct BG_AB_BannerTimer
@@ -325,14 +324,14 @@ class BattlegroundAB : public Battleground
     private:
         void PostUpdateImpl(uint32 diff) override;
         /* Gameobject spawning/despawning */
-        void _CreateBanner(uint8 node, uint8 type, uint8 teamIndex, bool delay);
-        void _DelBanner(uint8 node, uint8 type, uint8 teamIndex);
-        void _SendNodeUpdate(uint8 node);
+        void CreateBanner(uint8 node, uint8 type, uint8 teamIndex, bool delay);
+        void DelBanner(uint8 node, uint8 type, uint8 teamIndex);
+        void SendNodeUpdate(uint8 node);
 
         /* Creature spawning/despawning */
         /// @todo working, scripted peons spawning
-        void _NodeOccupied(uint8 node, Team team);
-        void _NodeDeOccupied(uint8 node);
+        void NodeOccupied(uint8 node, Team team);
+        void NodeDeOccupied(uint8 node);
 
         /* Nodes info:
             0: neutral
@@ -340,15 +339,15 @@ class BattlegroundAB : public Battleground
             2: horde contested
             3: ally occupied
             4: horde occupied     */
-        uint8               m_Nodes[BG_AB_DYNAMIC_NODES_COUNT];
-        uint8               m_prevNodes[BG_AB_DYNAMIC_NODES_COUNT];
-        BG_AB_BannerTimer   m_BannerTimers[BG_AB_DYNAMIC_NODES_COUNT];
-        uint32              m_NodeTimers[BG_AB_DYNAMIC_NODES_COUNT];
-        uint32              m_lastTick[BG_TEAMS_COUNT];
-        uint32              m_HonorScoreTics[BG_TEAMS_COUNT];
-        uint32              m_ReputationScoreTics[BG_TEAMS_COUNT];
-        bool                m_IsInformedNearVictory;
-        uint32              m_HonorTics;
-        uint32              m_ReputationTics;
+        uint8 _nodes[BG_AB_DYNAMIC_NODES_COUNT];
+        uint8 _prevNodes[BG_AB_DYNAMIC_NODES_COUNT];
+        BG_AB_BannerTimer _bannerTimers[BG_AB_DYNAMIC_NODES_COUNT];
+        uint32 _nodeTimers[BG_AB_DYNAMIC_NODES_COUNT];
+        uint32 _lastTick[BG_TEAMS_COUNT];
+        uint32 _honorScoreTics[BG_TEAMS_COUNT];
+        uint32 _reputationScoreTics[BG_TEAMS_COUNT];
+        bool _isInformedNearVictory;
+        uint32 _honorTics;
+        uint32 _reputationTics;
 };
 #endif

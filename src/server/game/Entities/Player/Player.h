@@ -1798,6 +1798,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool IsInvitedForBattlegroundQueueType(BattlegroundQueueTypeId bgQueueTypeId) const;
         bool InBattlegroundQueueForBattlegroundQueueType(BattlegroundQueueTypeId bgQueueTypeId) const;
 
+        BattlegroundBracketId GetBattlegroundBracketId(BattlegroundTypeId bgTypeId) const;
+
         void SetBattlegroundId(uint32 val, BattlegroundTypeId bgTypeId);
         uint32 AddBattlegroundQueueId(BattlegroundQueueTypeId val);
         bool HasFreeBattlegroundQueueId() const;

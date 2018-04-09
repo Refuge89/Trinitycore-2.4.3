@@ -3319,6 +3319,14 @@ enum BanReturn
     BAN_EXISTS
 };
 
+enum BattlegroundBracketId                                  // bracketId for level ranges
+{
+    BG_BRACKET_ID_FIRST          = 0,
+    BG_BRACKET_ID_LAST           = 6
+};
+
+#define MAX_BATTLEGROUND_BRACKETS  7
+
 enum BattlegroundTeamId
 {
     BG_TEAM_HORDE       = 0, // Battleground: Horde,    Arena: Green
@@ -3339,8 +3347,7 @@ enum BattlegroundTypeId : uint32
     BATTLEGROUND_BE             = 5, // Blade's Edge Arena
     BATTLEGROUND_AA             = 6, // All Arenas
     BATTLEGROUND_EY             = 7, // Eye of the Storm
-    BATTLEGROUND_RL             = 8, // Ruins of Lordaernon
-    BATTLEGROUND_RB             = 32  // Random Battleground
+    BATTLEGROUND_RL             = 8  // Ruins of Lordaernon
 };
 
 #define MAX_BATTLEGROUND_TYPE_ID 33
@@ -3468,16 +3475,15 @@ enum DuelCompleteType : uint8
 enum BattlegroundQueueTypeId
 {
     BATTLEGROUND_QUEUE_NONE     = 0,
-    BATTLEGROUND_QUEUE_AV       = 1,
-    BATTLEGROUND_QUEUE_WS       = 2,
-    BATTLEGROUND_QUEUE_AB       = 3,
-    BATTLEGROUND_QUEUE_EY       = 4,
-    BATTLEGROUND_QUEUE_SA       = 5,
-    BATTLEGROUND_QUEUE_IC       = 6,
-    BATTLEGROUND_QUEUE_RB       = 7,
-    BATTLEGROUND_QUEUE_2v2      = 8,
-    BATTLEGROUND_QUEUE_3v3      = 9,
-    BATTLEGROUND_QUEUE_5v5      = 10,
+    BATTLEGROUND_QUEUE_AV,
+    BATTLEGROUND_QUEUE_WS,
+    BATTLEGROUND_QUEUE_AB,
+    BATTLEGROUND_QUEUE_EY,
+    BATTLEGROUND_QUEUE_SA,
+    BATTLEGROUND_QUEUE_IC,
+    BATTLEGROUND_QUEUE_2v2,
+    BATTLEGROUND_QUEUE_3v3,
+    BATTLEGROUND_QUEUE_5v5,
     MAX_BATTLEGROUND_QUEUE_TYPES
 };
 
