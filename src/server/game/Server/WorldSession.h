@@ -580,6 +580,7 @@ class TC_GAME_API WorldSession
         void HandleRaidReadyCheckFinishedOpcode(WorldPacket& recvData);
         void HandleGroupRaidConvertOpcode(WorldPacket& recvData);
         void HandleGroupChangeSubGroupOpcode(WorldPacket& recvData);
+        void HandleGroupSwapSubGroupOpcode(WorldPacket& recvData);
         void HandleGroupAssistantLeaderOpcode(WorldPacket& recvData);
         void HandlePartyAssignmentOpcode(WorldPacket& recvData);
 

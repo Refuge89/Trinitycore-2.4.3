@@ -1048,3 +1048,48 @@ void WorldSession::HandleOptOutOfLootOpcode(WorldPacket& recvData)
 
     GetPlayer()->SetPassOnGroupLoot(passOnLoot != 0);
 }
+
+void WorldSession::HandleGroupSwapSubGroupOpcode(WorldPacket& recvData)
+{
+    TC_LOG_DEBUG("network", "WORLD: Received CMSG_GROUP_SWAP_SUB_GROUP");
+
+    // we will get correct pointer for group here, so we don't have to check if group is BG raid
+    Group* group = GetPlayer()->GetGroup();
+    if (!group)
+        return;
+
+    std::string nameOne, nameTwo;
+    recvData >> nameOne >> nameTwo;
+
+    if (!normalizePlayerName(nameOne) || !normalizePlayerName(nameTwo))
+        return;
+
+    ObjectGuid senderGuid = GetPlayer()->GetGUID();
+    if (!group->IsLeader(senderGuid) && !group->IsAssistant(senderGuid))
+        return;
+
+    ObjectGuid guidOne;
+    if (Player* player = ObjectAccessor::FindConnectedPlayerByName(nameOne))
+        guidOne = player->GetGUID();
+    else
+        guidOne = sCharacterCache->GetCharacterGuidByName(nameOne);
+
+    if (guidOne.IsEmpty())
+        return;
+
+    ObjectGuid guidTwo;
+    if (Player* player = ObjectAccessor::FindConnectedPlayerByName(nameTwo))
+        guidTwo = player->GetGUID();
+    else
+        guidTwo = sCharacterCache->GetCharacterGuidByName(nameTwo);
+
+    if (guidTwo.IsEmpty() || group->SameSubGroup(guidOne, guidTwo))
+        return;
+
+    uint8 subOne, subTwo;
+    subOne = group->GetMemberGroup(guidOne);
+    subTwo = group->GetMemberGroup(guidTwo);
+
+    group->ChangeMembersGroup(guidOne, subTwo);
+    group->ChangeMembersGroup(guidTwo, subOne);
+}
