@@ -51,6 +51,7 @@ enum ConditionTypes
     CONDITION_QUEST_NONE            = 14,                   // quest_id         0              0                  true if doesn't have quest saved
     CONDITION_CLASS                 = 15,                   // class            0              0                  true if player's class is equal to class
     CONDITION_RACE                  = 16,                   // race             0              0                  true if player's race is equal to race
+    CONDITION_ACHIEVEMENT           = 17,                   // achievement_id   0              0                  // only 335+
     CONDITION_TITLE                 = 18,                   // title id         0              0                  true if player has title
     CONDITION_SPAWNMASK             = 19,                   // spawnMask        0              0                  true if in spawnMask
     CONDITION_GENDER                = 20,                   // gender           0              0                  true if player's gender is equal to gender

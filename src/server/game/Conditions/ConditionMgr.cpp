@@ -82,6 +82,7 @@ ConditionMgr::ConditionTypeInfo const ConditionMgr::StaticConditionTypeData[COND
     { "Quest None",           true, false, false },
     { "Class",                true, false, false },
     { "Race",                 true, false, false },
+    { "Achievement",          true, false, false },
     { "Title",                true, false, false },
     { "SpawnMask",            true, false, false },
     { "Gender",               true, false, false },
