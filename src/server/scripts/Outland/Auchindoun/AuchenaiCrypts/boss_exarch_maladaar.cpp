@@ -107,7 +107,7 @@ class npc_stolen_soul : public CreatureScript
                 events.ScheduleEvent(EVENT_CLASS_SPELL, Seconds(1));
             }
 
-            void SetData(uint32 data, uint32 value)
+            void SetData(uint32 data, uint32 value) override
             {
                 if (data == DATA_CLASS)
                     myClass = value;
