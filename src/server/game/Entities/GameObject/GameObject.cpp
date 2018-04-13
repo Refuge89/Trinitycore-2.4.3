@@ -308,6 +308,10 @@ bool GameObject::Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* map, u
 
     SetObjectScale(goinfo->size);
 
+    SetFloatValue(GAMEOBJECT_POS_X, pos.GetPositionX());
+    SetFloatValue(GAMEOBJECT_POS_Y, pos.GetPositionY());
+    SetFloatValue(GAMEOBJECT_POS_Z, pos.GetPositionZ());
+
     if (GameObjectOverride const* goOverride = GetGameObjectOverride())
     {
         SetFaction(goOverride->Faction);
