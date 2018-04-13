@@ -1634,7 +1634,8 @@ void Creature::LoadEquipment(int8 id, bool force /*= true*/)
         if (force)
         {
             for (uint8 i = 0; i < MAX_EQUIPMENT_ITEMS; ++i)
-                SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + i, 0);
+                SetVirtualItem(i, 0);
+
             m_equipmentId = 0;
         }
 
@@ -1647,7 +1648,7 @@ void Creature::LoadEquipment(int8 id, bool force /*= true*/)
 
     m_equipmentId = id;
     for (uint8 i = 0; i < MAX_EQUIPMENT_ITEMS; ++i)
-        SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + i, einfo->ItemEntry[i]);
+        SetVirtualItem(i, einfo->ItemEntry[i]);
 }
 
 void Creature::SetSpawnHealth()
@@ -3207,4 +3208,27 @@ bool Creature::IsEscortNPC(bool onlyIfActive)
         return false;
 
     return AI()->IsEscortNPC(onlyIfActive);
+}
+
+void Creature::SetVirtualItem(uint8 slot, uint32 entry)
+{
+    if (entry)
+    {
+        if (ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(entry))
+        {
+            SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + slot, entry);
+            SetByteValue(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 0, VIRTUAL_ITEM_INFO_0_OFFSET_CLASS,         itemTemplate->Class);
+            SetByteValue(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 0, VIRTUAL_ITEM_INFO_0_OFFSET_SUBCLASS,      itemTemplate->SubClass);
+            SetByteValue(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 0, VIRTUAL_ITEM_INFO_0_OFFSET_SOUNDOVERRIDE, itemTemplate->SoundOverrideSubclass);
+            SetByteValue(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 0, VIRTUAL_ITEM_INFO_0_OFFSET_MATERIAL,      itemTemplate->Material);
+            SetByteValue(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 1, VIRTUAL_ITEM_INFO_1_OFFSET_INVENTORYTYPE, itemTemplate->InventoryType);
+            SetByteValue(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 1, VIRTUAL_ITEM_INFO_1_OFFSET_SHEATH,        itemTemplate->Sheath);
+
+            return;
+        }
+    }
+
+    SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + slot, 0);
+    SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 0, 0);
+    SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 1, 0);
 }

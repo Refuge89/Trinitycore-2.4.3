@@ -287,7 +287,7 @@ class boss_hexlord_malacrass : public CreatureScript
 
                 SpawnAdds();
 
-                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, 46916);
+                me->SetVirtualItem(0, 46916); // Need Value Update
                 me->SetByteValue(UNIT_FIELD_BYTES_2, 0, SHEATH_STATE_MELEE);
             }
 

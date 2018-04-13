@@ -580,27 +580,31 @@ class spell_gen_clone_weapon_aura : public AuraScript
             case SPELL_COPY_WEAPON_AURA:
             {
                 prevItem = target->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID);
+                uint32 newItem = caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID);
 
                 if (Player* player = caster->ToPlayer())
-                {
                     if (Item* mainItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))
-                        target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, mainItem->GetEntry());
-                }
+                        newItem = mainItem->GetEntry();
+
+                if (Creature* creature = target->ToCreature())
+                    creature->SetVirtualItem(0, newItem);
                 else
-                    target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID));
+                    target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, newItem);
                 break;
             }
             case SPELL_COPY_OFFHAND_AURA:
             {
-                prevItem = target->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID) + 1;
+                prevItem = target->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1);
+                uint32 newItem = caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1);
 
                 if (Player* player = caster->ToPlayer())
-                {
                     if (Item* offItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))
-                        target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, offItem->GetEntry());
-                }
+                        newItem = offItem->GetEntry();
+
+                if (Creature* creature = target->ToCreature())
+                    creature->SetVirtualItem(1, newItem);
                 else
-                    target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1));
+                    target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, newItem);
                 break;
             }
             default:
@@ -615,10 +619,16 @@ class spell_gen_clone_weapon_aura : public AuraScript
         switch (GetSpellInfo()->Id)
         {
             case SPELL_COPY_WEAPON_AURA:
-                target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, prevItem);
+                if (Creature* creature = target->ToCreature())
+                    creature->SetVirtualItem(0, prevItem);
+                else
+                    target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, prevItem);
                 break;
             case SPELL_COPY_OFFHAND_AURA:
-                target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, prevItem);
+                if (Creature* creature = target->ToCreature())
+                    creature->SetVirtualItem(1, prevItem);
+                else
+                    target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, prevItem);
                 break;
             default:
                 break;

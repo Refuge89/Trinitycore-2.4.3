@@ -172,6 +172,7 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         int8 GetOriginalEquipmentId() const { return m_originalEquipmentId; }
         uint8 GetCurrentEquipmentId() const { return m_equipmentId; }
         void SetCurrentEquipmentId(uint8 id) { m_equipmentId = id; }
+        void SetVirtualItem(uint8 slot, uint32 entry);
 
         float GetSpellDamageMod(int32 Rank) const;
 
@@ -196,9 +197,9 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
 
         bool LoadFromDB(ObjectGuid::LowType spawnId, Map* map, bool addToMap, bool allowDuplicate);
         void SaveToDB();
-                                                            // overriden in Pet
-        virtual void SaveToDB(uint32 mapid, uint8 spawnMask, uint32 phaseMask);
-        virtual void DeleteFromDB();                        // overriden in Pet
+
+        virtual void SaveToDB(uint32 mapid, uint8 spawnMask, uint32 phaseMask); // overriden in Pet
+        virtual void DeleteFromDB();                                            // overriden in Pet
 
         Loot loot;
         void StartPickPocketRefillTimer();

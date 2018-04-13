@@ -198,7 +198,7 @@ class boss_zuljin : public CreatureScript
 
                 Initialize();
 
-                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, 33975);
+                me->SetVirtualItem(0, 33975);
                 //me->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO, 218172674);
                 //me->SetByteValue(UNIT_FIELD_BYTES_2, 0, SHEATH_STATE_MELEE);
             }
@@ -303,7 +303,7 @@ class boss_zuljin : public CreatureScript
                     case 4:
                         DoTeleportTo(CENTER_X, CENTER_Y, CENTER_Z, 100);
                         ResetThreatList();
-                        me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, 0);
+                        me->SetVirtualItem(0, 0);
                         me->RemoveAurasDueToSpell(Transform[Phase].unaura);
                         DoCast(me, Transform[Phase].spell);
                         Talk(Transform[Phase].text);
