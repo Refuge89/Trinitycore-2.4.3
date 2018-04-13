@@ -107,6 +107,10 @@ bool DynamicObject::CreateDynamicObject(ObjectGuid::LowType guidlow, Unit* caste
     SetByteValue(DYNAMICOBJECT_BYTES, 0, type);
     SetUInt32Value(DYNAMICOBJECT_SPELLID, spellId);
     SetFloatValue(DYNAMICOBJECT_RADIUS, radius);
+    SetFloatValue(DYNAMICOBJECT_POS_X, pos.GetPositionX());
+    SetFloatValue(DYNAMICOBJECT_POS_Y, pos.GetPositionY());
+    SetFloatValue(DYNAMICOBJECT_POS_Z, pos.GetPositionZ());
+    SetFloatValue(DYNAMICOBJECT_FACING, pos.GetOrientation());
     SetUInt32Value(DYNAMICOBJECT_CASTTIME, GameTime::GetGameTimeMS());
 
     if (IsWorldObject())
