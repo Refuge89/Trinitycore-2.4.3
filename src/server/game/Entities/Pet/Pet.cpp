@@ -1120,6 +1120,10 @@ void Pet::_LoadAuras(uint32 timediff)
 {
     TC_LOG_DEBUG("entities.pet", "Loading auras for pet %u", GetGUID().GetCounter());
 
+    // Clear Out Aura UpdateFields
+    for (uint8 i = UNIT_FIELD_AURA; i < UNIT_FIELD_AURASTATE; ++i)
+        SetUInt32Value(i, 0);
+
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_PET_AURA);
     stmt->setUInt32(0, m_charmInfo->GetPetNumber());
     PreparedQueryResult result = CharacterDatabase.Query(stmt);

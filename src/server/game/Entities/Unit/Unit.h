@@ -1428,7 +1428,7 @@ class TC_GAME_API Unit : public WorldObject
 
         VisibleAuraMap const* GetVisibleAuras() { return &m_visibleAuras; }
         AuraApplication * GetVisibleAura(uint8 slot) const;
-        void SetVisibleAura(uint8 slot, AuraApplication * aur);
+        void SetVisibleAura(uint8 slot, AuraApplication * aur, uint8 level);
         void RemoveVisibleAura(uint8 slot);
 
         uint32 GetInterruptMask() const { return m_interruptMask; }

@@ -566,15 +566,48 @@ AuraApplication* Unit::GetVisibleAura(uint8 slot) const
     return 0;
 }
 
-void Unit::SetVisibleAura(uint8 slot, AuraApplication * aur)
+void Unit::SetVisibleAura(uint8 slot, AuraApplication * aur, uint8 level)
 {
-    m_visibleAuras[slot]=aur;
+    m_visibleAuras[slot] = aur;
+    Aura const* aura = aur->GetBase();
+    SetUInt32Value(UNIT_FIELD_AURA + slot, aura->GetId());
+
+    uint32 index = slot / 4;
+    uint32 byte = (slot % 4) * 8;
+    uint32 flagValue = GetUInt32Value(UNIT_FIELD_AURAFLAGS + index);
+    uint32 levelValue = GetUInt32Value(UNIT_FIELD_AURALEVELS + index);
+    uint32 auraAppValue = GetUInt32Value(UNIT_FIELD_AURAAPPS + index);
+    flagValue &= ~(0xFF << byte);
+    levelValue &= ~(0xFF << byte);
+    auraAppValue &= ~(0xFF << byte);
+    flagValue |= (aur->GetFlags() << byte);
+    levelValue |= (level << byte);
+    uint32 stackAmount = aura->GetCharges() ? aura->GetCharges() * aura->GetStackAmount() : aura->GetStackAmount();
+    auraAppValue |= (uint8(std::min<uint32>(255, stackAmount)) - 1);
+    SetUInt32Value(UNIT_FIELD_AURAFLAGS + index, flagValue);
+    SetUInt32Value(UNIT_FIELD_AURALEVELS + index, levelValue);
+    SetUInt32Value(UNIT_FIELD_AURAAPPS + index, auraAppValue);
+
     UpdateAuraForGroup(slot);
 }
 
 void Unit::RemoveVisibleAura(uint8 slot)
 {
     m_visibleAuras.erase(slot);
+    SetUInt32Value(UNIT_FIELD_AURA + slot, 0);
+
+    uint32 index = slot / 4;
+    uint32 byte = (slot % 4) * 8;
+    uint32 flagValue = GetUInt32Value(UNIT_FIELD_AURAFLAGS + index);
+    uint32 levelValue = GetUInt32Value(UNIT_FIELD_AURALEVELS + index);
+    uint32 auraAppValue = GetUInt32Value(UNIT_FIELD_AURAAPPS + index);
+    flagValue &= ~(0xFF << byte);
+    levelValue &= ~(0xFF << byte);
+    auraAppValue &= ~(0xFF << byte);
+    SetUInt32Value(UNIT_FIELD_AURAFLAGS + index, flagValue);
+    SetUInt32Value(UNIT_FIELD_AURALEVELS + index, levelValue);
+    SetUInt32Value(UNIT_FIELD_AURAAPPS + index, auraAppValue);
+
     UpdateAuraForGroup(slot);
 }
 

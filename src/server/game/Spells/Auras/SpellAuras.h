@@ -55,6 +55,7 @@ class TC_GAME_API AuraApplication
         uint8 _flags;                                  // Aura info flag
         uint8 _effectsToApply;                         // Used only at spell hit to determine which effect should be applied
         bool _needClientUpdate:1;
+        uint8 _casterLevel;
 
         explicit AuraApplication(Unit* target, Unit* caster, Aura* base, uint8 effMask);
         void _Remove();
@@ -76,13 +77,17 @@ class TC_GAME_API AuraApplication
         uint8 GetEffectsToApply() const { return _effectsToApply; }
         void UpdateApplyEffectMask(uint8 newEffMask);
 
+        void UpdateVisibleApplication(uint8 stackAmount);
+
+        void SetCasterLevel(uint8 level) { _casterLevel = level; }
+        uint8 GetCasterLevel() const { return _casterLevel; }
+
         void SetRemoveMode(AuraRemoveMode mode) { _removeMode = mode; }
         AuraRemoveMode GetRemoveMode() const { return _removeMode; }
 
         void SetNeedClientUpdate() { _needClientUpdate = true;}
         bool IsNeedClientUpdate() const { return _needClientUpdate;}
-        void BuildUpdatePacket(ByteBuffer& data, bool remove) const;
-        void ClientUpdate(bool remove = false);
+        void ClientUpdate();
 };
 
 // Caches some information about caster (because it may no longer exist)

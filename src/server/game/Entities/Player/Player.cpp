@@ -16947,6 +16947,10 @@ void Player::_LoadAuras(PreparedQueryResult result, uint32 timediff)
 {
     TC_LOG_DEBUG("entities.player.loading", "Player::_LoadAuras: Loading auras for %s", GetGUID().ToString().c_str());
 
+    // Clear Out Aura UpdateFields
+    for (uint8 i = UNIT_FIELD_AURA; i < UNIT_FIELD_AURASTATE; ++i)
+        SetUInt32Value(i, 0);
+
     /*                                                           0       1        2         3                 4         5      6       7         8              9            10
     QueryResult* result = CharacterDatabase.PQuery("SELECT casterGuid, spell, effectMask, recalculateMask, stackCount, amount0, amount1, amount2, base_amount0, base_amount1, base_amount2,
                                                         11          12          13              14

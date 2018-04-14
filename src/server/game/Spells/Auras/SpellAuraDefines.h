@@ -26,8 +26,8 @@ class SpellInfo;
 class Unit;
 class WorldObject;
 
-#define MAX_AURAS 255                         // Client-side limit
-#define MAX_AURAS_GROUP_UPDATE 64             // Limit of SMSG_PARY_MEMBER_STATS_FULL and SMSG_PARTY_MEMBER_STATS
+#define MAX_AURAS 56                         // Client-side limit
+#define MAX_POSITIVE_AURAS 40
 
 enum AURA_FLAGS
 {

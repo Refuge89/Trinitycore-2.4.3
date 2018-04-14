@@ -54,12 +54,15 @@ _flags(AFLAG_NONE), _effectsToApply(effMask), _needClientUpdate(false)
 {
     ASSERT(GetTarget() && GetBase());
 
+    SetCasterLevel(caster->getLevel());
+    _InitFlags(caster, effMask);
+
     if (GetBase()->CanBeSentToClient())
     {
         // Try find slot for aura
         uint8 slot = MAX_AURAS;
         // Lookup for auras already applied from spell
-        if (AuraApplication * foundAura = GetTarget()->GetAuraApplication(GetBase()->GetId(), GetBase()->GetCasterGUID(), GetBase()->GetCastItemGUID()))
+        if (AuraApplication* foundAura = GetTarget()->GetAuraApplication(GetBase()->GetId(), GetBase()->GetCasterGUID(), GetBase()->GetCastItemGUID()))
         {
             // allow use single slot only by auras from same caster
             slot = foundAura->GetSlot();
@@ -71,6 +74,9 @@ _flags(AFLAG_NONE), _effectsToApply(effMask), _needClientUpdate(false)
             Unit::VisibleAuraMap::const_iterator itr = visibleAuras->find(0);
             for (uint32 freeSlot = 0; freeSlot < MAX_AURAS; ++itr, ++freeSlot)
             {
+                if (!IsPositive() && freeSlot < MAX_POSITIVE_AURAS)
+                    continue;
+
                 if (itr == visibleAuras->end() || itr->first != freeSlot)
                 {
                     slot = freeSlot;
@@ -83,15 +89,13 @@ _flags(AFLAG_NONE), _effectsToApply(effMask), _needClientUpdate(false)
         if (slot < MAX_AURAS)
         {
             _slot = slot;
-            GetTarget()->SetVisibleAura(slot, this);
+            GetTarget()->SetVisibleAura(slot, this, GetCasterLevel());
             SetNeedClientUpdate();
             TC_LOG_DEBUG("spells", "Aura: %u Effect: %d put to unit visible auras slot: %u", GetBase()->GetId(), GetEffectMask(), slot);
         }
         else
             TC_LOG_ERROR("spells", "Aura: %u Effect: %d could not find empty unit visible slot", GetBase()->GetId(), GetEffectMask());
     }
-
-    _InitFlags(caster, effMask);
 }
 
 void AuraApplication::_Remove()
@@ -108,7 +112,7 @@ void AuraApplication::_Remove()
         {
             if (GetTarget()->GetVisibleAura(slot) == this)
             {
-                GetTarget()->SetVisibleAura(slot, foundAura);
+                GetTarget()->SetVisibleAura(slot, foundAura, GetCasterLevel());
                 foundAura->SetNeedClientUpdate();
             }
             // set not valid slot for aura - prevent removing other visible aura
@@ -118,10 +122,7 @@ void AuraApplication::_Remove()
 
     // update for out of range group members
     if (slot < MAX_AURAS)
-    {
         GetTarget()->RemoveVisibleAura(slot);
-        ClientUpdate(true);
-    }
 }
 
 void AuraApplication::_InitFlags(Unit* caster, uint8 effMask)
@@ -136,7 +137,7 @@ void AuraApplication::_InitFlags(Unit* caster, uint8 effMask)
         bool negativeFound = false;
         for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (((1<<i) & effMask) && !GetBase()->GetSpellInfo()->IsPositiveEffect(i))
+            if (((1 << i) & effMask) && !GetBase()->GetSpellInfo()->IsPositiveEffect(i))
             {
                 negativeFound = true;
                 break;
@@ -171,20 +172,19 @@ void AuraApplication::_HandleEffect(uint8 effIndex, bool apply)
 
     if (apply)
     {
-        ASSERT(!(_flags & (1<<effIndex)));
-        _flags |= 1<<effIndex;
+        ASSERT(!(_flags & (1 << effIndex)));
+        _flags |= 1 << effIndex;
         aurEff->HandleEffect(this, AURA_EFFECT_HANDLE_REAL, true);
     }
     else
     {
-        ASSERT(_flags & (1<<effIndex));
-        _flags &= ~(1<<effIndex);
+        ASSERT(_flags & (1 << effIndex));
+        _flags &= ~(1 << effIndex);
         aurEff->HandleEffect(this, AURA_EFFECT_HANDLE_REAL, false);
 
         // Remove all triggered by aura spells vs unlimited duration
         aurEff->CleanupTriggeredSpells(GetTarget());
     }
-    SetNeedClientUpdate();
 }
 
 void AuraApplication::UpdateApplyEffectMask(uint8 newEffMask)
@@ -218,18 +218,52 @@ void AuraApplication::UpdateApplyEffectMask(uint8 newEffMask)
     _effectsToApply = newEffMask;
 }
 
-void AuraApplication::BuildUpdatePacket(ByteBuffer& /*data*/, bool /*remove*/) const
-{
-    // To Rewrite
-    // Auras in Unit Fields
-    // SMSG_UPDATE_AURA_DURATION
-    // SMSG_SET_EXTRA_AURA_INFO
-    // SMSG_SET_EXTRA_AURA_INFO_NEED_UPDATE
-}
-
-void AuraApplication::ClientUpdate(bool /*remove*/)
+void AuraApplication::ClientUpdate()
 {
     _needClientUpdate = false;
+
+    if (GetSlot() >= MAX_AURAS || IsPositive())
+        return;
+
+    if (Player* player = GetTarget()->ToPlayer())
+    {
+        Aura const* aura = GetBase();
+
+        WorldPacket data(SMSG_UPDATE_AURA_DURATION, 1 + 4);
+        data << uint8(GetSlot());
+        data << uint32(aura->GetDuration());
+        player->SendDirectMessage(&data);
+
+        data.Initialize(SMSG_SET_EXTRA_AURA_INFO, 8 + 1 + 4 + 4 + 4);
+        data << player->GetPackGUID();
+        data << uint8(GetSlot());
+        data << uint32(aura->GetId());
+        data << uint32(aura->GetMaxDuration());
+        data << uint32(aura->GetDuration());
+        player->SendDirectMessage(&data);
+
+        if (player->IsInWorld())
+        {
+            Unit* caster = aura->GetCaster();
+            if (caster && caster != player && caster->GetTypeId() == TYPEID_PLAYER)
+            {
+                data.SetOpcode(SMSG_SET_EXTRA_AURA_INFO_NEED_UPDATE);
+                caster->ToPlayer()->SendDirectMessage(&data);
+            }
+        }
+    }
+}
+
+void AuraApplication::UpdateVisibleApplication(uint8 stackAmount)
+{
+    uint32 index = GetSlot() / 4;
+    uint32 byte = (GetSlot() % 4) * 8;
+    uint32 auraAppValue = GetTarget()->GetUInt32Value(UNIT_FIELD_AURAAPPS + index);
+    auraAppValue &= ~(0xFF << byte);
+    if (uint8 charges = GetBase()->GetCharges())
+        stackAmount *= charges;
+    auraAppValue |= (uint8(std::min<uint32>(255, stackAmount)) - 1);
+    GetTarget()->SetUInt32Value(UNIT_FIELD_AURAAPPS + index, auraAppValue);
 }
 
 uint8 Aura::BuildEffectMaskForOwner(SpellInfo const* spellProto, uint8 availableEffectMask, WorldObject* owner)
@@ -892,7 +926,6 @@ void Aura::SetCharges(uint8 charges)
 
     m_procCharges = charges;
     m_isUsingCharges = m_procCharges != 0;
-    SetNeedClientUpdateForTargets();
 }
 
 uint8 Aura::CalcMaxCharges(Unit* caster) const
@@ -961,6 +994,10 @@ void Aura::SetStackAmount(uint8 stackAmount)
 
     for (AuraApplication* aurApp : applications)
         if (!aurApp->GetRemoveMode())
+            aurApp->UpdateVisibleApplication(stackAmount);
+
+    for (AuraApplication* aurApp : applications)
+        if (!aurApp->GetRemoveMode())
             HandleAuraSpecificMods(aurApp, caster, false, true);
 
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -970,8 +1007,6 @@ void Aura::SetStackAmount(uint8 stackAmount)
     for (AuraApplication* aurApp : applications)
         if (!aurApp->GetRemoveMode())
             HandleAuraSpecificMods(aurApp, caster, true, true);
-
-    SetNeedClientUpdateForTargets();
 }
 
 bool Aura::ModStackAmount(int32 num, AuraRemoveMode removeMode /*= AURA_REMOVE_BY_DEFAULT*/, bool resetPeriodicTimer /*= true*/)
@@ -1007,7 +1042,6 @@ bool Aura::ModStackAmount(int32 num, AuraRemoveMode removeMode /*= AURA_REMOVE_B
         SetCharges(CalcMaxCharges());
     }
 
-    SetNeedClientUpdateForTargets();
     return false;
 }
 
@@ -1556,10 +1590,7 @@ void Aura::PrepareProcToTrigger(AuraApplication* aurApp, ProcEventInfo& eventInf
 
     // take one charge, aura expiration will be handled in Aura::TriggerProcOnEvent (if needed)
     if (IsUsingCharges() && (!eventInfo.GetSpellInfo() || !eventInfo.GetSpellInfo()->HasAttribute(SPELL_ATTR6_DONT_CONSUME_PROC_CHARGES)))
-    {
         --m_procCharges;
-        SetNeedClientUpdateForTargets();
-    }
 
     SpellProcEntry const* procEntry = sSpellMgr->GetSpellProcEntry(GetId());
     ASSERT(procEntry);
