@@ -588,7 +588,6 @@ void SmartAI::AttackStart(Unit* who)
     if (who && me->Attack(who, mCanAutoAttack))
     {
         me->GetMotionMaster()->Clear(MOTION_SLOT_ACTIVE);
-        me->PauseMovement();
 
         if (mCanCombatMove)
         {
