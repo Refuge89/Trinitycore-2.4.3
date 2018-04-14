@@ -198,6 +198,11 @@ uint32 UnitUpdateFieldFlags[PLAYER_END] =
     UF_FLAG_PUBLIC,                                         // UNIT_VIRTUAL_ITEM_SLOT_ID+1
     UF_FLAG_PUBLIC,                                         // UNIT_VIRTUAL_ITEM_SLOT_ID+2
     UF_FLAG_PUBLIC,                                         // UNIT_VIRTUAL_ITEM_INFO
+    UF_FLAG_PUBLIC,                                         // UNIT_VIRTUAL_ITEM_INFO+1
+    UF_FLAG_PUBLIC,                                         // UNIT_VIRTUAL_ITEM_INFO+2
+    UF_FLAG_PUBLIC,                                         // UNIT_VIRTUAL_ITEM_INFO+3
+    UF_FLAG_PUBLIC,                                         // UNIT_VIRTUAL_ITEM_INFO+4
+    UF_FLAG_PUBLIC,                                         // UNIT_VIRTUAL_ITEM_INFO+5
     UF_FLAG_PUBLIC,                                         // UNIT_FIELD_FLAGS
     UF_FLAG_PUBLIC,                                         // UNIT_FIELD_FLAGS_2
     UF_FLAG_PUBLIC,                                         // UNIT_FIELD_AURA

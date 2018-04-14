@@ -2375,41 +2375,33 @@ void GameObject::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* t
 
             if (index == GAMEOBJECT_DYNAMIC)
             {
-                uint16 dynFlags = 0;
-                int16 pathProgress = -1;
-                switch (GetGoType())
+                if (ActivateToQuest(target))
                 {
-                    case GAMEOBJECT_TYPE_QUESTGIVER:
-                        if (ActivateToQuest(target))
-                            dynFlags |= GO_DYNFLAG_LO_ACTIVATE;
-                        break;
-                    case GAMEOBJECT_TYPE_CHEST:
-                    case GAMEOBJECT_TYPE_GOOBER:
-                        if (ActivateToQuest(target))
-                            dynFlags |= GO_DYNFLAG_LO_ACTIVATE | GO_DYNFLAG_LO_SPARKLE;
-                        else if (targetIsGM)
-                            dynFlags |= GO_DYNFLAG_LO_ACTIVATE;
-                        break;
-                    case GAMEOBJECT_TYPE_GENERIC:
-                        if (ActivateToQuest(target))
-                            dynFlags |= GO_DYNFLAG_LO_SPARKLE;
-                        break;
-                    case GAMEOBJECT_TYPE_TRANSPORT:
-                    case GAMEOBJECT_TYPE_MO_TRANSPORT:
+                    switch (GetGoType())
                     {
-                        if (uint32 transportPeriod = GetTransportPeriod())
-                        {
-                            float timer = float(m_goValue.Transport.PathProgress % transportPeriod);
-                            pathProgress = int16(timer / float(transportPeriod) * 65535.0f);
-                        }
-                        break;
+                        case GAMEOBJECT_TYPE_QUESTGIVER:
+                            fieldBuffer << uint16(GO_DYNFLAG_LO_ACTIVATE);
+                            break;
+                        case GAMEOBJECT_TYPE_CHEST:
+                        case GAMEOBJECT_TYPE_SPELL_FOCUS:
+                        case GAMEOBJECT_TYPE_GOOBER:
+                            if (targetIsGM)
+                                fieldBuffer << uint16(GO_DYNFLAG_LO_ACTIVATE);
+                            else
+                                fieldBuffer << uint16(GO_DYNFLAG_LO_ACTIVATE | GO_DYNFLAG_LO_SPARKLE);
+                            break;
+                        case GAMEOBJECT_TYPE_GENERIC:
+                            fieldBuffer << uint16(GO_DYNFLAG_LO_SPARKLE);
+                            break;
+                        default:
+                            fieldBuffer << uint16(0);
+                            break;
                     }
-                    default:
-                        break;
-                }
 
-                fieldBuffer << uint16(dynFlags);
-                fieldBuffer << int16(pathProgress);
+                    fieldBuffer << uint16(0);
+                }
+                else
+                    fieldBuffer << uint32(0);
             }
             else if (index == GAMEOBJECT_FLAGS)
             {
