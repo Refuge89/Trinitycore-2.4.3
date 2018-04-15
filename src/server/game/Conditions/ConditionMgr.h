@@ -120,7 +120,7 @@ enum ConditionSourceType
     CONDITION_SOURCE_TYPE_GAMEOBJECT_LOOT_TEMPLATE       = 4,
     CONDITION_SOURCE_TYPE_ITEM_LOOT_TEMPLATE             = 5,
     CONDITION_SOURCE_TYPE_MAIL_LOOT_TEMPLATE             = 6,
-    // Condition source type 7 unused
+    CONDITION_SOURCE_TYPE_MILLING_LOOT_TEMPLATE          = 7, // 3.3.5+
     CONDITION_SOURCE_TYPE_PICKPOCKETING_LOOT_TEMPLATE    = 8,
     CONDITION_SOURCE_TYPE_PROSPECTING_LOOT_TEMPLATE      = 9,
     CONDITION_SOURCE_TYPE_REFERENCE_LOOT_TEMPLATE        = 10,
@@ -129,12 +129,12 @@ enum ConditionSourceType
     CONDITION_SOURCE_TYPE_SPELL_IMPLICIT_TARGET          = 13,
     CONDITION_SOURCE_TYPE_GOSSIP_MENU                    = 14,
     CONDITION_SOURCE_TYPE_GOSSIP_MENU_OPTION             = 15,
-    // Condition source type 16 unused
+    CONDITION_SOURCE_TYPE_CREATURE_TEMPLATE_VEHICLE      = 16, // 3.3.5+
     CONDITION_SOURCE_TYPE_SPELL                          = 17,
     CONDITION_SOURCE_TYPE_SPELL_CLICK_EVENT              = 18,
     CONDITION_SOURCE_TYPE_QUEST_AVAILABLE                = 19,
     // Condition source type 20 unused
-    // Condition source type 21 unused
+    CONDITION_SOURCE_TYPE_VEHICLE_SPELL                  = 21, // 3.3.5+
     CONDITION_SOURCE_TYPE_SMART_EVENT                    = 22,
     CONDITION_SOURCE_TYPE_NPC_VENDOR                     = 23,
     CONDITION_SOURCE_TYPE_SPELL_PROC                     = 24,
