@@ -228,8 +228,6 @@ class TC_GAME_API LFGMgr
         // World.cpp
         /// Finish the dungeon for the given group. All check are performed using internal lfg data
         void FinishDungeon(ObjectGuid gguid, uint32 dungeonId, Map const* currMap);
-        /// Loads dungeons from dbc and adds teleport coords
-        void LoadLFGDungeons(bool reload = false);
 
         // Multiple files
         /// Check if given guid applied for random dungeon

@@ -122,59 +122,6 @@ LFGDungeonData const* LFGMgr::GetLFGDungeon(uint32 id)
     return nullptr;
 }
 
-void LFGMgr::LoadLFGDungeons(bool reload /* = false */)
-{
-    LfgDungeonStore.clear();
-
-    // Initialize Dungeon map with data from dbcs
-    for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
-    {
-        LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(i);
-        if (!dungeon)
-            continue;
-
-        switch (dungeon->type)
-        {
-            case LFG_TYPE_DUNGEON:
-            case LFG_TYPE_HEROIC:
-            case LFG_TYPE_RAID:
-            case LFG_TYPE_RANDOM:
-                LfgDungeonStore[dungeon->ID] = LFGDungeonData(dungeon);
-                break;
-        }
-    }
-
-    // Fill all other teleport coords from areatriggers
-    for (LFGDungeonContainer::iterator itr = LfgDungeonStore.begin(); itr != LfgDungeonStore.end(); ++itr)
-    {
-        LFGDungeonData& dungeon = itr->second;
-
-        // No teleport coords in database, load from areatriggers
-        if (dungeon.type != LFG_TYPE_RANDOM && dungeon.x == 0.0f && dungeon.y == 0.0f && dungeon.z == 0.0f)
-        {
-            AreaTrigger const* at = sObjectMgr->GetMapEntranceTrigger(dungeon.map);
-            if (!at)
-            {
-                TC_LOG_ERROR("sql.sql", "Failed to load dungeon %s, cant find areatrigger for map %u", dungeon.name.c_str(), dungeon.map);
-                continue;
-            }
-
-            dungeon.map = at->target_mapId;
-            dungeon.x = at->target_X;
-            dungeon.y = at->target_Y;
-            dungeon.z = at->target_Z;
-            dungeon.o = at->target_Orientation;
-        }
-
-        if (dungeon.type != LFG_TYPE_RANDOM)
-            CachedDungeonMapStore[dungeon.group].insert(dungeon.id);
-        CachedDungeonMapStore[0].insert(dungeon.id);
-    }
-
-    if (reload)
-        CachedDungeonMapStore.clear();
-}
-
 LFGMgr* LFGMgr::instance()
 {
     static LFGMgr instance;
