@@ -195,9 +195,6 @@ void Group::LoadGroupFromDB(Field* fields)
         m_dungeonDifficulty = Difficulty(diff);
 
     m_masterLooterGuid = ObjectGuid(HighGuid::Player, fields[15].GetUInt32());
-
-    if (m_groupType & GROUPTYPE_LFG)
-        sLFGMgr->_LoadFromDB(fields, GetGUID());
 }
 
 void Group::LoadMemberFromDB(ObjectGuid::LowType guidLow, uint8 memberFlags, uint8 subgroup, uint8 roles)
@@ -221,8 +218,6 @@ void Group::LoadMemberFromDB(ObjectGuid::LowType guidLow, uint8 memberFlags, uin
     m_memberSlots.push_back(member);
 
     SubGroupCounterIncrease(subgroup);
-
-    sLFGMgr->SetupGroupMember(member.guid, GetGUID());
 }
 
 void Group::ConvertToLFG()
@@ -597,17 +592,6 @@ bool Group::RemoveMember(ObjectGuid guid, RemoveMethod const& method /*= GROUP_R
         }
 
         SendUpdate();
-
-        if (isLFGGroup() && GetMembersCount() == 1)
-        {
-            Player* leader = ObjectAccessor::FindConnectedPlayer(GetLeaderGUID());
-            uint32 mapId = sLFGMgr->GetDungeonMapId(GetGUID());
-            if (!mapId || !leader || (leader->IsAlive() && leader->GetMapId() != mapId))
-            {
-                Disband();
-                return false;
-            }
-        }
 
         if (m_memberMgr.getSize() < ((isLFGGroup() || isBGGroup()) ? 1u : 2u))
             Disband();
@@ -1153,7 +1137,7 @@ void Group::NeedBeforeGreed(Loot* loot, WorldObject* lootedObject)
                     if (itr->second == PASS)
                         SendLootRoll(newitemGUID, p->GetGUID(), 128, ROLL_PASS, *r);
                     else
-                        SendLootStartRollToPlayer(60000, p, p->CanRollForItemInLFG(item, lootedObject) == EQUIP_ERR_OK, *r);
+                        SendLootStartRollToPlayer(60000, p, true, *r);
                 }
 
                 RollId.push_back(r);
@@ -1216,7 +1200,7 @@ void Group::NeedBeforeGreed(Loot* loot, WorldObject* lootedObject)
                 if (itr->second == PASS)
                     SendLootRoll(newitemGUID, p->GetGUID(), 128, ROLL_PASS, *r);
                 else
-                    SendLootStartRollToPlayer(60000, p, p->CanRollForItemInLFG(item, lootedObject) == EQUIP_ERR_OK, *r);
+                    SendLootStartRollToPlayer(60000, p, true, *r);
             }
 
             RollId.push_back(r);
@@ -1897,7 +1881,7 @@ GroupJoinBattlegroundResult Group::CanJoinBattlegroundQueue(Battleground const* 
         if (!member->HasFreeBattlegroundQueueId())
             return ERR_BATTLEGROUND_TOO_MANY_QUEUES;        // not blizz-like
         // check if someone in party is using dungeon system
-        if (member->isUsingLfg())
+        if (member->IsUsingLfg())
             return ERR_LFG_CANT_USE_BATTLEGROUND;
         // check Freeze debuff
         if (member->HasAura(9454))

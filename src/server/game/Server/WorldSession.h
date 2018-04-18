@@ -55,17 +55,9 @@ struct MovementInfo;
 struct Petition;
 struct TradeStatusInfo;
 
-namespace lfg
-{
-struct LfgJoinResultData;
-struct LfgPlayerBoot;
-struct LfgProposal;
-struct LfgPlayerRewardData;
-}
-
 namespace rbac
 {
-class RBACData;
+    class RBACData;
 }
 
 namespace WorldPackets
@@ -827,6 +819,13 @@ class TC_GAME_API WorldSession
         void HandleLfgSetCommentOpcode(WorldPacket& recvData);
         void HandleLfgJoinOpcode(WorldPacket& recvData);
         void HandleLfgLeaveOpcode(WorldPacket& recvData);
+        void HandleLfgSetAutoFillOpcode(WorldPacket& recvData);
+        void HandleLfgClearAutoFillOpcode(WorldPacket& recvData);
+        void HandleClearLfgOpcode(WorldPacket& recvData);
+        void HandleClearLfmOpcode(WorldPacket& recvData);
+        void HandleLfgSetLfm(WorldPacket& recvData);
+        void HandleLfgSetLfg(WorldPacket& recvData);
+        void HandleLfgInfoOpcode(WorldPacket& recvData);
 
         void SendLfgDisabled();
 

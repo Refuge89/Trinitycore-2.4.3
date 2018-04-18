@@ -39,9 +39,10 @@ class TC_GAME_API LfgPlayerData
         void SetGroup(ObjectGuid group);
 
         // Queue
-        void SetRoles(uint8 roles);
+        void SetAutoJoin(bool autoJoin);
+        void SetAutoFill(bool autoFill);
         void SetComment(std::string const& comment);
-        void SetSelectedDungeons(LfgDungeonSet const& dungeons);
+        void SetSelectedDungeons(uint32 slot, uint32 dungeon);
 
         // General
         LfgState GetState() const;
@@ -50,22 +51,24 @@ class TC_GAME_API LfgPlayerData
         ObjectGuid GetGroup() const;
 
         // Queue
-        uint8 GetRoles() const;
+        bool IsAutoJoin() const;
+        bool IsAutoFill() const;
         std::string const& GetComment() const;
-        LfgDungeonSet const& GetSelectedDungeons() const;
+        LfgDungeonSet GetSelectedDungeons() const;
+        bool HasDungeonSelected(uint32 dungeon) const;
 
     private:
         // General
-        LfgState m_State;                                  ///< State if group in LFG
-        LfgState m_OldState;                               ///< Old State - Used to restore state after failed Rolecheck/Proposal
+        LfgState _state;
+        LfgState _oldState;
         // Player
-        uint8 m_Team;                                      ///< Player team - determines the queue to join
-        ObjectGuid m_Group;                                ///< Original group of player when joined LFG
-
+        uint8 _team;
+        ObjectGuid _group;
         // Queue
-        uint8 m_Roles;                                     ///< Roles the player selected when joined LFG
-        std::string m_Comment;                             ///< Player comment used when joined LFG
-        LfgDungeonSet m_SelectedDungeons;                  ///< Selected Dungeons when joined LFG
+        bool _autoJoin;
+        bool _autoFill;
+        std::string _comment;
+        uint32 _selectedDungeons[MAX_LOOKING_FOR_GROUP_SLOT];
 };
 
 } // namespace lfg

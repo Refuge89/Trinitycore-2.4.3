@@ -201,19 +201,6 @@ struct boss_coren_direbrew : public BossAI
             events.ScheduleEvent(EVENT_RESPAWN_URSULA, Seconds(1));
     }
 
-    void JustDied(Unit* /*killer*/) override
-    {
-        _JustDied();
-
-        Map::PlayerList const& players = me->GetMap()->GetPlayers();
-        if (!players.isEmpty())
-        {
-            if (Group* group = players.begin()->GetSource()->GetGroup())
-                if (group->isLFGGroup())
-                    sLFGMgr->FinishDungeon(group->GetGUID(), 287, me->GetMap());
-        }
-    }
-
     void SummonSister(uint32 entry)
     {
         if (Creature* sister = me->SummonCreature(entry, me->GetPosition(), TEMPSUMMON_DEAD_DESPAWN))

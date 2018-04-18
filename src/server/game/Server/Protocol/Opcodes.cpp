@@ -26,27 +26,27 @@
 template<class PacketClass, void(WorldSession::*HandlerFunction)(PacketClass&)>
 class PacketHandler : public ClientOpcodeHandler
 {
-public:
-    PacketHandler(char const* name, SessionStatus status, PacketProcessing processing) : ClientOpcodeHandler(name, status, processing) { }
+    public:
+        PacketHandler(char const* name, SessionStatus status, PacketProcessing processing) : ClientOpcodeHandler(name, status, processing) { }
 
-    void Call(WorldSession* session, WorldPacket& packet) const override
-    {
-        PacketClass nicePacket(std::move(packet));
-        nicePacket.Read();
-        (session->*HandlerFunction)(nicePacket);
-    }
+        void Call(WorldSession* session, WorldPacket& packet) const override
+        {
+            PacketClass nicePacket(std::move(packet));
+            nicePacket.Read();
+            (session->*HandlerFunction)(nicePacket);
+        }
 };
 
 template<void(WorldSession::*HandlerFunction)(WorldPacket&)>
 class PacketHandler<WorldPacket, HandlerFunction> : public ClientOpcodeHandler
 {
-public:
-    PacketHandler(char const* name, SessionStatus status, PacketProcessing processing) : ClientOpcodeHandler(name, status, processing) { }
+    public:
+        PacketHandler(char const* name, SessionStatus status, PacketProcessing processing) : ClientOpcodeHandler(name, status, processing) { }
 
-    void Call(WorldSession* session, WorldPacket& packet) const override
-    {
-        (session->*HandlerFunction)(packet);
-    }
+        void Call(WorldSession* session, WorldPacket& packet) const override
+        {
+            (session->*HandlerFunction)(packet);
+        }
 };
 
 OpcodeTable opcodeTable;
@@ -640,8 +640,8 @@ void OpcodeTable::Initialize()
     /*0x1FC*/ DEFINE_SERVER_OPCODE_HANDLER(SMSG_ENVIRONMENTALDAMAGELOG,    STATUS_NEVER);
     /*0x1FD*/ DEFINE_HANDLER(CMSG_RWHOIS_OBSOLETE,                         STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     /*0x1FE*/ DEFINE_SERVER_OPCODE_HANDLER(SMSG_RWHOIS,                    STATUS_NEVER);
-    /*0x1FF*/ DEFINE_SERVER_OPCODE_HANDLER(MSG_LOOKING_FOR_GROUP,          STATUS_NEVER);
-    /*0x200*/ DEFINE_HANDLER(CMSG_SET_LOOKING_FOR_GROUP,                   STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
+    /*0x1FF*/ DEFINE_HANDLER(MSG_LOOKING_FOR_GROUP,                        STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLfgInfoOpcode             );
+    /*0x200*/ DEFINE_HANDLER(CMSG_SET_LOOKING_FOR_GROUP,                   STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLfgSetLfg                 );
     /*0x201*/ DEFINE_HANDLER(CMSG_UNLEARN_SPELL,                           STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     /*0x202*/ DEFINE_HANDLER(CMSG_UNLEARN_SKILL,                           STATUS_LOGGEDIN, PROCESS_INPLACE,      &WorldSession::HandleUnlearnSkillOpcode        );
     /*0x203*/ DEFINE_SERVER_OPCODE_HANDLER(SMSG_REMOVED_SPELL,             STATUS_NEVER);
@@ -991,14 +991,14 @@ void OpcodeTable::Initialize()
     /*0x35B*/ DEFINE_SERVER_OPCODE_HANDLER(SMSG_ARENA_TEAM_STATS,          STATUS_NEVER);
     /*0x35C*/ DEFINE_HANDLER(CMSG_LFG_JOIN,                                STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLfgJoinOpcode             );
     /*0x35D*/ DEFINE_HANDLER(CMSG_LFG_LEAVE,                               STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLfgLeaveOpcode            );
-    /*0x35E*/ DEFINE_HANDLER(CMSG_LFM_SET_AUTOFILL,                        STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
-    /*0x35F*/ DEFINE_HANDLER(CMSG_LFM_CLEAR_AUTOFILL,                      STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
+    /*0x35E*/ DEFINE_HANDLER(CMSG_LFM_SET_AUTOFILL,                        STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLfgSetAutoFillOpcode      );
+    /*0x35F*/ DEFINE_HANDLER(CMSG_LFM_CLEAR_AUTOFILL,                      STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLfgClearAutoFillOpcode    );
     /*0x360*/ DEFINE_HANDLER(CMSG_ACCEPT_LFG_MATCH,                        STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     /*0x361*/ DEFINE_HANDLER(CMSG_DECLINE_LFG_MATCH,                       STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     /*0x362*/ DEFINE_HANDLER(CMSG_CANCEL_PENDING_LFG,                      STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
-    /*0x363*/ DEFINE_HANDLER(CMSG_CLEAR_LOOKING_FOR_GROUP,                 STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
-    /*0x364*/ DEFINE_HANDLER(CMSG_CLEAR_LOOKING_FOR_MORE,                  STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
-    /*0x365*/ DEFINE_HANDLER(CMSG_SET_LOOKING_FOR_MORE,                    STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
+    /*0x363*/ DEFINE_HANDLER(CMSG_CLEAR_LOOKING_FOR_GROUP,                 STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleClearLfgOpcode            );
+    /*0x364*/ DEFINE_HANDLER(CMSG_CLEAR_LOOKING_FOR_MORE,                  STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleClearLfmOpcode            );
+    /*0x365*/ DEFINE_HANDLER(CMSG_SET_LOOKING_FOR_MORE,                    STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLfgSetLfm                 );
     /*0x366*/ DEFINE_HANDLER(CMSG_SET_LFG_COMMENT,                         STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLfgSetCommentOpcode       );
     /*0x367*/ DEFINE_SERVER_OPCODE_HANDLER(SMSG_LFG_TIMEDOUT,              STATUS_NEVER);
     /*0x368*/ DEFINE_SERVER_OPCODE_HANDLER(SMSG_LFG_OTHER_TIMEDOUT,        STATUS_NEVER);

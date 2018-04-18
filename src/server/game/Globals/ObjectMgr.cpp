@@ -5460,12 +5460,6 @@ void ObjectMgr::LoadInstanceEncounters()
         dungeonEncounter.encounterIndex = fields[6].GetUInt32();
         dungeonEncounter.encounterName = fields[7].GetString();
 
-        if (lastEncounterDungeon && !sLFGMgr->GetLFGDungeonEntry(lastEncounterDungeon))
-        {
-            TC_LOG_ERROR("sql.sql", "Table `instance_encounters` has an encounter %u marked as final for invalid dungeon id %u, skipped!", entry, lastEncounterDungeon);
-            continue;
-        }
-
         auto itr = dungeonLastBosses.find(lastEncounterDungeon);
         if (lastEncounterDungeon)
         {

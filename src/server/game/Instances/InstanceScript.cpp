@@ -637,25 +637,6 @@ void InstanceScript::UpdateEncounterState(EncounterCreditType type, uint32 credi
             }
         }
     }
-
-    if (dungeonId)
-    {
-        Map::PlayerList const& players = instance->GetPlayers();
-        for (auto const& ref : players)
-        {
-            if (Player* player = ref.GetSource())
-            {
-                if (Group* grp = player->GetGroup())
-                {
-                    if (grp->isLFGGroup())
-                    {
-                        sLFGMgr->FinishDungeon(grp->GetGUID(), dungeonId, instance);
-                        return;
-                    }
-                }
-            }
-        }
-    }
 }
 
 void InstanceScript::UpdateEncounterStateForKilledCreature(uint32 creatureId, Unit* source)

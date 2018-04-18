@@ -205,14 +205,6 @@ public:
             if (Creature* frozenCore = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_FROZEN_CORE)))
                 Unit::Kill(me, frozenCore);
 
-            Map::PlayerList const& players = me->GetMap()->GetPlayers();
-            if (!players.isEmpty())
-            {
-                if (Group* group = players.begin()->GetSource()->GetGroup())
-                    if (group->isLFGGroup())
-                        sLFGMgr->FinishDungeon(group->GetGUID(), 286, me->GetMap());
-            }
-
             _JustDied();
         }
 

@@ -1015,7 +1015,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool HasItemTotemCategory(uint32 TotemCategory) const;
         InventoryResult CanUseItem(ItemTemplate const* pItem) const;
         InventoryResult CanUseAmmo(uint32 item) const;
-        InventoryResult CanRollForItemInLFG(ItemTemplate const* item, WorldObject const* lootedObject) const;
         Item* StoreNewItem(ItemPosCountVec const& pos, uint32 item, bool update, int32 randomPropertyId = 0, GuidSet const& allowedLooters = GuidSet());
         Item* StoreItem(ItemPosCountVec const& pos, Item* pItem, bool update);
         Item* EquipNewItem(uint16 pos, uint32 item, bool update);
@@ -1910,11 +1909,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void SetAtLoginFlag(AtLoginFlags f) { m_atLoginFlags |= f; }
         void RemoveAtLoginFlag(AtLoginFlags flags, bool persist = false);
 
-        bool isUsingLfg() const;
-        bool inRandomLfgDungeon() const;
-
-        bool IsLfgAutoJoin() const { return LfgAutoJoin; }
-        void SetLfgAutoJoin(bool autoJoin) { LfgAutoJoin = autoJoin; }
+        bool IsUsingLfg() const;
 
         typedef std::set<uint32> DFQuestsDoneList;
         DFQuestsDoneList m_DFQuests;
@@ -2315,8 +2310,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         uint32 m_DelayedOperations;
         bool m_bCanDelayTeleport;
         bool m_bHasDelayedTeleport;
-
-        bool LfgAutoJoin;
 
         // Temporary removed pet cache
         uint32 m_temporaryUnsummonedPetNumber;

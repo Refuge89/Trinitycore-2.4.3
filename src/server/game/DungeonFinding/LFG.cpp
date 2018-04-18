@@ -49,9 +49,6 @@ std::string GetStateString(LfgState state)
         case LFG_STATE_QUEUED:
             entry = LANG_LFG_STATE_QUEUED;
             break;
-        case LFG_STATE_PROPOSAL:
-            entry = LANG_LFG_STATE_PROPOSAL;
-            break;
         case LFG_STATE_DUNGEON:
             entry = LANG_LFG_STATE_DUNGEON;
             break;

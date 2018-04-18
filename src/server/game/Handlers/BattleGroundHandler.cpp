@@ -126,7 +126,7 @@ void WorldSession::HandleBattlemasterJoinOpcode(WorldPacket& recvData)
     // check queue conditions
     if (!joinAsGroup)
     {
-        if (GetPlayer()->isUsingLfg())
+        if (GetPlayer()->IsUsingLfg())
         {
             // player is using dungeon finder or raid finder
             WorldPacket data;

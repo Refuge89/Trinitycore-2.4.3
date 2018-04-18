@@ -20,98 +20,113 @@
 namespace lfg
 {
 
-LfgPlayerData::LfgPlayerData(): m_State(LFG_STATE_NONE), m_OldState(LFG_STATE_NONE),
-    m_Team(0), m_Group(), m_Roles(0), m_Comment("")
-{ }
+LfgPlayerData::LfgPlayerData(): _state(LFG_STATE_NONE), _oldState(LFG_STATE_NONE),
+    _team(0), _group(), _comment("")
+{
+    memset(_selectedDungeons, 0, sizeof(_selectedDungeons));
+}
 
 LfgPlayerData::~LfgPlayerData() { }
 
 void LfgPlayerData::SetState(LfgState state)
 {
-    switch (state)
+    if (state == LFG_STATE_NONE)
     {
-        case LFG_STATE_NONE:
-        case LFG_STATE_FINISHED_DUNGEON:
-            m_Roles = 0;
-            m_SelectedDungeons.clear();
-            m_Comment.clear();
-            // No break on purpose
-        case LFG_STATE_DUNGEON:
-            m_OldState = state;
-            // No break on purpose
-        default:
-            m_State = state;
+        memset(_selectedDungeons, 0, sizeof(_selectedDungeons));
+        _oldState = state;
+        _state = state;
     }
 }
 
 void LfgPlayerData::RestoreState()
 {
-    if (m_OldState == LFG_STATE_NONE)
-    {
-        m_SelectedDungeons.clear();
-        m_Roles = 0;
-    }
-    m_State = m_OldState;
+    if (_oldState == LFG_STATE_NONE)
+        memset(_selectedDungeons, 0, sizeof(_selectedDungeons));
+
+    _state = _oldState;
 }
 
 void LfgPlayerData::SetTeam(uint8 team)
 {
-    m_Team = team;
+    _team = team;
 }
 
 void LfgPlayerData::SetGroup(ObjectGuid group)
 {
-    m_Group = group;
+    _group = group;
 }
 
-void LfgPlayerData::SetRoles(uint8 roles)
+void LfgPlayerData::SetAutoJoin(bool autoJoin)
 {
-    m_Roles = roles;
+    _autoJoin = autoJoin;
+}
+
+void LfgPlayerData::SetAutoFill(bool autoFill)
+{
+    _autoFill = autoFill;
 }
 
 void LfgPlayerData::SetComment(std::string const& comment)
 {
-    m_Comment = comment;
+    _comment = comment;
 }
 
-void LfgPlayerData::SetSelectedDungeons(LfgDungeonSet const& dungeons)
+void LfgPlayerData::SetSelectedDungeons(uint32 slot, uint32 dungeon)
 {
-    m_SelectedDungeons = dungeons;
+    _selectedDungeons[slot] = dungeon;
 }
 
 LfgState LfgPlayerData::GetState() const
 {
-    return m_State;
+    return _state;
 }
 
 LfgState LfgPlayerData::GetOldState() const
 {
-    return m_OldState;
+    return _oldState;
 }
 
 uint8 LfgPlayerData::GetTeam() const
 {
-    return m_Team;
+    return _team;
 }
 
 ObjectGuid LfgPlayerData::GetGroup() const
 {
-    return m_Group;
+    return _group;
 }
 
-uint8 LfgPlayerData::GetRoles() const
+bool LfgPlayerData::IsAutoJoin() const
 {
-    return m_Roles;
+    return _autoJoin;
+}
+
+bool LfgPlayerData::IsAutoFill() const
+{
+    return _autoFill;
 }
 
 std::string const& LfgPlayerData::GetComment() const
 {
-    return m_Comment;
+    return _comment;
 }
 
-LfgDungeonSet const& LfgPlayerData::GetSelectedDungeons() const
+LfgDungeonSet LfgPlayerData::GetSelectedDungeons() const
 {
-    return m_SelectedDungeons;
+    LfgDungeonSet dungeons;
+    for (uint8 i = 0; i < MAX_LOOKING_FOR_GROUP_SLOT; ++i)
+        dungeons.insert(_selectedDungeons[i]);
+
+    return dungeons;
+}
+
+bool LfgPlayerData::HasDungeonSelected(uint32 dungeon) const
+{
+    for (uint8 i = 0; i < MAX_LOOKING_FOR_GROUP_SLOT; ++i)
+        if (_selectedDungeons[i] == dungeon)
+            return true;
+
+    return false;
 }
 
 } // namespace lfg

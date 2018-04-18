@@ -2316,9 +2316,6 @@ void World::Update(uint32 diff)
         Player::DeleteOldCharacters();
     }
 
-    sLFGMgr->Update(diff);
-    sWorldUpdateTime.RecordUpdateTimeDuration("UpdateLFGMgr");
-
     // execute callbacks from sql queries that were queued recently
     ProcessQueryCallbacks();
     sWorldUpdateTime.RecordUpdateTimeDuration("ProcessQueryCallbacks");
