@@ -322,6 +322,7 @@ uint32 UnitUpdateFieldFlags[PLAYER_END] =
     UF_FLAG_OWNER,                                          // UNIT_FIELD_PETEXPERIENCE
     UF_FLAG_OWNER,                                          // UNIT_FIELD_PETNEXTLEVELEXP
     UF_FLAG_DYNAMIC,                                        // UNIT_DYNAMIC_FLAGS
+    UF_FLAG_PUBLIC,                                         // UNIT_CHANNEL_SPELL
     UF_FLAG_PUBLIC,                                         // UNIT_MOD_CAST_SPEED
     UF_FLAG_PUBLIC,                                         // UNIT_CREATED_BY_SPELL
     UF_FLAG_DYNAMIC,                                        // UNIT_NPC_FLAGS
