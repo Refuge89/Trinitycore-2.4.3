@@ -63,112 +63,95 @@ bool readCamera(M2Camera const* cam, uint32 buffSize, M2Header const* header, Ci
     DBCData.z = dbcentry->Origin.Z;
     DBCData.w = dbcentry->OriginFacing;
 
+    // Extract Target positions
+    if (cam->target_positions.timestamps.offset_elements + sizeof(M2Array) > buffSize)
+        return false;
+
+    uint32 const* targTimestamps = reinterpret_cast<uint32 const*>(buffer + cam->target_positions.timestamps.offset_elements);
+    M2SplineKey<G3D::Vector3> const* targPositions = reinterpret_cast<M2SplineKey<G3D::Vector3> const*>(buffer + cam->target_positions.timestamps.offset_elements);
+
+    // Read the data for this set
+    uint32 currPos = cam->target_positions.timestamps.offset_elements;
     // Read target locations, only so that we can calculate orientation
     for (uint32 k = 0; k < cam->target_positions.timestamps.number; ++k)
     {
-        // Extract Target positions
-        if (cam->target_positions.timestamps.offset_elements + sizeof(M2Array) > buffSize)
+        if (currPos + sizeof(M2SplineKey<G3D::Vector3>) > buffSize)
             return false;
-        M2Array const* targTsArray = reinterpret_cast<M2Array const*>(buffer + cam->target_positions.timestamps.offset_elements);
-        if (targTsArray->offset_elements + sizeof(uint32) > buffSize || cam->target_positions.values.offset_elements + sizeof(M2Array) > buffSize)
-            return false;
-        uint32 const* targTimestamps = reinterpret_cast<uint32 const*>(buffer + targTsArray->offset_elements);
-        M2Array const* targArray = reinterpret_cast<M2Array const*>(buffer + cam->target_positions.values.offset_elements);
+        // Translate co-ordinates
+        G3D::Vector3 newPos = TranslateLocation(&DBCData, &cam->target_position_base, &targPositions->p0);
 
-        if (targArray->offset_elements + sizeof(M2SplineKey<G3D::Vector3>) > buffSize)
-            return false;
-        M2SplineKey<G3D::Vector3> const* targPositions = reinterpret_cast<M2SplineKey<G3D::Vector3> const*>(buffer + targArray->offset_elements);
-
-        // Read the data for this set
-        uint32 currPos = targArray->offset_elements;
-        for (uint32 i = 0; i < targTsArray->number; ++i)
-        {
-            if (currPos + sizeof(M2SplineKey<G3D::Vector3>) > buffSize)
-                return false;
-            // Translate co-ordinates
-            G3D::Vector3 newPos = TranslateLocation(&DBCData, &cam->target_position_base, &targPositions->p0);
-
-            // Add to vector
-            FlyByCamera thisCam;
-            thisCam.timeStamp = targTimestamps[i];
-            thisCam.locations.Relocate(newPos.x, newPos.y, newPos.z, 0.0f);
-            targetcam.push_back(thisCam);
-            targPositions++;
-            currPos += sizeof(M2SplineKey<G3D::Vector3>);
-        }
+        // Add to vector
+        FlyByCamera thisCam;
+        thisCam.timeStamp = targTimestamps[k];
+        thisCam.locations.Relocate(newPos.x, newPos.y, newPos.z, 0.0f);
+        targetcam.push_back(thisCam);
+        targPositions++;
+        currPos += sizeof(M2SplineKey<G3D::Vector3>);
     }
 
+    // Extract Camera positions for this set
+    if (cam->positions.timestamps.offset_elements + sizeof(M2Array) > buffSize)
+        return false;
+
+    uint32 const* posTimestamps = reinterpret_cast<uint32 const*>(buffer + cam->positions.timestamps.offset_elements);
+    M2SplineKey<G3D::Vector3> const* positions = reinterpret_cast<M2SplineKey<G3D::Vector3> const*>(buffer + cam->positions.timestamps.offset_elements);
+
+    // Read the data for this set
+    currPos = cam->positions.timestamps.offset_elements;
     // Read camera positions and timestamps (translating first position of 3 only, we don't need to translate the whole spline)
     for (uint32 k = 0; k < cam->positions.timestamps.number; ++k)
     {
-        // Extract Camera positions for this set
-        if (cam->positions.timestamps.offset_elements + sizeof(M2Array) > buffSize)
+        if (currPos + sizeof(M2SplineKey<G3D::Vector3>) > buffSize)
             return false;
-        M2Array const* posTsArray = reinterpret_cast<M2Array const*>(buffer + cam->positions.timestamps.offset_elements);
-        if (posTsArray->offset_elements + sizeof(uint32) > buffSize || cam->positions.values.offset_elements + sizeof(M2Array) > buffSize)
-            return false;
-        uint32 const* posTimestamps = reinterpret_cast<uint32 const*>(buffer + posTsArray->offset_elements);
-        M2Array const* posArray = reinterpret_cast<M2Array const*>(buffer + cam->positions.values.offset_elements);
-        if (posArray->offset_elements + sizeof(M2SplineKey<G3D::Vector3>) > buffSize)
-            return false;
-        M2SplineKey<G3D::Vector3> const* positions = reinterpret_cast<M2SplineKey<G3D::Vector3> const*>(buffer + posArray->offset_elements);
+        // Translate co-ordinates
+        G3D::Vector3 newPos = TranslateLocation(&DBCData, &cam->position_base, &positions->p0);
 
-        // Read the data for this set
-        uint32 currPos = posArray->offset_elements;
-        for (uint32 i = 0; i < posTsArray->number; ++i)
+        // Add to vector
+        FlyByCamera thisCam;
+        thisCam.timeStamp = posTimestamps[k];
+        thisCam.locations.Relocate(newPos.x, newPos.y, newPos.z);
+
+        if (targetcam.size() > 0)
         {
-            if (currPos + sizeof(M2SplineKey<G3D::Vector3>) > buffSize)
-                return false;
-            // Translate co-ordinates
-            G3D::Vector3 newPos = TranslateLocation(&DBCData, &cam->position_base, &positions->p0);
+            // Find the target camera before and after this camera
+            FlyByCamera lastTarget;
+            FlyByCamera nextTarget;
 
-            // Add to vector
-            FlyByCamera thisCam;
-            thisCam.timeStamp = posTimestamps[i];
-            thisCam.locations.Relocate(newPos.x, newPos.y, newPos.z);
-
-            if (targetcam.size() > 0)
+            // Pre-load first item
+            lastTarget = targetcam[0];
+            nextTarget = targetcam[0];
+            for (uint32 j = 0; j < targetcam.size(); ++j)
             {
-                // Find the target camera before and after this camera
-                FlyByCamera lastTarget;
-                FlyByCamera nextTarget;
+                nextTarget = targetcam[j];
+                if (targetcam[j].timeStamp > posTimestamps[k])
+                    break;
 
-                // Pre-load first item
-                lastTarget = targetcam[0];
-                nextTarget = targetcam[0];
-                for (uint32 j = 0; j < targetcam.size(); ++j)
-                {
-                    nextTarget = targetcam[j];
-                    if (targetcam[j].timeStamp > posTimestamps[i])
-                        break;
-
-                    lastTarget = targetcam[j];
-                }
-
-                float x, y, z;
-                lastTarget.locations.GetPosition(x, y, z);
-
-                // Now, the timestamps for target cam and position can be different. So, if they differ we interpolate
-                if (lastTarget.timeStamp != posTimestamps[i])
-                {
-                    uint32 timeDiffTarget = nextTarget.timeStamp - lastTarget.timeStamp;
-                    uint32 timeDiffThis = posTimestamps[i] - lastTarget.timeStamp;
-                    float xDiff = nextTarget.locations.GetPositionX() - lastTarget.locations.GetPositionX();
-                    float yDiff = nextTarget.locations.GetPositionY() - lastTarget.locations.GetPositionY();
-                    float zDiff = nextTarget.locations.GetPositionZ() - lastTarget.locations.GetPositionZ();
-                    x = lastTarget.locations.GetPositionX() + (xDiff * (float(timeDiffThis) / float(timeDiffTarget)));
-                    y = lastTarget.locations.GetPositionY() + (yDiff * (float(timeDiffThis) / float(timeDiffTarget)));
-                    z = lastTarget.locations.GetPositionZ() + (zDiff * (float(timeDiffThis) / float(timeDiffTarget)));
-                }
-                float xDiff = x - thisCam.locations.GetPositionX();
-                float yDiff = y - thisCam.locations.GetPositionY();
-                thisCam.locations.SetOrientation(std::atan2(yDiff, xDiff));
+                lastTarget = targetcam[j];
             }
 
-            cameras.push_back(thisCam);
-            positions++;
-            currPos += sizeof(M2SplineKey<G3D::Vector3>);
+            float x, y, z;
+            lastTarget.locations.GetPosition(x, y, z);
+
+            // Now, the timestamps for target cam and position can be different. So, if they differ we interpolate
+            if (lastTarget.timeStamp != posTimestamps[k])
+            {
+                uint32 timeDiffTarget = nextTarget.timeStamp - lastTarget.timeStamp;
+                uint32 timeDiffThis = posTimestamps[k] - lastTarget.timeStamp;
+                float xDiff = nextTarget.locations.GetPositionX() - lastTarget.locations.GetPositionX();
+                float yDiff = nextTarget.locations.GetPositionY() - lastTarget.locations.GetPositionY();
+                float zDiff = nextTarget.locations.GetPositionZ() - lastTarget.locations.GetPositionZ();
+                x = lastTarget.locations.GetPositionX() + (xDiff * (float(timeDiffThis) / float(timeDiffTarget)));
+                y = lastTarget.locations.GetPositionY() + (yDiff * (float(timeDiffThis) / float(timeDiffTarget)));
+                z = lastTarget.locations.GetPositionZ() + (zDiff * (float(timeDiffThis) / float(timeDiffTarget)));
+            }
+            float xDiff = x - thisCam.locations.GetPositionX();
+            float yDiff = y - thisCam.locations.GetPositionY();
+            thisCam.locations.SetOrientation(std::atan2(yDiff, xDiff));
         }
+
+        cameras.push_back(thisCam);
+        positions++;
+        currPos += sizeof(M2SplineKey<G3D::Vector3>);
     }
 
     sFlyByCameraStore[dbcentry->ID] = cameras;
@@ -249,7 +232,7 @@ void LoadM2Cameras(std::string const& dataPath)
         // Get camera(s) - Main header, then dump them.
         M2Camera const* cam = reinterpret_cast<M2Camera const*>(buffer.data() + header->ofsCameras);
         if (!readCamera(cam, fileSize, header, dbcentry))
-            TC_LOG_ERROR("server.loading", "Camera file %s is damaged. Camera references position beyond file end", filename.string().c_str());
+            TC_LOG_ERROR("server.loading", "Read camera failed camera file %s is damaged. Camera references position beyond file end", filename.string().c_str());
     }
 
     TC_LOG_INFO("server.loading", ">> Loaded %u cinematic waypoint sets in %u ms", (uint32)sFlyByCameraStore.size(), GetMSTimeDiffToNow(oldMSTime));

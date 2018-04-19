@@ -961,7 +961,7 @@ void ExtractMapsFromMpq(uint32 build)
 
 bool ExtractFile( char const* mpq_name, std::string const& filename )
 {
-    FILE *output = fopen(filename.c_str(), "wb");
+    FILE* output = fopen(filename.c_str(), "wb");
     if(!output)
     {
         printf("Can't create the output file '%s'\n", filename.c_str());
