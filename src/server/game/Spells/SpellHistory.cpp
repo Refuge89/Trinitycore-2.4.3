@@ -246,7 +246,7 @@ void SpellHistory::WritePacket<Player>(WorldPacket& packet) const
 
     for (auto const& spellCooldown : _spellCooldowns)
     {
-        packet << uint32(spellCooldown.first);
+        packet << uint16(spellCooldown.first);
         packet << uint16(spellCooldown.second.ItemId);        // cast item id
         packet << uint16(spellCooldown.second.CategoryId);    // spell category
 
