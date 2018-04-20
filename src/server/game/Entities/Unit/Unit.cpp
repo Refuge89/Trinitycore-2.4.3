@@ -11250,11 +11250,7 @@ void Unit::KnockbackFrom(float x, float y, float speedXY, float speedZ)
         }
     }
 
-    if (!player)
-    {
-        GetMotionMaster()->MoveKnockbackFrom(x, y, speedXY, speedZ);
-    }
-    else
+    if (player)
     {
         float vcos, vsin;
         GetSinCos(x, y, vsin, vcos);

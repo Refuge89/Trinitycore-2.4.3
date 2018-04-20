@@ -46,7 +46,6 @@ namespace Movement
     {
         MoveSplineFlag splineflags = move_spline.splineflags;
 
-        data << uint8(0);                                       // sets/unsets MOVEMENTFLAG2_UNK7 (0x40)
         data << move_spline.spline.getPoint(move_spline.spline.first());
         data << move_spline.GetId();
 
@@ -71,21 +70,8 @@ namespace Movement
 
         // add fake Enter_Cycle flag - needed for client-side cyclic movement (client will erase first spline vertex after first cycle done)
         splineflags.enter_cycle = move_spline.isCyclic();
-        data << uint32(splineflags & uint32(~MoveSplineFlag::Mask_No_Monster_Move));
-
-        if (splineflags.animation)
-        {
-            data << splineflags.getAnimationId();
-            data << move_spline.effect_start_time;
-        }
-
+        data << uint32(splineflags & uint32(~MoveSplineFlag::Mask_No_Monster_Move  | MoveSplineFlag::Runmode));
         data << move_spline.Duration();
-
-        if (splineflags.parabolic)
-        {
-            data << move_spline.vertical_acceleration;
-            data << move_spline.effect_start_time;
-        }
     }
 
     void PacketBuilder::WriteStopMovement(G3D::Vector3 const& pos, uint32 splineId, ByteBuffer& data)
@@ -159,17 +145,11 @@ namespace Movement
             data << splineFlags.raw();
 
             if (splineFlags.final_angle)
-            {
                 data << move_spline.facing.angle;
-            }
             else if (splineFlags.final_target)
-            {
                 data << move_spline.facing.target;
-            }
             else if (splineFlags.final_point)
-            {
                 data << move_spline.facing.f.x << move_spline.facing.f.y << move_spline.facing.f.z;
-            }
 
             data << move_spline.timePassed();
             data << move_spline.Duration();

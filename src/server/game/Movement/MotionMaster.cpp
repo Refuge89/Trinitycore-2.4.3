@@ -353,7 +353,6 @@ void MotionMaster::MoveLand(uint32 id, Position const& pos)
 
     Movement::MoveSplineInit init(_owner);
     init.MoveTo(x, y, z);
-    init.SetAnimation(Movement::ToGround);
     init.Launch();
     Mutate(new EffectMovementGenerator(id), MOTION_SLOT_ACTIVE);
 }
@@ -367,7 +366,6 @@ void MotionMaster::MoveTakeoff(uint32 id, Position const& pos)
 
     Movement::MoveSplineInit init(_owner);
     init.MoveTo(x, y, z);
-    init.SetAnimation(Movement::ToFly);
     init.Launch();
     Mutate(new EffectMovementGenerator(id), MOTION_SLOT_ACTIVE);
 }
@@ -415,14 +413,12 @@ void MotionMaster::MoveKnockbackFrom(float srcX, float srcY, float speedXY, floa
     float x, y, z;
     float moveTimeHalf = speedZ / Movement::gravity;
     float dist = 2 * moveTimeHalf * speedXY;
-    float max_height = -Movement::computeFallElevation(moveTimeHalf, false, -speedZ);
 
     _owner->GetNearPoint(_owner, x, y, z, dist, _owner->GetAbsoluteAngle(srcX, srcY) + float(M_PI));
 
     Movement::MoveSplineInit init(_owner);
     init.MoveTo(x, y, z);
-    init.SetParabolic(max_height, 0);
-    init.SetOrientationFixed(true);
+    init.SetFacing(_owner->GetOrientation());
     init.SetVelocity(speedXY);
     init.Launch();
     Mutate(new EffectMovementGenerator(0), MOTION_SLOT_CONTROLLED);
@@ -450,12 +446,8 @@ void MotionMaster::MoveJump(float x, float y, float z, float o, float speedXY, f
     if (speedXY < 0.01f)
         return;
 
-    float moveTimeHalf = speedZ / Movement::gravity;
-    float max_height = -Movement::computeFallElevation(moveTimeHalf, false, -speedZ);
-
     Movement::MoveSplineInit init(_owner);
     init.MoveTo(x, y, z, false);
-    init.SetParabolic(max_height, 0);
     init.SetVelocity(speedXY);
     if (hasOrientation)
         init.SetFacing(o);
@@ -489,7 +481,6 @@ void MotionMaster::MoveCirclePath(float x, float y, float z, float radius, bool 
     {
         init.SetFly();
         init.SetCyclic();
-        init.SetAnimation(Movement::ToFly);
     }
     else
     {
@@ -511,7 +502,6 @@ void MotionMaster::MoveSmoothPath(uint32 pointId, Position const* pathPoints, si
     });
 
     init.MovebyPath(path);
-    init.SetSmooth();
     init.SetWalk(walk);
     init.Launch();
 

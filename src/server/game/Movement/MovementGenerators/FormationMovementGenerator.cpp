@@ -40,12 +40,6 @@ void FormationMovementGenerator::DoInitialize(Creature* owner)
 
     switch (_moveType)
     {
-        case 2: // WAYPOINT_MOVE_TYPE_LAND
-            init.SetAnimation(Movement::ToGround);
-            break;
-        case 3: // WAYPOINT_MOVE_TYPE_TAKEOFF
-            init.SetAnimation(Movement::ToFly);
-            break;
         case 1: // WAYPOINT_MOVE_TYPE_RUN
             init.SetWalk(false);
             break;
@@ -86,12 +80,6 @@ bool FormationMovementGenerator::DoUpdate(Creature* owner, uint32 /*diff*/)
 
         switch (_moveType)
         {
-            case 2: // WAYPOINT_MOVE_TYPE_LAND
-                init.SetAnimation(Movement::ToGround);
-                break;
-            case 3: // WAYPOINT_MOVE_TYPE_TAKEOFF
-                init.SetAnimation(Movement::ToFly);
-                break;
             case 1: // WAYPOINT_MOVE_TYPE_RUN
                 init.SetWalk(false);
                 break;

@@ -71,10 +71,6 @@ namespace Movement
          * can't be combined with final animation
          */
         void SetParabolic(float amplitude, float start_time);
-        /* Plays animation after movement done
-         * can't be combined with parabolic movement
-         */
-        void SetAnimation(AnimType anim);
 
         /* Adds final facing animation
          * sets unit's facing to specified point/angle after all path done
@@ -100,10 +96,6 @@ namespace Movement
          */
         void SetFirstPointId(int32 pointId) { args.path_Idx_offset = pointId; }
 
-        /* Enables CatmullRom spline interpolation mode(makes path smooth)
-         * if not enabled linear spline mode will be choosen. Disabled by default
-         */
-        void SetSmooth();
         /* Enables CatmullRom spline interpolation mode, enables flying animation. Disabled by default
          */
         void SetFly();
@@ -116,18 +108,6 @@ namespace Movement
         /* Enables falling mode. Disabled by default
          */
         void SetFall();
-        /* Enters transport. Disabled by default
-         */
-        void SetTransportEnter();
-        /* Exits transport. Disabled by default
-         */
-        void SetTransportExit();
-        /* Inverses unit model orientation. Disabled by default
-         */
-        void SetBackward();
-        /* Fixes unit's model rotation. Disabled by default
-         */
-        void SetOrientationFixed(bool enable);
 
         /* Sets the velocity (in case you want to have custom movement velocity)
          * if no set, speed will be selected based on unit's speeds and current movement mode
@@ -149,26 +129,14 @@ namespace Movement
 
     inline void MoveSplineInit::SetFly() { args.flags.EnableFlying(); }
     inline void MoveSplineInit::SetWalk(bool enable) { args.walk = enable; }
-    inline void MoveSplineInit::SetSmooth() { args.flags.EnableCatmullRom(); }
     inline void MoveSplineInit::SetCyclic() { args.flags.cyclic = true; }
     inline void MoveSplineInit::SetFall() { args.flags.EnableFalling(); }
     inline void MoveSplineInit::SetVelocity(float vel) { args.velocity = vel; args.HasVelocity = true; }
-    inline void MoveSplineInit::SetBackward() { args.flags.backward = true; }
-    inline void MoveSplineInit::SetTransportEnter() { args.flags.EnableTransportEnter(); }
-    inline void MoveSplineInit::SetTransportExit() { args.flags.EnableTransportExit(); }
-    inline void MoveSplineInit::SetOrientationFixed(bool enable) { args.flags.orientationFixed = enable; }
 
     inline void MoveSplineInit::SetParabolic(float amplitude, float time_shift)
     {
         args.time_perc = time_shift;
         args.parabolic_amplitude = amplitude;
-        args.flags.EnableParabolic();
-    }
-
-    inline void MoveSplineInit::SetAnimation(AnimType anim)
-    {
-        args.time_perc = 0.f;
-        args.flags.EnableAnimation((uint8)anim);
     }
 
     inline void MoveSplineInit::DisableTransportPathTransformations() { args.TransformForTransport = false; }

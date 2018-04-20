@@ -74,7 +74,6 @@ namespace Movement
 
     protected:
         MySpline::ControlArray const& getPath() const { return spline.getPoints(); }
-        void computeParabolicElevation(float& el) const;
         void computeFallElevation(float& el) const;
 
         UpdateResult _updateState(int32& ms_time_diff);
