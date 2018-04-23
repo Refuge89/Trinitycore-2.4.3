@@ -465,7 +465,8 @@ void MotionMaster::MoveJump(Position const& pos, float speedXY, float speedZ, ui
 
 void MotionMaster::MoveJump(float x, float y, float z, float o, float speedXY, float speedZ, uint32 id, bool hasOrientation /* = false*/)
 {
-    TC_LOG_DEBUG("misc", "Unit (GUID: %u) jumps to point (X: %f Y: %f Z: %f).", _owner->GetGUID().GetCounter(), x, y, z);
+    // SpeedZ To Prevent Warning For Time Being
+    TC_LOG_DEBUG("misc", "Unit (GUID: %u) jumps to point (X: %f Y: %f Z: %f) SpeedZ %f.", _owner->GetGUID().GetCounter(), x, y, z, speedZ);
     if (speedXY < 0.01f)
         return;
 
