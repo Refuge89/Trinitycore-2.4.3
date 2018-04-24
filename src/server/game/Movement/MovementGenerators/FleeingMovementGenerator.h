@@ -32,7 +32,7 @@ class FleeingMovementGenerator : public MovementGeneratorMedium< T, FleeingMovem
 {
     public:
         explicit FleeingMovementGenerator(ObjectGuid fleeTargetGUID) : _fleeTargetGUID(fleeTargetGUID), _timer(0), _interrupt(false) { }
-        ~FleeingMovementGenerator();
+        ~FleeingMovementGenerator() = default;
 
         MovementGeneratorType GetMovementGeneratorType() const override;
         void UnitSpeedChanged() override { } //TODO

@@ -30,7 +30,7 @@ class RandomMovementGenerator : public MovementGeneratorMedium< T, RandomMovemen
 {
     public:
         explicit RandomMovementGenerator(float distance = 0.0f) : _timer(0), _reference(), _wanderDistance(distance), _interrupt(false) { }
-        ~RandomMovementGenerator();
+        ~RandomMovementGenerator() = default;
 
         MovementGeneratorType GetMovementGeneratorType() const override;
         void UnitSpeedChanged() override { } //TODO

@@ -31,9 +31,6 @@
 #define MAX_QUIET_DISTANCE 43.0f
 
 template<class T>
-FleeingMovementGenerator<T>::~FleeingMovementGenerator() = default;
-
-template<class T>
 MovementGeneratorType FleeingMovementGenerator<T>::GetMovementGeneratorType() const
 {
     return FLEEING_MOTION_TYPE;
@@ -186,8 +183,6 @@ void FleeingMovementGenerator<T>::GetPoint(T* owner, Position &position)
     owner->MovePositionToFirstCollision(position, distance, angle);
 }
 
-template FleeingMovementGenerator<Player>::~FleeingMovementGenerator();
-template FleeingMovementGenerator<Creature>::~FleeingMovementGenerator();
 template MovementGeneratorType FleeingMovementGenerator<Player>::GetMovementGeneratorType() const;
 template MovementGeneratorType FleeingMovementGenerator<Creature>::GetMovementGeneratorType() const;
 template void FleeingMovementGenerator<Player>::DoInitialize(Player*);

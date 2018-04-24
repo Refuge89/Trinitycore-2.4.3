@@ -26,9 +26,6 @@
 #include "Random.h"
 
 template<class T>
-ConfusedMovementGenerator<T>::~ConfusedMovementGenerator() = default;
-
-template<class T>
 MovementGeneratorType ConfusedMovementGenerator<T>::GetMovementGeneratorType() const
 {
     return CONFUSED_MOTION_TYPE;
@@ -126,8 +123,6 @@ void ConfusedMovementGenerator<Creature>::DoFinalize(Creature* unit)
         unit->SetTarget(unit->EnsureVictim()->GetGUID());
 }
 
-template ConfusedMovementGenerator<Player>::~ConfusedMovementGenerator();
-template ConfusedMovementGenerator<Creature>::~ConfusedMovementGenerator();
 template MovementGeneratorType ConfusedMovementGenerator<Player>::GetMovementGeneratorType() const;
 template MovementGeneratorType ConfusedMovementGenerator<Creature>::GetMovementGeneratorType() const;
 template void ConfusedMovementGenerator<Player>::DoInitialize(Player*);

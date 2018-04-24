@@ -26,11 +26,6 @@
 #include "Random.h"
 
 template<class T>
-RandomMovementGenerator<T>::~RandomMovementGenerator() = default;
-
-template RandomMovementGenerator<Creature>::~RandomMovementGenerator();
-
-template<class T>
 MovementGeneratorType RandomMovementGenerator<T>::GetMovementGeneratorType() const
 {
     return RANDOM_MOTION_TYPE;

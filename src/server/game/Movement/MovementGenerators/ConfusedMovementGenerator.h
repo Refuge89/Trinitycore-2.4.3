@@ -29,7 +29,7 @@ class ConfusedMovementGenerator : public MovementGeneratorMedium< T, ConfusedMov
 {
     public:
         explicit ConfusedMovementGenerator() : _timer(0), _x(0.f), _y(0.f), _z(0.f), _interrupt(false) { }
-        ~ConfusedMovementGenerator();
+        ~ConfusedMovementGenerator() = default;
 
         MovementGeneratorType GetMovementGeneratorType() const override;
         void UnitSpeedChanged() override { } //TODO
