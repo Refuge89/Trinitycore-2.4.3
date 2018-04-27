@@ -238,19 +238,12 @@ enum MovementFlags : uint32
     MOVEMENTFLAG_DISABLE_GRAVITY       = 0x00000400,               // Former MOVEMENTFLAG_LEVITATING. This is used when walking is not possible.
     MOVEMENTFLAG_ROOT                  = 0x00000800,               // Must not be set along with MOVEMENTFLAG_MASK_MOVING
     MOVEMENTFLAG_FALLING               = 0x00001000,               // damage dealt on that type of falling
-    MOVEMENTFLAG_FALLING_FAR           = 0x00002000,
-    MOVEMENTFLAG_PENDING_STOP          = 0x00004000,
-    MOVEMENTFLAG_PENDING_STRAFE_STOP   = 0x00008000,
-    MOVEMENTFLAG_PENDING_FORWARD       = 0x00010000,
-    MOVEMENTFLAG_PENDING_BACKWARD      = 0x00020000,
-    MOVEMENTFLAG_PENDING_STRAFE_LEFT   = 0x00040000,
-    MOVEMENTFLAG_PENDING_STRAFE_RIGHT  = 0x00080000,
-    MOVEMENTFLAG_PENDING_ROOT          = 0x00100000,
+    MOVEMENTFLAG_FALLING_FAR           = 0x00004000,
     MOVEMENTFLAG_SWIMMING              = 0x00200000,               // appears with fly flag also
     MOVEMENTFLAG_ASCENDING             = 0x00400000,               // press "space" when flying
-    MOVEMENTFLAG_DESCENDING            = 0x00800000,
-    MOVEMENTFLAG_CAN_FLY               = 0x01000000,               // Appears when unit can fly AND also walk
-    MOVEMENTFLAG_FLYING                = 0x02000000,               // unit is actually flying. pretty sure this is only used for players. creatures use disable_gravity
+    MOVEMENTFLAG_CAN_FLY               = 0x00800000,               // Appears when unit can fly AND also walk
+    MOVEMENTFLAG_FLYING                = 0x01000000,
+    MOVEMENTFLAG_FLYING_P              = 0x02000000,               // unit is actually flying. pretty sure this is only used for players. creatures use disable_gravity
     MOVEMENTFLAG_SPLINE_ELEVATION      = 0x04000000,               // used for flight paths
     MOVEMENTFLAG_SPLINE_ENABLED        = 0x08000000,               // used for flight paths
     MOVEMENTFLAG_WATERWALKING          = 0x10000000,               // prevent unit from falling through water
@@ -259,14 +252,13 @@ enum MovementFlags : uint32
 
     MOVEMENTFLAG_MASK_MOVING =
         MOVEMENTFLAG_FORWARD | MOVEMENTFLAG_BACKWARD | MOVEMENTFLAG_STRAFE_LEFT | MOVEMENTFLAG_STRAFE_RIGHT |
-        MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR | MOVEMENTFLAG_ASCENDING | MOVEMENTFLAG_DESCENDING |
-        MOVEMENTFLAG_SPLINE_ELEVATION,
+        MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR | MOVEMENTFLAG_ASCENDING | MOVEMENTFLAG_SPLINE_ELEVATION,
 
     MOVEMENTFLAG_MASK_TURNING =
         MOVEMENTFLAG_LEFT | MOVEMENTFLAG_RIGHT | MOVEMENTFLAG_PITCH_UP | MOVEMENTFLAG_PITCH_DOWN,
 
     MOVEMENTFLAG_MASK_MOVING_FLY =
-        MOVEMENTFLAG_FLYING | MOVEMENTFLAG_ASCENDING | MOVEMENTFLAG_DESCENDING,
+        MOVEMENTFLAG_FLYING | MOVEMENTFLAG_ASCENDING,
 
     /// @todo if needed: add more flags to this masks that are exclusive to players
     MOVEMENTFLAG_MASK_PLAYER_ONLY =

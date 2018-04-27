@@ -804,13 +804,9 @@ void WorldSession::ReadMovementInfo(WorldPacket &data, MovementInfo* mi)
         data >> mi->transport.guid.ReadAsPacked();
         data >> mi->transport.pos.PositionXYZOStream();
         data >> mi->transport.time;
-        data >> mi->transport.seat;
-
-        if (mi->HasExtraMovementFlag(MOVEMENTFLAG2_INTERPOLATED_MOVEMENT))
-            data >> mi->transport.time2;
     }
 
-    if (mi->HasMovementFlag(MovementFlags(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING)) || (mi->HasExtraMovementFlag(MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING)))
+    if (mi->HasMovementFlag(MovementFlags(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING_P)) || (mi->HasExtraMovementFlag(MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING)))
         data >> mi->pitch;
 
     data >> mi->fallTime;
@@ -855,10 +851,6 @@ void WorldSession::ReadMovementInfo(WorldPacket &data, MovementInfo* mi)
     //! Cannot hover without SPELL_AURA_HOVER
     REMOVE_VIOLATING_FLAGS(mi->HasMovementFlag(MOVEMENTFLAG_HOVER) && !GetPlayer()->HasAuraType(SPELL_AURA_HOVER),
         MOVEMENTFLAG_HOVER);
-
-    //! Cannot ascend and descend at the same time
-    REMOVE_VIOLATING_FLAGS(mi->HasMovementFlag(MOVEMENTFLAG_ASCENDING) && mi->HasMovementFlag(MOVEMENTFLAG_DESCENDING),
-        MOVEMENTFLAG_ASCENDING | MOVEMENTFLAG_DESCENDING);
 
     //! Cannot move left and right at the same time
     REMOVE_VIOLATING_FLAGS(mi->HasMovementFlag(MOVEMENTFLAG_LEFT) && mi->HasMovementFlag(MOVEMENTFLAG_RIGHT),
@@ -920,13 +912,9 @@ void WorldSession::WriteMovementInfo(WorldPacket* data, MovementInfo* mi)
        *data << mi->transport.guid.WriteAsPacked();
        *data << mi->transport.pos.PositionXYZOStream();
        *data << mi->transport.time;
-       *data << mi->transport.seat;
-
-       if (mi->HasExtraMovementFlag(MOVEMENTFLAG2_INTERPOLATED_MOVEMENT))
-           *data << mi->transport.time2;
     }
 
-    if (mi->HasMovementFlag(MovementFlags(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING)) || mi->HasExtraMovementFlag(MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING))
+    if (mi->HasMovementFlag(MovementFlags(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING_P)) || mi->HasExtraMovementFlag(MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING))
         *data << mi->pitch;
 
     *data << mi->fallTime;

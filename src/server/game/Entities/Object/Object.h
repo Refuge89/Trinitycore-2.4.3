@@ -486,8 +486,7 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
         float GetTransOffsetZ() const { return m_movementInfo.transport.pos.GetPositionZ(); }
         float GetTransOffsetO() const { return m_movementInfo.transport.pos.GetOrientation(); }
         Position const& GetTransOffset() const { return m_movementInfo.transport.pos; }
-        uint32 GetTransTime()   const { return m_movementInfo.transport.time; }
-        int8 GetTransSeat()     const { return m_movementInfo.transport.seat; }
+        uint32 GetTransTime() const { return m_movementInfo.transport.time; }
         virtual ObjectGuid GetTransGUID() const;
         void SetTransport(Transport* t) { m_transport = t; }
 

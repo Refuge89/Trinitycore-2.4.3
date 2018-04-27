@@ -942,13 +942,10 @@ void MovementInfo::OutDebug()
         TC_LOG_DEBUG("misc", "TRANSPORT:");
         TC_LOG_DEBUG("misc", "%s", transport.guid.ToString().c_str());
         TC_LOG_DEBUG("misc", "position: `%s`", transport.pos.ToString().c_str());
-        TC_LOG_DEBUG("misc", "seat: %i", transport.seat);
         TC_LOG_DEBUG("misc", "time: %u", transport.time);
-        if (flags2 & MOVEMENTFLAG2_INTERPOLATED_MOVEMENT)
-            TC_LOG_DEBUG("misc", "time2: %u", transport.time2);
     }
 
-    if ((flags & (MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING)) || (flags2 & MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING))
+    if ((flags & (MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING_P)) || (flags2 & MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING))
         TC_LOG_DEBUG("misc", "pitch: %f", pitch);
 
     TC_LOG_DEBUG("misc", "fallTime: %u", fallTime);

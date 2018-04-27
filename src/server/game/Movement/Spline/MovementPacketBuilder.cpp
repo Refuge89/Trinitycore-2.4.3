@@ -76,7 +76,6 @@ namespace Movement
 
     void PacketBuilder::WriteStopMovement(G3D::Vector3 const& pos, uint32 splineId, ByteBuffer& data)
     {
-        data << uint8(0);                                       // sets/unsets MOVEMENTFLAG2_UNK7 (0x40)
         data << pos;
         data << splineId;
         data << uint8(MonsterMoveStop);

@@ -11677,13 +11677,10 @@ void Unit::BuildMovementPacket(Position const& pos, Position const& transportPos
         *data << movementInfo.transport.guid;
         *data << TaggedPosition<Position::XYZO>(transportPos);
         *data << uint32(movementInfo.transport.time);
-
-        if (movementInfo.HasExtraMovementFlag(MOVEMENTFLAG2_INTERPOLATED_MOVEMENT))
-            *data << uint32(movementInfo.transport.time2);
     }
 
     // 0x02200000
-    if ((movementInfo.HasMovementFlag(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING)) || (movementInfo.HasExtraMovementFlag(MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING)))
+    if ((movementInfo.HasMovementFlag(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING_P)) || (movementInfo.HasExtraMovementFlag(MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING)))
         *data << float(movementInfo.pitch);
 
     *data << uint32(movementInfo.fallTime);
