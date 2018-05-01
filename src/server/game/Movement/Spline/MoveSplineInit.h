@@ -25,14 +25,6 @@ class Unit;
 
 namespace Movement
 {
-    enum AnimType
-    {
-        ToGround    = 0, // 460 = ToGround, index of AnimationData.dbc
-        FlyToFly    = 1, // 461 = FlyToFly?
-        ToFly       = 2, // 458 = ToFly
-        FlyToGround = 3  // 463 = FlyToGround
-    };
-
     // Transforms coordinates from global to transport offsets
     class TC_GAME_API TransportPathTransform
     {
@@ -124,7 +116,6 @@ namespace Movement
         */
         void DisableTransportPathTransformations();
     protected:
-
         MoveSplineInitArgs args;
         Unit*  unit;
     };

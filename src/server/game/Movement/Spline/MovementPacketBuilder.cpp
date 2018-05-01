@@ -23,12 +23,12 @@
 
 namespace Movement
 {
-    inline void operator<<(ByteBuffer& b, Vector3 const& v)
+    inline void operator << (ByteBuffer& b, Vector3 const& v)
     {
         b << v.x << v.y << v.z;
     }
 
-    inline void operator>>(ByteBuffer& b, Vector3& v)
+    inline void operator >> (ByteBuffer& b, Vector3& v)
     {
         b >> v.x >> v.y >> v.z;
     }
@@ -70,7 +70,7 @@ namespace Movement
 
         // add fake Enter_Cycle flag - needed for client-side cyclic movement (client will erase first spline vertex after first cycle done)
         splineflags.enter_cycle = move_spline.isCyclic();
-        data << uint32(splineflags & uint32(~MoveSplineFlag::Mask_No_Monster_Move  | MoveSplineFlag::Runmode));
+        data << uint32(splineflags & uint32(~MoveSplineFlag::Mask_No_Monster_Move | MoveSplineFlag::Runmode));
         data << move_spline.Duration();
     }
 
