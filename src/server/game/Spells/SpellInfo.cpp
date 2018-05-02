@@ -1742,10 +1742,6 @@ SpellCastResult SpellInfo::CheckTarget(WorldObject const* caster, WorldObject co
         }
     }
 
-    if (unitTarget->HasAuraType(SPELL_AURA_PREVENT_RESURRECTION))
-        if (HasEffect(SPELL_EFFECT_SELF_RESURRECT) || HasEffect(SPELL_EFFECT_RESURRECT) || HasEffect(SPELL_EFFECT_RESURRECT_NEW))
-            return SPELL_FAILED_TARGET_CANNOT_BE_RESURRECTED;
-
     return SPELL_CAST_OK;
 }
 
@@ -3528,7 +3524,6 @@ bool _isPositiveEffectImpl(SpellInfo const* spellInfo, uint8 effIndex, std::unor
             case SPELL_AURA_PERIODIC_LEECH:
             case SPELL_AURA_PERIODIC_MANA_LEECH:
             case SPELL_AURA_MOD_STALKED:
-            case SPELL_AURA_PREVENT_RESURRECTION:
             case SPELL_AURA_PERIODIC_DAMAGE:
             case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
             case SPELL_AURA_MELEE_ATTACK_POWER_ATTACKER_BONUS:

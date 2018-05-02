@@ -692,7 +692,6 @@ void Object::SetByteValue(uint16 index, uint8 offset, uint8 value)
         _changesMask.SetBit(index);
 
         AddToObjectUpdateIfNeeded();
-
     }
 }
 

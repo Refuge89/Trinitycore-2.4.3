@@ -3429,9 +3429,6 @@ void Spell::EffectStuck(SpellEffIndex /*effIndex*/)
     // if player is dead - teleport to graveyard
     if (!player->IsAlive())
     {
-        if (player->HasAuraType(SPELL_AURA_PREVENT_RESURRECTION))
-            return;
-
         // player is in corpse
         if (!player->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
             player->BuildPlayerRepop();
@@ -3562,11 +3559,7 @@ void Spell::EffectInebriate(SpellEffIndex /*effIndex*/)
     uint8 currentDrunk = player->GetDrunkValue();
     uint8 drunkMod = damage;
     if (currentDrunk + drunkMod > 100)
-    {
         currentDrunk = 100;
-        if (rand_chance() < 25.0f)
-            player->CastSpell(player, 67468, false);    // Drunken Vomit
-    }
     else
         currentDrunk += drunkMod;
 

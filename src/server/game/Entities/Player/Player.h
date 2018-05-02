@@ -291,7 +291,7 @@ enum PlayerFlags
     PLAYER_FLAGS_GHOST             = 0x00000010,
     PLAYER_FLAGS_RESTING           = 0x00000020,
     PLAYER_FLAGS_UNK6              = 0x00000040,
-    PLAYER_FLAGS_UNK7              = 0x00000080,               // pre-3.0.3 PLAYER_FLAGS_FFA_PVP flag for FFA PVP state
+    PLAYER_FLAGS_FFA_PVP           = 0x00000080,               // pre-3.0.3 PLAYER_FLAGS_FFA_PVP flag for FFA PVP state
     PLAYER_FLAGS_CONTESTED_PVP     = 0x00000100,               // Player has been involved in a PvP combat and will be attacked by contested guards
     PLAYER_FLAGS_IN_PVP            = 0x00000200,
     PLAYER_FLAGS_HIDE_HELM         = 0x00000400,
@@ -300,7 +300,7 @@ enum PlayerFlags
     PLAYER_FLAGS_PLAYED_TOO_LONG   = 0x00002000,               // played too long time
     PLAYER_FLAGS_IS_OUT_OF_BOUNDS  = 0x00004000,
     PLAYER_FLAGS_DEVELOPER         = 0x00008000,               // <Dev> prefix for something?
-    PLAYER_FLAGS_UNK16             = 0x00010000,               // pre-3.0.3 PLAYER_FLAGS_SANCTUARY flag for player entered sanctuary
+    PLAYER_FLAGS_SANCTUARY         = 0x00010000,               // pre-3.0.3 PLAYER_FLAGS_SANCTUARY flag for player entered sanctuary
     PLAYER_FLAGS_TAXI_BENCHMARK    = 0x00020000,               // taxi benchmark mode (on/off) (2.0.1)
     PLAYER_FLAGS_PVP_TIMER         = 0x00040000,               // 3.0.2, pvp timer active (after you disable pvp manually)
     PLAYER_FLAGS_UBER              = 0x00080000,
@@ -352,21 +352,17 @@ enum PlayerFieldBytesOffsets
 
 enum PlayerFieldBytes2Offsets
 {
-    PLAYER_FIELD_BYTES_2_OFFSET_OVERRIDE_SPELLS_ID                  = 0,    // uint16!
-    PLAYER_FIELD_BYTES_2_OFFSET_IGNORE_POWER_REGEN_PREDICTION_MASK  = 2,
-    PLAYER_FIELD_BYTES_2_OFFSET_AURA_VISION                         = 3
+    PLAYER_FIELD_BYTES_2_OFFSET_OVERRIDE_SPELLS_ID                  = 0,
+    PLAYER_FIELD_BYTES_2_OFFSET_AURA_VISION                         = 1
 };
 
-static_assert((PLAYER_FIELD_BYTES_2_OFFSET_OVERRIDE_SPELLS_ID & 1) == 0, "PLAYER_FIELD_BYTES_2_OFFSET_OVERRIDE_SPELLS_ID must be aligned to 2 byte boundary");
-
-#define PLAYER_BYTES_2_OVERRIDE_SPELLS_UINT16_OFFSET (PLAYER_FIELD_BYTES_2_OFFSET_OVERRIDE_SPELLS_ID / 2)
-
 #define KNOWN_TITLES_SIZE   3
-#define MAX_TITLE_INDEX     (KNOWN_TITLES_SIZE*64)          // 3 uint64 fields
+#define MAX_TITLE_INDEX     (KNOWN_TITLES_SIZE * 64)          // 3 uint64 fields
 
 // used in PLAYER_FIELD_BYTES values
 enum PlayerFieldByteFlags
 {
+    PLAYER_FEILD_BYTE_GRANTABLE_LEVEL   = 0x00000001,
     PLAYER_FIELD_BYTE_TRACK_STEALTHED   = 0x00000002,
     PLAYER_FIELD_BYTE_RELEASE_TIMER     = 0x00000008,       // Display time till auto release spirit
     PLAYER_FIELD_BYTE_NO_RELEASE_WINDOW = 0x00000010        // Display no "release spirit" window at all
@@ -824,8 +820,6 @@ struct ResurrectionData
     uint32 Mana;
     uint32 Aura;
 };
-
-#define SPELL_DK_RAISE_ALLY 46619
 
 class TC_GAME_API Player : public Unit, public GridObject<Player>
 {
@@ -1424,6 +1418,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         PvPInfo pvpInfo;
         void UpdatePvPState(bool onlyFFA = false);
+        bool IsFFAPvP() const override;
+        bool IsInSanctuary() const override;
         void SetPvP(bool state) override;
         void UpdatePvP(bool state, bool override = false);
         void UpdateZone(uint32 newZone, uint32 newArea);
@@ -1588,8 +1584,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void ResurrectPlayer(float restore_percent, bool applySickness = false);
         void BuildPlayerRepop();
         void RepopAtGraveyard();
-
-        void RemoveGhoul();
 
         void DurabilityLossAll(double percent, bool inventory);
         void DurabilityLoss(Item* item, double percent);

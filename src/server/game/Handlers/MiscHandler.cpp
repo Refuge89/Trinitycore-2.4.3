@@ -61,9 +61,6 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket& recvData)
     if (GetPlayer()->IsAlive() || GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
         return;
 
-    if (GetPlayer()->HasAuraType(SPELL_AURA_PREVENT_RESURRECTION))
-        return; // silently return, client should display the error by itself
-
     // the world update order is sessions, players, creatures
     // the netcode runs in parallel with all of these
     // creatures can kill players
@@ -77,7 +74,6 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket& recvData)
     }
 
     //this is spirit release confirm?
-    GetPlayer()->RemoveGhoul();
     GetPlayer()->RemovePet(nullptr, PET_SAVE_NOT_IN_SLOT, true);
     GetPlayer()->BuildPlayerRepop();
     GetPlayer()->RepopAtGraveyard();
@@ -448,13 +444,9 @@ void WorldSession::HandleTogglePvP(WorldPacket& recvData)
         bool newPvPStatus;
         recvData >> newPvPStatus;
         GetPlayer()->ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_IN_PVP, newPvPStatus);
-        GetPlayer()->ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_PVP_TIMER, !newPvPStatus);
     }
     else
-    {
         GetPlayer()->ToggleFlag(PLAYER_FLAGS, PLAYER_FLAGS_IN_PVP);
-        GetPlayer()->ToggleFlag(PLAYER_FLAGS, PLAYER_FLAGS_PVP_TIMER);
-    }
 
     if (GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_IN_PVP))
     {
@@ -650,7 +642,7 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recvData)
         player->SetRestFlag(REST_FLAG_IN_TAVERN, atEntry->id);
 
         if (sWorld->IsFFAPvPRealm())
-            player->RemoveByteFlag(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG, UNIT_BYTE2_FLAG_FFA_PVP);
+            player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_FFA_PVP);
 
         return;
     }
