@@ -559,21 +559,12 @@ typedef std::vector<ItemPosCount> ItemPosCountVec;
 enum TransferAbortReason
 {
     TRANSFER_ABORT_NONE                     = 0x00,
-    TRANSFER_ABORT_ERROR                    = 0x01,
-    TRANSFER_ABORT_MAX_PLAYERS              = 0x02,         // Transfer Aborted: instance is full
-    TRANSFER_ABORT_NOT_FOUND                = 0x03,         // Transfer Aborted: instance not found
-    TRANSFER_ABORT_TOO_MANY_INSTANCES       = 0x04,         // You have entered too many instances recently.
-    TRANSFER_ABORT_ZONE_IN_COMBAT           = 0x06,         // Unable to zone in while an encounter is in progress.
-    TRANSFER_ABORT_INSUF_EXPAN_LVL          = 0x07,         // You must have <TBC, WotLK> expansion installed to access this area.
-    TRANSFER_ABORT_DIFFICULTY               = 0x08,         // <Normal, Heroic, Epic> difficulty mode is not available for %s.
-    TRANSFER_ABORT_UNIQUE_MESSAGE           = 0x09,         // Until you've escaped TLK's grasp, you cannot leave this place!
-    TRANSFER_ABORT_TOO_MANY_REALM_INSTANCES = 0x0A,         // Additional instances cannot be launched, please try again later.
-    TRANSFER_ABORT_NEED_GROUP               = 0x0B,         // 3.1
-    TRANSFER_ABORT_NOT_FOUND1               = 0x0C,         // 3.1
-    TRANSFER_ABORT_NOT_FOUND2               = 0x0D,         // 3.1
-    TRANSFER_ABORT_NOT_FOUND3               = 0x0E,         // 3.2
-    TRANSFER_ABORT_REALM_ONLY               = 0x0F,         // All players on party must be from the same realm.
-    TRANSFER_ABORT_MAP_NOT_ALLOWED          = 0x10          // Map can't be entered at this time.
+    TRANSFER_ABORT_MAX_PLAYERS              = 0x01,         // Transfer Aborted: instance is full
+    TRANSFER_ABORT_NOT_FOUND                = 0x02,         // Transfer Aborted: instance not found
+    TRANSFER_ABORT_TOO_MANY_INSTANCES       = 0x03,         // You have entered too many instances recently.
+    TRANSFER_ABORT_ZONE_IN_COMBAT           = 0x05,         // Unable to zone in while an encounter is in progress.
+    TRANSFER_ABORT_INSUF_EXPAN_LVL          = 0x06,         // You must have <TBC, WotLK> expansion installed to access this area.
+    TRANSFER_ABORT_DIFFICULTY               = 0x07          // <Normal, Heroic, Epic> difficulty mode is not available for %s.
 };
 
 enum InstanceResetWarningType
@@ -602,8 +593,7 @@ class InstanceSave;
 enum RestFlag
 {
     REST_FLAG_IN_TAVERN         = 0x1,
-    REST_FLAG_IN_CITY           = 0x2,
-    REST_FLAG_IN_FACTION_AREA   = 0x4, // used with AREA_FLAG_REST_ZONE_*
+    REST_FLAG_IN_CITY           = 0x2
 };
 
 enum TeleportToOptions
@@ -619,12 +609,12 @@ enum TeleportToOptions
 /// Type of environmental damages
 enum EnviromentalDamage : uint8
 {
-    DAMAGE_EXHAUSTED = 0,
-    DAMAGE_DROWNING  = 1,
-    DAMAGE_FALL      = 2,
-    DAMAGE_LAVA      = 3,
-    DAMAGE_SLIME     = 4,
-    DAMAGE_FIRE      = 5,
+    DAMAGE_EXHAUSTED    = 0,
+    DAMAGE_DROWNING     = 1,
+    DAMAGE_FALL         = 2,
+    DAMAGE_LAVA         = 3,
+    DAMAGE_SLIME        = 4,
+    DAMAGE_FIRE         = 5,
     DAMAGE_FALL_TO_VOID = 6                                 // custom case for fall without durability loss
 };
 

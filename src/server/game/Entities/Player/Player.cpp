@@ -1542,7 +1542,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     if (!GetSession()->HasPermission(rbac::RBAC_PERM_SKIP_CHECK_DISABLE_MAP) && DisableMgr::IsDisabledFor(DISABLE_TYPE_MAP, mapid, this))
     {
         TC_LOG_ERROR("entities.player.cheat", "Player::TeleportTo: Player '%s' (%s) tried to enter a forbidden map (MapID: %u)", GetGUID().ToString().c_str(), GetName().c_str(), mapid);
-        SendTransferAborted(mapid, TRANSFER_ABORT_MAP_NOT_ALLOWED);
+        // SendTransferAborted(mapid, TRANSFER_ABORT_MAP_NOT_ALLOWED);
         return false;
     }
 
@@ -6693,12 +6693,6 @@ void Player::UpdateArea(uint32 newArea)
     }
     else
         RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_SANCTUARY);
-
-    uint32 const areaRestFlag = (GetTeam() == ALLIANCE) ? AREA_FLAG_REST_ZONE_ALLIANCE : AREA_FLAG_REST_ZONE_HORDE;
-    if (area && area->flags & areaRestFlag)
-        SetRestFlag(REST_FLAG_IN_FACTION_AREA);
-    else
-        RemoveRestFlag(REST_FLAG_IN_FACTION_AREA);
 }
 
 void Player::UpdateZone(uint32 newZone, uint32 newArea)
@@ -21437,7 +21431,6 @@ void Player::SendTransferAborted(uint32 mapid, TransferAbortReason reason, uint8
     {
         case TRANSFER_ABORT_INSUF_EXPAN_LVL:
         case TRANSFER_ABORT_DIFFICULTY:
-        case TRANSFER_ABORT_UNIQUE_MESSAGE:
             // these are the ONLY cases that have an extra argument in the packet!!!
             data << uint8(arg);
             break;
