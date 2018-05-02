@@ -95,7 +95,7 @@ class npc_draenei_survivor : public CreatureScript
 
                 DoCast(me, SPELL_IRRIDATION, true);
 
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
                 me->SetHealth(me->CountPctFromMaxHealth(10));
                 me->SetStandState(UNIT_STAND_STATE_SLEEP);
@@ -119,7 +119,7 @@ class npc_draenei_survivor : public CreatureScript
             {
                 if (Spell->Id == SPELL_GIFT_OF_NAARU)
                 {
-                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
                     me->SetStandState(UNIT_STAND_STATE_STAND);
 
                     DoCastSelf(SPELL_STUNNED, true);
