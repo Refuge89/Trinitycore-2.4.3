@@ -4150,10 +4150,6 @@ void Player::DeleteFromDB(ObjectGuid playerguid, uint32 accountId, bool updateRe
             stmt->setUInt32(0, guid);
             trans->Append(stmt);
 
-            stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_EQUIPMENTSETS);
-            stmt->setUInt32(0, guid);
-            trans->Append(stmt);
-
             stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_GUILD_EVENTLOG_BY_PLAYER);
             stmt->setUInt32(0, guid);
             stmt->setUInt32(1, guid);
@@ -15950,35 +15946,6 @@ void Player::_LoadArenaTeamInfo(PreparedQueryResult result)
     }
 }
 
-void Player::_LoadEquipmentSets(PreparedQueryResult result)
-{
-    // SetPQuery(PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS,   "SELECT setguid, setindex, name, iconname, item0, item1, item2, item3, item4, item5, item6, item7, item8, item9, item10, item11, item12, item13, item14, item15, item16, item17, item18 FROM character_equipmentsets WHERE guid = '%u' ORDER BY setindex", GUID_LOPART(m_guid));
-    if (!result)
-        return;
-
-    do
-    {
-        Field* fields = result->Fetch();
-        EquipmentSetInfo eqSet;
-
-        eqSet.Data.Guid       = fields[0].GetUInt64();
-        eqSet.Data.SetID      = fields[1].GetUInt8();
-        eqSet.Data.SetName    = fields[2].GetString();
-        eqSet.Data.SetIcon    = fields[3].GetString();
-        eqSet.Data.IgnoreMask = fields[4].GetUInt32();
-        eqSet.State           = EQUIPMENT_SET_UNCHANGED;
-
-        for (uint32 i = 0; i < EQUIPMENT_SLOT_END; ++i)
-            if (ObjectGuid::LowType guid = fields[5 + i].GetUInt32())
-                eqSet.Data.Pieces[i] = ObjectGuid::Create<HighGuid::Item>(guid);
-
-        if (eqSet.Data.SetID >= MAX_EQUIPMENT_SET_INDEX)    // client limit
-            continue;
-
-        _equipmentSets[eqSet.Data.Guid] = eqSet;
-    } while (result->NextRow());
-}
-
 void Player::_LoadBGData(PreparedQueryResult result)
 {
     if (!result)
@@ -16771,8 +16738,6 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
         SetByteValue(PLAYER_FIELD_BYTES, PLAYER_FIELD_BYTES_OFFSET_RAF_GRANTABLE_LEVEL, PLAYER_FEILD_BYTE_GRANTABLE_LEVEL);
 
     _LoadDeclinedNames(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_DECLINED_NAMES));
-
-    _LoadEquipmentSets(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_EQUIPMENT_SETS));
 
     return true;
 }
@@ -18438,7 +18403,6 @@ void Player::SaveToDB(bool create /*=false*/)
     _SaveAuras(trans);
     _SaveSkills(trans);
     m_reputationMgr->SaveToDB(trans);
-    _SaveEquipmentSets(trans);
     GetSession()->SaveTutorialsData(trans);                 // changed only while character in game
     _SaveInstanceTimeRestrictions(trans);
 
@@ -23670,56 +23634,6 @@ void Player::BuildEnchantmentsInfoData(WorldPacket* data)
     }
 
     data->put<uint32>(slotUsedMaskPos, slotUsedMask);
-}
-
-void Player::_SaveEquipmentSets(SQLTransaction& trans)
-{
-    for (EquipmentSetContainer::iterator itr = _equipmentSets.begin(); itr != _equipmentSets.end();)
-    {
-        EquipmentSetInfo& eqSet = itr->second;
-        PreparedStatement* stmt;
-        uint8 j = 0;
-        switch (eqSet.State)
-        {
-            case EQUIPMENT_SET_UNCHANGED:
-                ++itr;
-                break;                                      // nothing do
-            case EQUIPMENT_SET_CHANGED:
-                stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_EQUIP_SET);
-                stmt->setString(j++, eqSet.Data.SetName);
-                stmt->setString(j++, eqSet.Data.SetIcon);
-                stmt->setUInt32(j++, eqSet.Data.IgnoreMask);
-                for (uint8 i = 0; i < EQUIPMENT_SLOT_END; ++i)
-                    stmt->setUInt32(j++, eqSet.Data.Pieces[i].GetCounter());
-                stmt->setUInt32(j++, GetGUID().GetCounter());
-                stmt->setUInt64(j++, eqSet.Data.Guid);
-                stmt->setUInt32(j, eqSet.Data.SetID);
-                trans->Append(stmt);
-                eqSet.State = EQUIPMENT_SET_UNCHANGED;
-                ++itr;
-                break;
-            case EQUIPMENT_SET_NEW:
-                stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_EQUIP_SET);
-                stmt->setUInt32(j++, GetGUID().GetCounter());
-                stmt->setUInt64(j++, eqSet.Data.Guid);
-                stmt->setUInt32(j++, eqSet.Data.SetID);
-                stmt->setString(j++, eqSet.Data.SetName);
-                stmt->setString(j++, eqSet.Data.SetIcon);
-                stmt->setUInt32(j++, eqSet.Data.IgnoreMask);
-                for (uint8 i = 0; i < EQUIPMENT_SLOT_END; ++i)
-                    stmt->setUInt32(j++, eqSet.Data.Pieces[i].GetCounter());
-                trans->Append(stmt);
-                eqSet.State = EQUIPMENT_SET_UNCHANGED;
-                ++itr;
-                break;
-            case EQUIPMENT_SET_DELETED:
-                stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_EQUIP_SET);
-                stmt->setUInt64(0, eqSet.Data.Guid);
-                trans->Append(stmt);
-                itr = _equipmentSets.erase(itr);
-                break;
-        }
-    }
 }
 
 void Player::_SaveBGData(SQLTransaction& trans)

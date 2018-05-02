@@ -229,7 +229,6 @@ bool SpellClickInfo::IsFitToRequirements(Unit const* clicker, Unit const* clicke
 
 ObjectMgr::ObjectMgr():
     _auctionId(1),
-    _equipmentSetGuid(1),
     _mailId(1),
     _mailtextId(1),
     _hiPetNumber(1),
@@ -6689,10 +6688,6 @@ void ObjectMgr::SetHighestGuids()
     if (result)
         sArenaTeamMgr->SetNextArenaTeamId((*result)[0].GetUInt32()+1);
 
-    result = CharacterDatabase.Query("SELECT MAX(setguid) FROM character_equipmentsets");
-    if (result)
-        _equipmentSetGuid = (*result)[0].GetUInt64()+1;
-
     result = CharacterDatabase.Query("SELECT MAX(guildId) FROM guild");
     if (result)
         sGuildMgr->SetNextGuildId((*result)[0].GetUInt32()+1);
@@ -6718,16 +6713,6 @@ uint32 ObjectMgr::GenerateAuctionID()
         World::StopNow(ERROR_EXIT_CODE);
     }
     return _auctionId++;
-}
-
-uint64 ObjectMgr::GenerateEquipmentSetGuid()
-{
-    if (_equipmentSetGuid >= uint64(0xFFFFFFFFFFFFFFFELL))
-    {
-        TC_LOG_ERROR("misc", "EquipmentSet guid overflow!! Can't continue, shutting down server. Search on forum for TCE00007 for more info. ");
-        World::StopNow(ERROR_EXIT_CODE);
-    }
-    return _equipmentSetGuid++;
 }
 
 uint32 ObjectMgr::GenerateMailID()

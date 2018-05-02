@@ -32,8 +32,6 @@ enum DumpTableType
                                                             // character_queststatus, character_queststatus_rewarded, character_reputation,
                                                             // character_spell, character_spell_cooldown, character_ticket, character_talent
 
-    DTT_EQSET_TABLE,    // <- guid                          // character_equipmentsets
-
     DTT_INVENTORY,      //    -> item guids collection      // character_inventory
 
     DTT_MAIL,           //    -> mail ids collection        // mail
@@ -88,8 +86,6 @@ class TC_GAME_API PlayerDumpWriter : public PlayerDump
         std::set<ObjectGuid::LowType> _pets;
         std::set<ObjectGuid::LowType> _mails;
         std::set<ObjectGuid::LowType> _items;
-
-        std::set<uint64> _itemSets;
 };
 
 class TC_GAME_API PlayerDumpReader : public PlayerDump

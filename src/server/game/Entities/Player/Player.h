@@ -22,7 +22,6 @@
 #include "Unit.h"
 #include "DatabaseEnvFwd.h"
 #include "DBCEnums.h"
-#include "EquipmentSet.h"
 #include "GroupReference.h"
 #include "ItemDefines.h"
 #include "ItemEnchantmentMgr.h"
@@ -456,9 +455,8 @@ enum SkillUpdateState
 
 struct SkillStatusData
 {
-    SkillStatusData(uint8 _pos, SkillUpdateState _uState) : pos(_pos), uState(_uState)
-    {
-    }
+    SkillStatusData(uint8 _pos, SkillUpdateState _uState) : pos(_pos), uState(_uState) { }
+
     uint8 pos;
     SkillUpdateState uState;
 };
@@ -670,7 +668,6 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOAD_DECLINED_NAMES          = 15,
     PLAYER_LOGIN_QUERY_LOAD_GUILD                   = 16,
     PLAYER_LOGIN_QUERY_LOAD_ARENA_INFO              = 17,
-    PLAYER_LOGIN_QUERY_LOAD_EQUIPMENT_SETS          = 20,
     PLAYER_LOGIN_QUERY_LOAD_BG_DATA                 = 21,
     PLAYER_LOGIN_QUERY_LOAD_TALENTS                 = 23,
     PLAYER_LOGIN_QUERY_LOAD_ACCOUNT_DATA            = 24,
@@ -698,7 +695,7 @@ enum PlayerDelayedOperations
 };
 
 // Player summoning auto-decline time (in secs)
-#define MAX_PLAYER_SUMMON_DELAY                   (2*MINUTE)
+#define MAX_PLAYER_SUMMON_DELAY (2 * MINUTE)
 // Maximum money amount : 2^31 - 1
 TC_GAME_API extern uint32 const MAX_MONEY_AMOUNT;
 
@@ -709,6 +706,7 @@ enum BindExtensionState
     EXTEND_STATE_EXTENDED =   2,
     EXTEND_STATE_KEEP     = 255   // special state: keep current save type
 };
+
 struct InstancePlayerBind
 {
     InstanceSave* save;
@@ -730,12 +728,6 @@ enum CharDeleteMethod
     CHAR_DELETE_REMOVE = 0,                      // Completely remove from the database
     CHAR_DELETE_UNLINK = 1                       // The character gets unlinked from the account,
                                                  // the name gets freed up and appears as deleted ingame
-};
-
-enum CurrencyItems
-{
-    ITEM_HONOR_POINTS_ID    = 43308,
-    ITEM_ARENA_POINTS_ID    = 43307
 };
 
 enum ReferAFriendError
@@ -1757,9 +1749,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void CastItemCombatSpell(DamageInfo const& damageInfo, Item* item, ItemTemplate const* proto);
         void CastItemUseSpell(Item* item, SpellCastTargets const& targets, uint8 cast_count);
 
-        void SetEquipmentSet(EquipmentSetInfo::EquipmentSetData const& eqset);
-        void DeleteEquipmentSet(uint64 setGuid);
-
         void SendInitWorldStates(uint32 zone, uint32 area);
         void SendUpdateWorldState(uint32 Field, uint32 Value) const;
         void SendDirectMessage(WorldPacket const* data) const;
@@ -2076,14 +2065,12 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void _LoadWeeklyQuestStatus(PreparedQueryResult result);
         void _LoadMonthlyQuestStatus(PreparedQueryResult result);
         void _LoadSeasonalQuestStatus(PreparedQueryResult result);
-        void _LoadRandomBGStatus(PreparedQueryResult result);
         void _LoadGroup(PreparedQueryResult result);
         void _LoadSkills(PreparedQueryResult result);
         void _LoadSpells(PreparedQueryResult result);
         bool _LoadHomeBind(PreparedQueryResult result);
         void _LoadDeclinedNames(PreparedQueryResult result);
         void _LoadArenaTeamInfo(PreparedQueryResult result);
-        void _LoadEquipmentSets(PreparedQueryResult result);
         void _LoadBGData(PreparedQueryResult result);
         void _LoadTalents(PreparedQueryResult result);
         void _LoadInstanceTimeRestrictions(PreparedQueryResult result);
@@ -2103,7 +2090,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void _SaveSeasonalQuestStatus(SQLTransaction& trans);
         void _SaveSkills(SQLTransaction& trans);
         void _SaveSpells(SQLTransaction& trans);
-        void _SaveEquipmentSets(SQLTransaction& trans);
         void _SaveBGData(SQLTransaction& trans);
         void _SaveTalents(SQLTransaction& trans);
         void _SaveStats(SQLTransaction& trans) const;
@@ -2250,7 +2236,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         WorldLocation m_recall_location;
 
         DeclinedName *m_declinedname;
-        EquipmentSetContainer _equipmentSets;
 
         bool CanAlwaysSee(WorldObject const* obj) const override;
 
