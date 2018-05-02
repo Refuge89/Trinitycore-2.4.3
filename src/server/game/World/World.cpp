@@ -114,7 +114,6 @@ World::World()
     m_NextDailyQuestReset = 0;
     m_NextWeeklyQuestReset = 0;
     m_NextMonthlyQuestReset = 0;
-    m_NextRandomBGReset = 0;
     m_NextGuildReset = 0;
 
     m_defaultDbcLocale = LOCALE_enUS;
@@ -2048,9 +2047,6 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO("server.loading", "Calculate next monthly quest reset time...");
     InitMonthlyQuestResetTime();
 
-    TC_LOG_INFO("server.loading", "Calculate random battleground reset time...");
-    InitRandomBGResetTime();
-
     TC_LOG_INFO("server.loading", "Calculate guild limitation(s) reset time...");
     InitGuildResetTime();
 
@@ -2196,9 +2192,6 @@ void World::Update(uint32 diff)
     /// Handle monthly quests reset time
     if (currentGameTime > m_NextMonthlyQuestReset)
         ResetMonthlyQuests();
-
-    if (currentGameTime > m_NextRandomBGReset)
-        ResetRandomBG();
 
     if (currentGameTime > m_NextGuildReset)
         ResetGuildCap();
@@ -3064,34 +3057,6 @@ void World::InitMonthlyQuestResetTime()
     m_NextMonthlyQuestReset = wstime < curtime ? curtime : time_t(wstime);
 }
 
-void World::InitRandomBGResetTime()
-{
-    time_t bgtime = uint64(sWorld->getWorldState(WS_BG_DAILY_RESET_TIME));
-    if (!bgtime)
-        m_NextRandomBGReset = time_t(GameTime::GetGameTime());         // game time not yet init
-
-    // generate time by config
-    time_t curTime = GameTime::GetGameTime();
-    tm localTm;
-    localtime_r(&curTime, &localTm);
-    localTm.tm_hour = getIntConfig(CONFIG_RANDOM_BG_RESET_HOUR);
-    localTm.tm_min = 0;
-    localTm.tm_sec = 0;
-
-    // current day reset time
-    time_t nextDayResetTime = mktime(&localTm);
-
-    // next reset time before current moment
-    if (curTime >= nextDayResetTime)
-        nextDayResetTime += DAY;
-
-    // normalize reset time
-    m_NextRandomBGReset = bgtime < curTime ? nextDayResetTime - DAY : nextDayResetTime;
-
-    if (!bgtime)
-        sWorld->setWorldState(WS_BG_DAILY_RESET_TIME, uint64(m_NextRandomBGReset));
-}
-
 void World::InitGuildResetTime()
 {
     time_t gtime = uint64(getWorldState(WS_GUILD_DAILY_RESET_TIME));
@@ -3227,21 +3192,6 @@ void World::ResetEventSeasonalQuests(uint16 event_id)
     for (SessionMap::const_iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
         if (itr->second->GetPlayer())
             itr->second->GetPlayer()->ResetSeasonalQuestStatus(event_id);
-}
-
-void World::ResetRandomBG()
-{
-    TC_LOG_INFO("misc", "Random BG status reset for all characters.");
-
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_BATTLEGROUND_RANDOM_ALL);
-    CharacterDatabase.Execute(stmt);
-
-    for (SessionMap::const_iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
-        if (itr->second->GetPlayer())
-            itr->second->GetPlayer()->SetRandomWinner(false);
-
-    m_NextRandomBGReset = time_t(m_NextRandomBGReset + DAY);
-    sWorld->setWorldState(WS_BG_DAILY_RESET_TIME, uint64(m_NextRandomBGReset));
 }
 
 void World::ResetGuildCap()

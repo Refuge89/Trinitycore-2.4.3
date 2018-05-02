@@ -633,7 +633,6 @@ class TC_GAME_API World
         /// Next daily quests and random bg reset time
         time_t GetNextDailyQuestsResetTime() const { return m_NextDailyQuestReset; }
         time_t GetNextWeeklyQuestsResetTime() const { return m_NextWeeklyQuestReset; }
-        time_t GetNextRandomBGResetTime() const { return m_NextRandomBGReset; }
 
         /// Get the maximum skill level a player can reach
         uint16 GetConfigMaxSkillValue() const
@@ -774,12 +773,10 @@ class TC_GAME_API World
         void InitDailyQuestResetTime(bool loading = true);
         void InitWeeklyQuestResetTime();
         void InitMonthlyQuestResetTime();
-        void InitRandomBGResetTime();
         void InitGuildResetTime();
         void ResetDailyQuests();
         void ResetWeeklyQuests();
         void ResetMonthlyQuests();
-        void ResetRandomBG();
         void ResetGuildCap();
     private:
         World();
@@ -838,7 +835,6 @@ class TC_GAME_API World
         time_t m_NextDailyQuestReset;
         time_t m_NextWeeklyQuestReset;
         time_t m_NextMonthlyQuestReset;
-        time_t m_NextRandomBGReset;
         time_t m_NextGuildReset;
 
         //Player Queue

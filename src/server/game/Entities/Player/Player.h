@@ -673,7 +673,6 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOAD_ACCOUNT_DATA            = 24,
     PLAYER_LOGIN_QUERY_LOAD_SKILLS                  = 25,
     PLAYER_LOGIN_QUERY_LOAD_WEEKLY_QUEST_STATUS     = 26,
-    PLAYER_LOGIN_QUERY_LOAD_RANDOM_BG               = 27,
     PLAYER_LOGIN_QUERY_LOAD_BANNED                  = 28,
     PLAYER_LOGIN_QUERY_LOAD_QUEST_STATUS_REW        = 29,
     PLAYER_LOGIN_QUERY_LOAD_INSTANCE_LOCK_TIMES     = 30,
@@ -1805,9 +1804,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool isTotalImmune() const;
         bool CanCaptureTowerPoint() const;
 
-        bool GetRandomWinner() const { return m_IsBGRandomWinner; }
-        void SetRandomWinner(bool isWinner);
-
         /*********************************************************/
         /***               OUTDOOR PVP SYSTEM                  ***/
         /*********************************************************/
@@ -2028,8 +2024,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         BgBattlegroundQueueID_Rec m_bgBattlegroundQueueID[PLAYER_MAX_BATTLEGROUND_QUEUES];
         BGData                    m_bgData;
-
-        bool m_IsBGRandomWinner;
 
         /*********************************************************/
         /***                    QUEST SYSTEM                   ***/
