@@ -10711,7 +10711,7 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
     }
     else if (Player* player = ToPlayer())
     {
-        if (player->isAFK())
+        if (player->IsAFK())
             player->ToggleAFK();
 
         if (charmer->GetTypeId() == TYPEID_UNIT) // we are charmed by a creature

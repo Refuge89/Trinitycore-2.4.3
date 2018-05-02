@@ -220,9 +220,9 @@ void SocialMgr::GetFriendInfo(Player* player, ObjectGuid const& friendGUID, Frie
 
     if (target->IsVisibleGloballyFor(player))
     {
-        if (target->isDND())
+        if (target->IsDND())
             friendInfo.Status = FRIEND_STATUS_DND;
-        else if (target->isAFK())
+        else if (target->IsAFK())
             friendInfo.Status = FRIEND_STATUS_AFK;
         else
         {

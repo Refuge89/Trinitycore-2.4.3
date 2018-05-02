@@ -754,10 +754,10 @@ void WorldSession::BuildPartyMemberStatsChangedPacket(Player* player, WorldPacke
         if (player->IsFFAPvP())
             playerStatus |= MEMBER_STATUS_PVP_FFA;
 
-        if (player->isAFK())
+        if (player->IsAFK())
             playerStatus |= MEMBER_STATUS_AFK;
 
-        if (player->isDND())
+        if (player->IsDND())
             playerStatus |= MEMBER_STATUS_DND;
 
         *data << uint16(playerStatus);
@@ -943,10 +943,10 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPacket &recvData)
     if (player->IsFFAPvP())
         playerStatus |= MEMBER_STATUS_PVP_FFA;
 
-    if (player->isAFK())
+    if (player->IsAFK())
         playerStatus |= MEMBER_STATUS_AFK;
 
-    if (player->isDND())
+    if (player->IsDND())
         playerStatus |= MEMBER_STATUS_DND;
 
     data << uint32(updateFlags);

@@ -479,7 +479,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
         {
             if (!sender->IsInCombat())
             {
-                if (sender->isAFK())                       // Already AFK
+                if (sender->IsAFK())                       // Already AFK
                 {
                     if (msg.empty())
                         sender->ToggleAFK();               // Remove AFK
@@ -490,7 +490,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                 {
                     sender->autoReplyMsg = msg.empty() ? GetTrinityString(LANG_PLAYER_AFK_DEFAULT) : msg;
 
-                    if (sender->isDND())
+                    if (sender->IsDND())
                         sender->ToggleDND();
 
                     sender->ToggleAFK();
@@ -502,7 +502,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
         }
         case CHAT_MSG_DND:
         {
-            if (sender->isDND())                           // Already DND
+            if (sender->IsDND())                           // Already DND
             {
                 if (msg.empty())
                     sender->ToggleDND();                   // Remove DND
@@ -513,7 +513,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             {
                 sender->autoReplyMsg = msg.empty() ? GetTrinityString(LANG_PLAYER_DND_DEFAULT) : msg;
 
-                if (sender->isAFK())
+                if (sender->IsAFK())
                     sender->ToggleAFK();
 
                 sender->ToggleDND();

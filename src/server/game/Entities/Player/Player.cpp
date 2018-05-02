@@ -1505,7 +1505,7 @@ void Player::ToggleAFK()
     ToggleFlag(PLAYER_FLAGS, PLAYER_FLAGS_AFK);
 
     // afk player not allowed in battleground
-    if (!IsGameMaster() && isAFK() && InBattleground() && !InArena())
+    if (!IsGameMaster() && IsAFK() && InBattleground() && !InArena())
         LeaveBattleground();
 }
 
@@ -1520,9 +1520,9 @@ uint8 Player::GetChatTag() const
 
     if (isGMChat())
         tag |= CHAT_TAG_GM;
-    if (isDND())
+    if (IsDND())
         tag |= CHAT_TAG_DND;
-    if (isAFK())
+    if (IsAFK())
         tag |= CHAT_TAG_AFK;
     if (HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_DEVELOPER))
         tag |= CHAT_TAG_DEV;
@@ -19588,9 +19588,9 @@ void Player::Whisper(std::string const& text, Language language, Player* target,
     }
 
     // announce afk or dnd message
-    if (target->isAFK())
+    if (target->IsAFK())
         ChatHandler(GetSession()).PSendSysMessage(LANG_PLAYER_AFK, target->GetName().c_str(), target->autoReplyMsg.c_str());
-    else if (target->isDND())
+    else if (target->IsDND())
         ChatHandler(GetSession()).PSendSysMessage(LANG_PLAYER_DND, target->GetName().c_str(), target->autoReplyMsg.c_str());
 }
 
