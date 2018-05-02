@@ -1518,7 +1518,7 @@ uint8 Player::GetChatTag() const
 {
     uint8 tag = CHAT_TAG_NONE;
 
-    if (isGMChat())
+    if (IsGMChat())
         tag |= CHAT_TAG_GM;
     if (IsDND())
         tag |= CHAT_TAG_DND;
@@ -19573,7 +19573,7 @@ void Player::Whisper(std::string const& text, Language language, Player* target,
     ChatHandler::BuildChatPacket(data, CHAT_MSG_WHISPER_INFORM, Language(language), target, target, _text);
     SendDirectMessage(&data);
 
-    if (!isAcceptWhispers() && !IsGameMaster() && !target->IsGameMaster())
+    if (!IsAcceptWhispers() && !IsGameMaster() && !target->IsGameMaster())
     {
         SetAcceptWhispers(true);
         ChatHandler(GetSession()).SendSysMessage(LANG_COMMAND_WHISPERON);

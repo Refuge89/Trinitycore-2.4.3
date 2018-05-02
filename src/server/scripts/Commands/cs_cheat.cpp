@@ -161,7 +161,7 @@ public:
         handler->PSendSysMessage(LANG_COMMAND_CHEAT_CT, player->GetCommandStatus(CHEAT_CASTTIME) ? enabled : disabled);
         handler->PSendSysMessage(LANG_COMMAND_CHEAT_POWER, player->GetCommandStatus(CHEAT_POWER) ? enabled : disabled);
         handler->PSendSysMessage(LANG_COMMAND_CHEAT_WW, player->GetCommandStatus(CHEAT_WATERWALK) ? enabled : disabled);
-        handler->PSendSysMessage(LANG_COMMAND_CHEAT_TAXINODES, player->isTaxiCheater() ? enabled : disabled);
+        handler->PSendSysMessage(LANG_COMMAND_CHEAT_TAXINODES, player->IsTaxiCheater() ? enabled : disabled);
 
         return true;
     }
@@ -203,7 +203,7 @@ public:
 
         if (!*args)
         {
-            argstr = (chr->isTaxiCheater()) ? "off" : "on";
+            argstr = (chr->IsTaxiCheater()) ? "off" : "on";
         }
 
         if (argstr == "off")

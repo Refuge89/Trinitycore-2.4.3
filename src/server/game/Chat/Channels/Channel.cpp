@@ -236,7 +236,7 @@ void Channel::JoinChannel(Player* player, std::string const& pass)
 
     PlayerInfo& pinfo = _playersStore[guid];
     pinfo.flags = MEMBER_FLAG_NONE;
-    pinfo.invisible = !player->isGMVisible();
+    pinfo.invisible = !player->IsGMVisible();
 
     YouJoinedAppend appender(this);
     ChannelNameBuilder<YouJoinedAppend> builder(this, appender);
@@ -766,7 +766,7 @@ void Channel::Invite(Player const* player, std::string const& newname)
     }
 
     Player* newp = ObjectAccessor::FindConnectedPlayerByName(newname);
-    if (!newp || !newp->isGMVisible())
+    if (!newp || !newp->IsGMVisible())
     {
         PlayerNotFoundAppend appender(newname);
         ChannelNameBuilder<PlayerNotFoundAppend> builder(this, appender);
