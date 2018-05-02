@@ -172,7 +172,7 @@ bool ArenaTeam::AddMember(ObjectGuid playerGuid)
     // Inform player if online
     if (player)
     {
-        player->SetInArenaTeam(TeamId, GetSlot(), GetType());
+        player->SetInArenaTeam(TeamId, GetSlot());
         player->SetArenaTeamIdInvited(0);
 
         // Hide promote/remove buttons

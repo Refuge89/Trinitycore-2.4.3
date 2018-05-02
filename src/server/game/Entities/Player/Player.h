@@ -589,13 +589,12 @@ enum InstanceResetWarningType
 enum ArenaTeamInfoType
 {
     ARENA_TEAM_ID                = 0,
-    ARENA_TEAM_TYPE              = 1,                       // new in 3.2 - team type?
-    ARENA_TEAM_MEMBER            = 2,                       // 0 - captain, 1 - member
-    ARENA_TEAM_GAMES_WEEK        = 3,
-    ARENA_TEAM_GAMES_SEASON      = 4,
-    ARENA_TEAM_WINS_SEASON       = 5,
-    ARENA_TEAM_PERSONAL_RATING   = 6,
-    ARENA_TEAM_END               = 7
+    ARENA_TEAM_MEMBER            = 1,                       // 0 - captain, 1 - member
+    ARENA_TEAM_GAMES_WEEK        = 2,
+    ARENA_TEAM_GAMES_SEASON      = 3,
+    ARENA_TEAM_WINS_SEASON       = 4,
+    ARENA_TEAM_PERSONAL_RATING   = 5,
+    ARENA_TEAM_END               = 6
 };
 
 class InstanceSave;
@@ -1452,7 +1451,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         static void RemovePetitionsAndSigns(ObjectGuid guid, CharterTypes type);
 
         // Arena Team
-        void SetInArenaTeam(uint32 ArenaTeamId, uint8 slot, uint8 type);
+        void SetInArenaTeam(uint32 ArenaTeamId, uint8 slot);
         void SetArenaTeamInfoField(uint8 slot, ArenaTeamInfoType type, uint32 value);
         static void LeaveAllArenaTeams(ObjectGuid guid);
         uint32 GetArenaTeamId(uint8 slot) const { return GetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (slot * ARENA_TEAM_END) + ARENA_TEAM_ID); }

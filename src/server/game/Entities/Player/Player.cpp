@@ -6609,10 +6609,9 @@ void Player::ModifyArenaPoints(int32 value, SQLTransaction trans)
     }
 }
 
-void Player::SetInArenaTeam(uint32 ArenaTeamId, uint8 slot, uint8 type)
+void Player::SetInArenaTeam(uint32 ArenaTeamId, uint8 slot)
 {
     SetArenaTeamInfoField(slot, ARENA_TEAM_ID, ArenaTeamId);
-    SetArenaTeamInfoField(slot, ARENA_TEAM_TYPE, type);
 }
 
 void Player::SetArenaTeamInfoField(uint8 slot, ArenaTeamInfoType type, uint32 value)
@@ -15929,7 +15928,6 @@ void Player::_LoadArenaTeamInfo(PreparedQueryResult result)
             personalRatingCache[arenaSlot] = fields[4].GetUInt16();
 
             SetArenaTeamInfoField(arenaSlot, ARENA_TEAM_ID, arenaTeamId);
-            SetArenaTeamInfoField(arenaSlot, ARENA_TEAM_TYPE, arenaTeam->GetType());
             SetArenaTeamInfoField(arenaSlot, ARENA_TEAM_MEMBER, (arenaTeam->GetCaptain() == GetGUID()) ? 0 : 1);
             SetArenaTeamInfoField(arenaSlot, ARENA_TEAM_GAMES_WEEK, uint32(fields[1].GetUInt16()));
             SetArenaTeamInfoField(arenaSlot, ARENA_TEAM_GAMES_SEASON, uint32(fields[2].GetUInt16()));
