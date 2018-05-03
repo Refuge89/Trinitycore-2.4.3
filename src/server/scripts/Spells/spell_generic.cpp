@@ -1612,7 +1612,7 @@ class spell_gen_pet_summoned : public SpellScript
             {
                 // revive the pet if it is dead
                 if (newPet->getDeathState() == DEAD)
-                    newPet->setDeathState(ALIVE);
+                    newPet->SetDeathState(ALIVE);
 
                 newPet->SetFullHealth();
                 newPet->SetPower(newPet->GetPowerType(), newPet->GetMaxPower(newPet->GetPowerType()));

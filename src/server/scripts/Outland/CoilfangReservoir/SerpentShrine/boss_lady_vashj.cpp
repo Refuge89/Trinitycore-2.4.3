@@ -221,7 +221,7 @@ public:
                 {
                     if (Unit* remo = ObjectAccessor::GetUnit(*me, ShieldGeneratorChannel[i]))
                     {
-                        remo->setDeathState(JUST_DIED);
+                        remo->SetDeathState(JUST_DIED);
                         ShieldGeneratorChannel[i].Clear();
                     }
                 }
@@ -709,7 +709,7 @@ public:
             if (DespawnTimer <= diff)
             {
                 // call Unsummon()
-                me->setDeathState(DEAD);
+                me->SetDeathState(DEAD);
 
                 // to prevent crashes
                 DespawnTimer = 1000;
@@ -935,7 +935,7 @@ public:
 
                 // get and remove channel
                 if (Unit* channel = ObjectAccessor::GetCreature(*vashj, ENSURE_AI(boss_lady_vashj::boss_lady_vashjAI, vashj->AI())->ShieldGeneratorChannel[channelIdentifier]))
-                    channel->setDeathState(JUST_DIED); // call Unsummon()
+                    channel->SetDeathState(JUST_DIED); // call Unsummon()
 
                 instance->SetData(identifier, 1);
 

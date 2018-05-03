@@ -65,7 +65,7 @@ class TC_GAME_API Pet : public Guardian
         void Remove(PetSaveMode mode, bool returnreagent = false);
         static void DeleteFromDB(ObjectGuid::LowType guidlow);
 
-        void setDeathState(DeathState s) override;                   // overwrite virtual Creature::setDeathState and Unit::setDeathState
+        void SetDeathState(DeathState state) override; // overwrite virtual Creature::SetDeathState and Unit::SetDeathState
         void Update(uint32 diff) override;                           // overwrite virtual Creature::Update and Unit::Update
 
         uint8 GetPetAutoSpellSize() const override { return m_autospells.size(); }

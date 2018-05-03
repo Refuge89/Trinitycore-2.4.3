@@ -272,7 +272,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petEntry, uint32 petnumber, bool c
         uint32 savedhealth = fields[10].GetUInt32();
         uint32 savedmana = fields[11].GetUInt32();
         if (!savedhealth && getPetType() == HUNTER_PET)
-            setDeathState(JUST_DIED);
+            SetDeathState(JUST_DIED);
         else
         {
             SetHealth(savedhealth > GetMaxHealth() ? GetMaxHealth() : savedhealth);
@@ -513,9 +513,9 @@ void Pet::DeleteFromDB(ObjectGuid::LowType guidlow)
     CharacterDatabase.CommitTransaction(trans);
 }
 
-void Pet::setDeathState(DeathState s)                       // overwrite virtual Creature::setDeathState and Unit::setDeathState
+void Pet::SetDeathState(DeathState state) // overwrite virtual Creature::SetDeathState and Unit::SetDeathState
 {
-    Creature::setDeathState(s);
+    Creature::SetDeathState(state);
     if (getDeathState() == CORPSE)
     {
         if (getPetType() == HUNTER_PET)

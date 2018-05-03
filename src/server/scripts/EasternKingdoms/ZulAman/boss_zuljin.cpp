@@ -284,7 +284,7 @@ class boss_zuljin : public CreatureScript
                         if (Unit* temp = ObjectAccessor::GetUnit(*me, SpiritGUID[i]))
                         {
                             temp->SetVisible(false);
-                            temp->setDeathState(DEAD);
+                            temp->SetDeathState(DEAD);
                         }
                     }
                     SpiritGUID[i].Clear();

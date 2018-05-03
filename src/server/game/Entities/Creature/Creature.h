@@ -193,7 +193,7 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         // override WorldObject function for proper name localization
         std::string const& GetNameForLocaleIdx(LocaleConstant locale_idx) const override;
 
-        void setDeathState(DeathState s) override;                   // override virtual Unit::setDeathState
+        void SetDeathState(DeathState state) override; // override virtual Unit::SetDeathState
 
         bool LoadFromDB(ObjectGuid::LowType spawnId, Map* map, bool addToMap, bool allowDuplicate);
         void SaveToDB();

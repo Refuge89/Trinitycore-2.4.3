@@ -3740,7 +3740,7 @@ void Spell::finish(bool ok)
         if (spellInfo && spellInfo->SpellIconID == 2056)
         {
             TC_LOG_DEBUG("spells", "Statue %d is unsummoned in spell %d finish", unitCaster->GetGUID().GetCounter(), m_spellInfo->Id);
-            unitCaster->setDeathState(JUST_DIED);
+            unitCaster->SetDeathState(JUST_DIED);
             return;
         }
     }

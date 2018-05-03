@@ -3310,7 +3310,7 @@ void Unit::_UnapplyAura(AuraApplicationMap::iterator& i, AuraRemoveMode removeMo
     if (aurApp->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE && GetTypeId() == TYPEID_UNIT && IsTotem())
     {
         if (ToTotem()->GetSpell() == aura->GetId() && ToTotem()->GetTotemType() == TOTEM_PASSIVE)
-            ToTotem()->setDeathState(JUST_DIED);
+            ToTotem()->SetDeathState(JUST_DIED);
     }
 
     // Remove aurastates only if needed and were not found
@@ -8025,12 +8025,12 @@ void Unit::RemoveAllFollowers()
         (*m_followingMe.begin())->SetTarget(nullptr);
 }
 
-void Unit::setDeathState(DeathState s)
+void Unit::SetDeathState(DeathState state)
 {
     // Death state needs to be updated before RemoveAllAurasOnDeath() is called, to prevent entering combat
-    m_deathState = s;
+    m_deathState = state;
 
-    if (s != ALIVE && s != JUST_RESPAWNED)
+    if (state != ALIVE && state != JUST_RESPAWNED)
     {
         CombatStop();
         GetThreatManager().ClearAllThreat();
@@ -8044,7 +8044,7 @@ void Unit::setDeathState(DeathState s)
         RemoveAllAurasOnDeath();
     }
 
-    if (s == JUST_DIED)
+    if (state == JUST_DIED)
     {
         // remove aurastates allowing special moves
         ClearAllReactives();
@@ -8071,7 +8071,7 @@ void Unit::setDeathState(DeathState s)
         if (ZoneScript* zoneScript = GetZoneScript() ? GetZoneScript() : GetInstanceScript())
             zoneScript->OnUnitDeath(this);
     }
-    else if (s == JUST_RESPAWNED)
+    else if (state == JUST_RESPAWNED)
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE); // clear skinnable for creature and player (at battleground)
 }
 
@@ -10233,11 +10233,11 @@ bool Unit::InitTamedPet(Pet* pet, uint8 level, uint32 spell_id)
     if (!spiritOfRedemption)
     {
         TC_LOG_DEBUG("entities.unit", "SET JUST_DIED");
-        victim->setDeathState(JUST_DIED);
+        victim->SetDeathState(JUST_DIED);
     }
 
     // Inform pets (if any) when player kills target)
-    // MUST come after victim->setDeathState(JUST_DIED); or pet next target
+    // MUST come after victim->SetDeathState(JUST_DIED); or pet next target
     // selection will get stuck on same target and break pet react state
     if (player)
     {
@@ -10282,7 +10282,7 @@ bool Unit::InitTamedPet(Pet* pet, uint8 level, uint32 spell_id)
         {
             creature->GetThreatManager().ClearAllThreat();
 
-            // must be after setDeathState which resets dynamic flags
+            // must be after SetDeathState which resets dynamic flags
             if (!creature->loot.isLooted())
                 creature->SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
             else

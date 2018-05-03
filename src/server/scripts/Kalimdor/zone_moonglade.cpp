@@ -214,7 +214,7 @@ public:
 
             if (!PlayerGUID)
             {
-                me->setDeathState(JUST_DIED);
+                me->SetDeathState(JUST_DIED);
                 return;
             }
 
@@ -234,7 +234,7 @@ public:
                 Player* player = ObjectAccessor::GetPlayer(*me, PlayerGUID);
                 if (!player || player->GetQuestStatus(10965) == QUEST_STATUS_NONE)
                 {
-                    me->setDeathState(JUST_DIED);
+                    me->SetDeathState(JUST_DIED);
                     return;
                 }
 
@@ -358,7 +358,7 @@ public:
                                 player->TalkedToCreature(me->GetEntry(), me->GetGUID());
                                 PlayerGUID.Clear();
                                 Reset();
-                                me->setDeathState(JUST_DIED);
+                                me->SetDeathState(JUST_DIED);
                                 break;
                         }
                         break;

@@ -1308,31 +1308,31 @@ void Player::Update(uint32 p_time)
 
 }
 
-void Player::setDeathState(DeathState s)
+void Player::SetDeathState(DeathState state)
 {
     uint32 ressSpellId = 0;
 
     bool cur = IsAlive();
 
-    if (s == JUST_DIED)
+    if (state == JUST_DIED)
     {
         if (!cur)
         {
-            TC_LOG_ERROR("entities.player", "Player::setDeathState: Attempt to kill a dead player '%s' (%s)", GetName().c_str(), GetGUID().ToString().c_str());
+            TC_LOG_ERROR("entities.player", "Player::SetDeathState: Attempt to kill a dead player '%s' (%s)", GetName().c_str(), GetGUID().ToString().c_str());
             return;
         }
 
         // drunken state is cleared on death
         SetDrunkValue(0);
-        // lost combo points at any target (targeted combo points clear in Unit::setDeathState)
+        // lost combo points at any target (targeted combo points clear in Unit::SetDeathState)
         ClearComboPoints();
 
         ClearResurrectRequestData();
 
-        //FIXME: is pet dismissed at dying or releasing spirit? if second, add setDeathState(DEAD) to HandleRepopRequestOpcode and define pet unsummon here with (s == DEAD)
+        //FIXME: is pet dismissed at dying or releasing spirit? if second, add SetDeathState(DEAD) to HandleRepopRequestOpcode and define pet unsummon here with (s == DEAD)
         RemovePet(nullptr, PET_SAVE_NOT_IN_SLOT, true);
 
-        // save value before aura remove in Unit::setDeathState
+        // save value before aura remove in Unit::SetDeathState
         ressSpellId = GetUInt32Value(PLAYER_SELF_RES_SPELL);
 
         // passive spell
@@ -1340,10 +1340,10 @@ void Player::setDeathState(DeathState s)
             ressSpellId = GetResurrectionSpellId();
     }
 
-    Unit::setDeathState(s);
+    Unit::SetDeathState(state);
 
     // restore resurrection spell id for player after aura remove
-    if (s == JUST_DIED && cur && ressSpellId)
+    if (state == JUST_DIED && cur && ressSpellId)
         SetUInt32Value(PLAYER_SELF_RES_SPELL, ressSpellId);
 
     if (IsAlive() && !cur)
@@ -4355,7 +4355,7 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
     if (GetSession()->IsARecruiter() || (GetSession()->GetRecruiterId() != 0))
         SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_REFER_A_FRIEND);
 
-    setDeathState(ALIVE);
+    SetDeathState(ALIVE);
 
     SetMovement(MOVE_LAND_WALK);
     SetMovement(MOVE_UNROOT);
@@ -4425,7 +4425,7 @@ void Player::KillPlayer()
 
     StopMirrorTimers();                                     //disable timers(bars)
 
-    setDeathState(CORPSE);
+    SetDeathState(CORPSE);
     //SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_IN_PVP);
 
     SetUInt32Value(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_NONE);
