@@ -216,8 +216,8 @@ class TC_GAME_API GameObject : public WorldObject, public GridObject<GameObject>
         GameObject* GetLinkedTrap();
         void SetLinkedTrap(GameObject* linkedTrap) { m_linkedTrap = linkedTrap->GetGUID(); }
 
-        bool hasQuest(uint32 quest_id) const override;
-        bool hasInvolvedQuest(uint32 quest_id) const override;
+        bool HasQuest(uint32 quest_id) const override;
+        bool HasInvolvedQuest(uint32 quest_id) const override;
         bool ActivateToQuest(Player* target) const;
         void UseDoorOrButton(uint32 time_to_restore = 0, bool alternative = false, Unit* user = nullptr);
                                                             // 0 = use `gameobject`.`spawntimesecs`

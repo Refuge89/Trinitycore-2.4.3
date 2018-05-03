@@ -1162,7 +1162,7 @@ void Creature::InitializeReactState()
         SetReactState(REACT_AGGRESSIVE);
 }
 
-bool Creature::isCanInteractWithBattleMaster(Player* player, bool msg) const
+bool Creature::CanInteractWithBattleMaster(Player* player, bool msg) const
 {
     if (!IsBattleMaster())
         return false;
@@ -1197,10 +1197,11 @@ bool Creature::isCanInteractWithBattleMaster(Player* player, bool msg) const
         }
         return false;
     }
+
     return true;
 }
 
-bool Creature::isCanTrainingAndResetTalentsOf(Player* player) const
+bool Creature::CanTrainingAndResetTalentsOf(Player* player) const
 {
     return player->getLevel() >= 10
         && GetCreatureTemplate()->trainer_type == TRAINER_TYPE_CLASS
@@ -1255,7 +1256,7 @@ void Creature::SetLootRecipient(Unit* unit, bool withGroup)
 }
 
 // return true if this creature is tapped by the player or by a member of his group.
-bool Creature::isTappedBy(Player const* player) const
+bool Creature::IsTappedBy(Player const* player) const
 {
     if (player->GetGUID() == m_lootRecipient)
         return true;
@@ -1675,25 +1676,23 @@ void Creature::SetSpawnHealth()
     SetHealth((m_deathState == ALIVE || m_deathState == JUST_RESPAWNED) ? curhealth : 0);
 }
 
-bool Creature::hasQuest(uint32 quest_id) const
+bool Creature::HasQuest(uint32 quest_id) const
 {
     QuestRelationBounds qr = sObjectMgr->GetCreatureQuestRelationBounds(GetEntry());
     for (QuestRelations::const_iterator itr = qr.first; itr != qr.second; ++itr)
-    {
         if (itr->second == quest_id)
             return true;
-    }
+
     return false;
 }
 
-bool Creature::hasInvolvedQuest(uint32 quest_id) const
+bool Creature::HasInvolvedQuest(uint32 quest_id) const
 {
     QuestRelationBounds qir = sObjectMgr->GetCreatureQuestInvolvedRelationBounds(GetEntry());
     for (QuestRelations::const_iterator itr = qir.first; itr != qir.second; ++itr)
-    {
         if (itr->second == quest_id)
             return true;
-    }
+
     return false;
 }
 
@@ -1908,7 +1907,7 @@ void Creature::SetDeathState(DeathState state)
         }
 
         // always save boss respawn time at death to prevent crash cheating
-        if (sWorld->getBoolConfig(CONFIG_SAVE_RESPAWN_TIME_IMMEDIATELY) || isWorldBoss())
+        if (sWorld->getBoolConfig(CONFIG_SAVE_RESPAWN_TIME_IMMEDIATELY) || IsWorldBoss())
             SaveRespawnTime();
         else if (!m_respawnCompatibilityMode)
             SaveRespawnTime(0, false);
@@ -2170,7 +2169,7 @@ bool Creature::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index) 
     return Unit::IsImmunedToSpellEffect(spellInfo, index);
 }
 
-bool Creature::isElite() const
+bool Creature::IsElite() const
 {
     if (IsPet())
         return false;
@@ -2179,7 +2178,7 @@ bool Creature::isElite() const
     return rank != CREATURE_ELITE_NORMAL && rank != CREATURE_ELITE_RARE;
 }
 
-bool Creature::isWorldBoss() const
+bool Creature::IsWorldBoss() const
 {
     if (IsPet())
         return false;
@@ -2397,7 +2396,7 @@ bool Creature::CanCreatureAttack(Unit const* victim, bool /*force*/) const
             return true;
 
         // don't check distance to home position if recently damaged, this should include taunt auras
-        if (!isWorldBoss() && (GetLastDamagedTime() > GameTime::GetGameTime() || HasAuraType(SPELL_AURA_MOD_TAUNT)))
+        if (!IsWorldBoss() && (GetLastDamagedTime() > GameTime::GetGameTime() || HasAuraType(SPELL_AURA_MOD_TAUNT)))
             return true;
     }
 
@@ -2598,7 +2597,7 @@ void Creature::AllLootRemovedFromCorpse()
 
 uint8 Creature::getLevelForTarget(WorldObject const* target) const
 {
-    if (!isWorldBoss() || !target->ToUnit())
+    if (!IsWorldBoss() || !target->ToUnit())
         return Unit::getLevelForTarget(target);
 
     uint16 level = target->ToUnit()->getLevel() + sWorld->getIntConfig(CONFIG_WORLD_BOSS_LEVEL_DIFF);

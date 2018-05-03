@@ -830,7 +830,7 @@ PlayerAI::TargetedSpell SimpleCharmedPlayerAI::SelectAppropriateCastForSpec()
             VerifyAndPushSpellCast(spells, SPELL_HAND_OF_PROTECTION, TARGET_SELF, 1);
             if (Creature* creatureCharmer = GetCharmer())
             {
-                if (creatureCharmer->IsDungeonBoss() || creatureCharmer->isWorldBoss())
+                if (creatureCharmer->IsDungeonBoss() || creatureCharmer->IsWorldBoss())
                     VerifyAndPushSpellCast(spells, SPELL_HAND_OF_SACRIFICE, creatureCharmer, 10);
                 else
                     VerifyAndPushSpellCast(spells, SPELL_HAND_OF_PROTECTION, creatureCharmer, 3);

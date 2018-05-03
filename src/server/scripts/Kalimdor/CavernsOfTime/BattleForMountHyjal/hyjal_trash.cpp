@@ -400,11 +400,11 @@ void hyjal_trashAI::UpdateAI(uint32 /*diff*/)
 
 void hyjal_trashAI::JustDied(Unit* /*killer*/)
 {
-    if (IsEvent && !me->isWorldBoss())
-        instance->SetData(DATA_TRASH, 0);//signal trash is dead
+    if (IsEvent && !me->IsWorldBoss())
+        instance->SetData(DATA_TRASH, 0); //signal trash is dead
 
-    if ((instance->GetData(DATA_RAIDDAMAGE) < MINRAIDDAMAGE && !me->isWorldBoss()) || (damageTaken < me->GetMaxHealth()/4 && me->isWorldBoss()))
-        me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);//no loot
+    if ((instance->GetData(DATA_RAIDDAMAGE) < MINRAIDDAMAGE && !me->IsWorldBoss()) || (damageTaken < me->GetMaxHealth() / 4 && me->IsWorldBoss()))
+        me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE); //no loot
 }
 
 class npc_giant_infernal : public CreatureScript

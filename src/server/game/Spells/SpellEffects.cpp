@@ -3877,7 +3877,7 @@ void Spell::EffectSkinning(SpellEffIndex /*effIndex*/)
     int32 const skillValue = player->GetPureSkillValue(skill);
 
     // Double chances for elites
-    player->UpdateGatherSkill(skill, skillValue, reqValue, creature->isElite() ? 2 : 1);
+    player->UpdateGatherSkill(skill, skillValue, reqValue, creature->IsElite() ? 2 : 1);
 }
 
 void Spell::EffectCharge(SpellEffIndex /*effIndex*/)
@@ -3947,7 +3947,7 @@ void Spell::EffectKnockBack(SpellEffIndex effIndex)
 
     if (m_caster->GetAffectingPlayer())
         if (Creature* creatureTarget = unitTarget->ToCreature())
-            if (creatureTarget->isWorldBoss() || creatureTarget->IsDungeonBoss())
+            if (creatureTarget->IsWorldBoss() || creatureTarget->IsDungeonBoss())
                 return;
 
     // Spells with SPELL_EFFECT_KNOCK_BACK (like Thunderstorm) can't knockback target if target has ROOT/STUN

@@ -52,7 +52,7 @@ typedef std::list<VendorItemCount> VendorItemCounts;
 // max different by z coordinate for creature aggro reaction
 #define CREATURE_Z_ATTACK_RANGE 3
 
-#define MAX_VENDOR_ITEMS 150                                // Limitation in 3.x.x item count in SMSG_LIST_INVENTORY
+#define MAX_VENDOR_ITEMS 255                                // Limitation in item count in SMSG_LIST_INVENTORY
 
 //used for handling non-repeatable random texts
 typedef std::vector<uint8> CreatureTextRepeatIds;
@@ -117,15 +117,14 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         using Unit::SetImmuneToNPC;
         void SetImmuneToNPC(bool apply) override { Unit::SetImmuneToNPC(apply, HasReactState(REACT_PASSIVE)); }
 
-        /// @todo Rename these properly
-        bool isCanInteractWithBattleMaster(Player* player, bool msg) const;
-        bool isCanTrainingAndResetTalentsOf(Player* player) const;
+        bool CanInteractWithBattleMaster(Player* player, bool msg) const;
+        bool CanTrainingAndResetTalentsOf(Player* player) const;
         bool CanCreatureAttack(Unit const* victim, bool force = true) const;
         void LoadTemplateImmunities();
         bool IsImmunedToSpell(SpellInfo const* spellInfo, WorldObject const* caster) const override;
         bool IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index) const override;
-        bool isElite() const;
-        bool isWorldBoss() const;
+        bool IsElite() const;
+        bool IsWorldBoss() const;
 
         uint8 getLevelForTarget(WorldObject const* target) const override; // overwrite Unit::getLevelForTarget for boss level support
 
@@ -209,7 +208,7 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         Player* GetLootRecipient() const;
         Group* GetLootRecipientGroup() const;
         bool hasLootRecipient() const { return !m_lootRecipient.IsEmpty() || m_lootRecipientGroup; }
-        bool isTappedBy(Player const* player) const;                          // return true if the creature is tapped by the player or a member of his party.
+        bool IsTappedBy(Player const* player) const; // return true if the creature is tapped by the player or a member of his party.
 
         void SetLootRecipient (Unit* unit, bool withGroup = true);
         void AllLootRemovedFromCorpse();
@@ -276,8 +275,8 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
 
         void SendZoneUnderAttackMessage(Player* attacker);
 
-        bool hasQuest(uint32 quest_id) const override;
-        bool hasInvolvedQuest(uint32 quest_id)  const override;
+        bool HasQuest(uint32 quest_id) const override;
+        bool HasInvolvedQuest(uint32 quest_id) const override;
 
         bool CanRegenerateHealth() const { return !_regenerateHealthLock && _regenerateHealth; }
         void SetRegenerateHealth(bool value) { _regenerateHealthLock = !value; }
