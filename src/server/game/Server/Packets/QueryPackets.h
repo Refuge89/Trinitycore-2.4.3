@@ -91,7 +91,6 @@ namespace WorldPackets
             uint32 DisplayID = 0;
             uint32 Data[MAX_GAMEOBJECT_DATA] = { };
             float Size = 0.0f;
-            uint32 QuestItems[MAX_GAMEOBJECT_QUEST_ITEMS] = { };
         };
 
         class QueryGameObjectResponse final : public ServerPacket

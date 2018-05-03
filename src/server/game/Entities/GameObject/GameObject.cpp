@@ -74,14 +74,6 @@ WorldPacket GameObjectTemplate::BuildQueryData(LocaleConstant loc) const
     memcpy(queryTemp.Stats.Data, raw.data, sizeof(uint32) * MAX_GAMEOBJECT_DATA);
     queryTemp.Stats.Size = size;
 
-    for (uint32 i = 0; i < MAX_GAMEOBJECT_QUEST_ITEMS; ++i)
-        queryTemp.Stats.QuestItems[i] = 0;
-
-    if (std::vector<uint32> const* items = sObjectMgr->GetGameObjectQuestItemList(entry))
-        for (uint32 i = 0; i < MAX_GAMEOBJECT_QUEST_ITEMS; ++i)
-            if (i < items->size())
-                queryTemp.Stats.QuestItems[i] = (*items)[i];
-
     queryTemp.Write();
     return queryTemp.Move();
 }
