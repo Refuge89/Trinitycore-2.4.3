@@ -490,7 +490,7 @@ bool SpellMgr::CanSpellTriggerProcOnEvent(SpellProcEntry const& procEntry, ProcE
     // check XP or honor target requirement
     if (procEntry.AttributesMask & PROC_ATTR_REQ_EXP_OR_HONOR)
         if (Player* actor = eventInfo.GetActor()->ToPlayer())
-            if (eventInfo.GetActionTarget() && !actor->isHonorOrXPTarget(eventInfo.GetActionTarget()))
+            if (eventInfo.GetActionTarget() && !actor->IsHonorOrXPTarget(eventInfo.GetActionTarget()))
                 return false;
 
     // check mana requirement

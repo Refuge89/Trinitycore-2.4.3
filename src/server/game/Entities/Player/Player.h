@@ -979,7 +979,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         InventoryResult CanStoreItems(Item** items, int count) const;
         InventoryResult CanEquipNewItem(uint8 slot, uint16& dest, uint32 item, bool swap) const;
         InventoryResult CanEquipItem(uint8 slot, uint16& dest, Item* pItem, bool swap, bool not_loading = true) const;
-
         InventoryResult CanEquipUniqueItem(Item* pItem, uint8 except_slot = NULL_SLOT) const;
         InventoryResult CanEquipUniqueItem(ItemTemplate const* itemProto, uint8 except_slot = NULL_SLOT) const;
         InventoryResult CanUnequipItems(uint32 item, uint32 count) const;
@@ -1247,8 +1246,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void RegenerateAll();
         void Regenerate(Powers power);
         void RegenerateHealth();
-        void setRegenTimerCount(uint32 time) {m_regenTimerCount = time;}
-        void setWeaponChangeTimer(uint32 time) {m_weaponChangeTimer = time;}
+        void SetRegenTimerCount(uint32 time) { m_regenTimerCount = time; }
+        void SetWeaponChangeTimer(uint32 time) { m_weaponChangeTimer = time; }
 
         uint32 GetMoney() const { return GetUInt32Value(PLAYER_FIELD_COINAGE); }
         bool ModifyMoney(int32 amount, bool sendError = true);
@@ -1256,8 +1255,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool HasEnoughMoney(int32 amount) const;
         void SetMoney(uint32 value);
 
-        RewardedQuestSet const& getRewardedQuests() const { return m_RewardedQuests; }
-        QuestStatusMap& getQuestStatusMap() { return m_QuestStatus; }
+        RewardedQuestSet const& GetRewardedQuests() const { return m_RewardedQuests; }
+        QuestStatusMap& GetQuestStatusMap() { return m_QuestStatus; }
 
         size_t GetRewardedQuestCount() const { return m_RewardedQuests.size(); }
         bool IsQuestRewarded(uint32 quest_id) const;
@@ -1387,11 +1386,11 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void ResurrectUsingRequestData();
         void ResurrectUsingRequestDataImpl();
 
-        uint8 getCinematic() const { return m_cinematic; }
-        void setCinematic(uint8 cine) { m_cinematic = cine; }
+        uint8 GetCinematic() const { return m_cinematic; }
+        void SetCinematic(uint8 cinematic) { m_cinematic = cinematic; }
 
-        ActionButton* addActionButton(uint8 button, uint32 action, uint8 type);
-        void removeActionButton(uint8 button);
+        ActionButton* AddActionButton(uint8 button, uint32 action, uint8 type);
+        void RemoveActionButton(uint8 button);
         ActionButton const* GetActionButton(uint8 button);
         void SendActionButtons() const;
         bool IsActionButtonDataValid(uint8 button, uint32 action, uint8 type) const;
@@ -1619,7 +1618,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         static uint32 TeamForRace(uint8 race);
         uint32 GetTeam() const { return m_team; }
         TeamId GetTeamId() const { return m_team == ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE; }
-        void setFactionForRace(uint8 race);
+        void SetFactionForRace(uint8 race);
 
         void InitDisplayIds();
 
@@ -1627,7 +1626,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool IsAtRecruitAFriendDistance(WorldObject const* pOther) const;
         void RewardPlayerAndGroupAtKill(Unit* victim, bool isBattleGround);
         void RewardPlayerAndGroupAtEvent(uint32 creature_id, WorldObject* pRewardSource);
-        bool isHonorOrXPTarget(Unit* victim) const;
+        bool IsHonorOrXPTarget(Unit* victim) const;
 
         bool GetsRecruitAFriendBonus(bool forXP);
         uint8 GetGrantableLevels() const { return m_grantableLevels; }
@@ -1790,7 +1789,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         bool GetBGAccessByLevel(BattlegroundTypeId bgTypeId) const;
         bool CanUseBattlegroundObject(GameObject* gameobject) const;
-        bool isTotalImmune() const;
+        bool IsTotalImmune() const;
         bool CanCaptureTowerPoint() const;
 
         /*********************************************************/
@@ -1954,13 +1953,13 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void SetPassOnGroupLoot(bool bPassOnGroupLoot) { m_bPassOnGroupLoot = bPassOnGroupLoot; }
         bool GetPassOnGroupLoot() const { return m_bPassOnGroupLoot; }
 
-        MapReference &GetMapRef() { return m_mapRef; }
+        MapReference& GetMapRef() { return m_mapRef; }
 
         // Set map to player and add reference
         void SetMap(Map* map) override;
         void ResetMap() override;
 
-        bool isAllowedToLoot(Creature const* creature);
+        bool IsAllowedToLoot(Creature const* creature);
 
         DeclinedName const* GetDeclinedNames() const { return m_declinedname; }
 
@@ -2085,14 +2084,14 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void SendMirrorTimer(MirrorTimerType Type, uint32 MaxValue, uint32 CurrentValue, int32 Regen);
         void StopMirrorTimer(MirrorTimerType Type);
         void HandleDrowning(uint32 time_diff);
-        int32 getMaxTimer(MirrorTimerType timer) const;
+        int32 GetMaxTimer(MirrorTimerType timer) const;
 
         /*********************************************************/
         /***                  HONOR SYSTEM                     ***/
         /*********************************************************/
         time_t m_lastHonorUpdateTime;
 
-        void outDebugValues() const;
+        void OutDebugValues() const;
         ObjectGuid m_lootGuid;
 
         uint32 m_team;

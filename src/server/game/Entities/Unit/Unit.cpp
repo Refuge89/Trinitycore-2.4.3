@@ -10891,7 +10891,7 @@ void Unit::RemoveCharmedBy(Unit* charmer)
 void Unit::RestoreFaction()
 {
     if (GetTypeId() == TYPEID_PLAYER)
-        ToPlayer()->setFactionForRace(getRace());
+        ToPlayer()->SetFactionForRace(getRace());
     else
     {
         if (HasUnitTypeMask(UNIT_MASK_MINION))
@@ -12253,7 +12253,7 @@ void Unit::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* target)
                             dynamicFlags |= UNIT_DYNFLAG_TAPPED_BY_PLAYER;
                     }
 
-                    if (!target->isAllowedToLoot(creature))
+                    if (!target->IsAllowedToLoot(creature))
                         dynamicFlags &= ~UNIT_DYNFLAG_LOOTABLE;
                 }
 

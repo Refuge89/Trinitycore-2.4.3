@@ -462,7 +462,7 @@ bool Player::Create(ObjectGuid::LowType guidlow, CharacterCreateInfo* createInfo
 
     SetObjectScale(1.0f);
 
-    setFactionForRace(createInfo->Race);
+    SetFactionForRace(createInfo->Race);
 
     if (!IsValidGender(createInfo->Gender))
     {
@@ -552,7 +552,7 @@ bool Player::Create(ObjectGuid::LowType guidlow, CharacterCreateInfo* createInfo
 
     // original action bar
     for (PlayerCreateInfoActions::const_iterator action_itr = info->action.begin(); action_itr != info->action.end(); ++action_itr)
-        addActionButton(action_itr->button, action_itr->action, action_itr->type);
+        AddActionButton(action_itr->button, action_itr->action, action_itr->type);
 
     // original items
     if (CharStartOutfitEntry const* oEntry = GetCharStartOutfitEntry(createInfo->Race, createInfo->Class, createInfo->Gender))
@@ -755,7 +755,7 @@ uint32 Player::EnvironmentalDamage(EnviromentalDamage type, uint32 damage)
     return final_damage;
 }
 
-int32 Player::getMaxTimer(MirrorTimerType timer) const
+int32 Player::GetMaxTimer(MirrorTimerType timer) const
 {
     switch (timer)
     {
@@ -797,7 +797,7 @@ void Player::StopMirrorTimers()
 
 bool Player::IsMirrorTimerActive(MirrorTimerType type) const
 {
-    return m_MirrorTimer[type] == getMaxTimer(type);
+    return m_MirrorTimer[type] == GetMaxTimer(type);
 }
 
 void Player::HandleDrowning(uint32 time_diff)
@@ -811,7 +811,7 @@ void Player::HandleDrowning(uint32 time_diff)
         // Breath timer not activated - activate it
         if (m_MirrorTimer[BREATH_TIMER] == DISABLED_MIRROR_TIMER)
         {
-            m_MirrorTimer[BREATH_TIMER] = getMaxTimer(BREATH_TIMER);
+            m_MirrorTimer[BREATH_TIMER] = GetMaxTimer(BREATH_TIMER);
             SendMirrorTimer(BREATH_TIMER, m_MirrorTimer[BREATH_TIMER], m_MirrorTimer[BREATH_TIMER], -1);
         }
         else                                                              // If activated - do tick
@@ -827,12 +827,12 @@ void Player::HandleDrowning(uint32 time_diff)
                 EnvironmentalDamage(DAMAGE_DROWNING, damage);
             }
             else if (!(m_MirrorTimerFlagsLast & UNDERWATER_INWATER))      // Update time in client if need
-                SendMirrorTimer(BREATH_TIMER, getMaxTimer(BREATH_TIMER), m_MirrorTimer[BREATH_TIMER], -1);
+                SendMirrorTimer(BREATH_TIMER, GetMaxTimer(BREATH_TIMER), m_MirrorTimer[BREATH_TIMER], -1);
         }
     }
     else if (m_MirrorTimer[BREATH_TIMER] != DISABLED_MIRROR_TIMER)        // Regen timer
     {
-        int32 UnderWaterTime = getMaxTimer(BREATH_TIMER);
+        int32 UnderWaterTime = GetMaxTimer(BREATH_TIMER);
         // Need breath regen
         m_MirrorTimer[BREATH_TIMER] += 10 * time_diff;
         if (m_MirrorTimer[BREATH_TIMER] >= UnderWaterTime || !IsAlive())
@@ -847,7 +847,7 @@ void Player::HandleDrowning(uint32 time_diff)
         // Fatigue timer not activated - activate it
         if (m_MirrorTimer[FATIGUE_TIMER] == DISABLED_MIRROR_TIMER)
         {
-            m_MirrorTimer[FATIGUE_TIMER] = getMaxTimer(FATIGUE_TIMER);
+            m_MirrorTimer[FATIGUE_TIMER] = GetMaxTimer(FATIGUE_TIMER);
             SendMirrorTimer(FATIGUE_TIMER, m_MirrorTimer[FATIGUE_TIMER], m_MirrorTimer[FATIGUE_TIMER], -1);
         }
         else
@@ -866,12 +866,12 @@ void Player::HandleDrowning(uint32 time_diff)
                     RepopAtGraveyard();
             }
             else if (!(m_MirrorTimerFlagsLast & UNDERWATER_INDARKWATER))
-                SendMirrorTimer(FATIGUE_TIMER, getMaxTimer(FATIGUE_TIMER), m_MirrorTimer[FATIGUE_TIMER], -1);
+                SendMirrorTimer(FATIGUE_TIMER, GetMaxTimer(FATIGUE_TIMER), m_MirrorTimer[FATIGUE_TIMER], -1);
         }
     }
     else if (m_MirrorTimer[FATIGUE_TIMER] != DISABLED_MIRROR_TIMER)       // Regen timer
     {
-        int32 DarkWaterTime = getMaxTimer(FATIGUE_TIMER);
+        int32 DarkWaterTime = GetMaxTimer(FATIGUE_TIMER);
         m_MirrorTimer[FATIGUE_TIMER] += 10 * time_diff;
         if (m_MirrorTimer[FATIGUE_TIMER] >= DarkWaterTime || !IsAlive())
             StopMirrorTimer(FATIGUE_TIMER);
@@ -883,7 +883,7 @@ void Player::HandleDrowning(uint32 time_diff)
     {
         // Breath timer not activated - activate it
         if (m_MirrorTimer[FIRE_TIMER] == DISABLED_MIRROR_TIMER)
-            m_MirrorTimer[FIRE_TIMER] = getMaxTimer(FIRE_TIMER);
+            m_MirrorTimer[FIRE_TIMER] = GetMaxTimer(FIRE_TIMER);
         else
         {
             m_MirrorTimer[FIRE_TIMER] -= time_diff;
@@ -2250,7 +2250,7 @@ void Player::SetGameMaster(bool on)
         SetPhaseMask(newPhase, false);
 
         m_ExtraFlags &= ~ PLAYER_EXTRA_GM_ON;
-        setFactionForRace(getRace());
+        SetFactionForRace(getRace());
         RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_GM);
 
         if (Pet* pet = GetPet())
@@ -6009,7 +6009,7 @@ bool Player::IsActionButtonDataValid(uint8 button, uint32 action, uint8 type) co
     return true;
 }
 
-ActionButton* Player::addActionButton(uint8 button, uint32 action, uint8 type)
+ActionButton* Player::AddActionButton(uint8 button, uint32 action, uint8 type)
 {
     if (!IsActionButtonDataValid(button, action, type))
         return nullptr;
@@ -6025,7 +6025,7 @@ ActionButton* Player::addActionButton(uint8 button, uint32 action, uint8 type)
     return &ab;
 }
 
-void Player::removeActionButton(uint8 button)
+void Player::RemoveActionButton(uint8 button)
 {
     ActionButtonList::iterator buttonItr = m_actionButtons.find(button);
     if (buttonItr == m_actionButtons.end() || buttonItr->second.uState == ACTIONBUTTON_DELETED)
@@ -6215,7 +6215,7 @@ uint32 Player::TeamForRace(uint8 race)
     return ALLIANCE;
 }
 
-void Player::setFactionForRace(uint8 race)
+void Player::SetFactionForRace(uint8 race)
 {
     m_team = TeamForRace(race);
 
@@ -14046,7 +14046,7 @@ void Player::AddQuest(Quest const* quest, Object* questGiver)
 
         // shared timed quest
         if (questGiver && questGiver->GetTypeId() == TYPEID_PLAYER)
-            timeAllowed = questGiver->ToPlayer()->getQuestStatusMap()[quest_id].Timer / IN_MILLISECONDS;
+            timeAllowed = questGiver->ToPlayer()->GetQuestStatusMap()[quest_id].Timer / IN_MILLISECONDS;
 
         AddTimedQuest(quest_id);
         questStatusData.Timer = timeAllowed * IN_MILLISECONDS;
@@ -16153,11 +16153,11 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
     }
 
     TC_LOG_DEBUG("entities.player.loading", "Player::LoadFromDB: Load Basic value of player '%s' is: ", m_name.c_str());
-    outDebugValues();
+    OutDebugValues();
 
     //Need to call it to initialize m_team (m_team can be calculated from race)
     //Other way is to saves m_team into characters table.
-    setFactionForRace(getRace());
+    SetFactionForRace(getRace());
 
     // load home bind and check in same time class/race pair, it used later for restore broken positions
     if (!_LoadHomeBind(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_HOME_BIND)))
@@ -16668,7 +16668,7 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
     }
 
     TC_LOG_DEBUG("entities.player.loading", "Player::LoadFromDB: The value of player '%s' after load item and aura is: ", m_name.c_str());
-    outDebugValues();
+    OutDebugValues();
 
     // GM state
     if (GetSession()->HasPermission(rbac::RBAC_PERM_RESTORE_SAVED_GM_STATE))
@@ -16731,7 +16731,7 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
     return true;
 }
 
-bool Player::isAllowedToLoot(Creature const* creature)
+bool Player::IsAllowedToLoot(Creature const* creature)
 {
     if (!creature->isDead() || !creature->IsDamageEnoughForLootingAndReward())
         return false;
@@ -16796,7 +16796,7 @@ void Player::_LoadActions(PreparedQueryResult result)
             uint32 action = fields[1].GetUInt32();
             uint8 type = fields[2].GetUInt8();
 
-            if (ActionButton* ab = addActionButton(button, action, type))
+            if (ActionButton* ab = AddActionButton(button, action, type))
                 ab->uState = ACTIONBUTTON_UNCHANGED;
             else
             {
@@ -18108,7 +18108,7 @@ void Player::SaveToDB(bool create /*=false*/)
     UpdateHonorFields();
 
     TC_LOG_DEBUG("entities.unit", "Player::SaveToDB: The value of player %s at save: ", m_name.c_str());
-    outDebugValues();
+    OutDebugValues();
 
     if (!create)
         sScriptMgr->OnPlayerSave(this);
@@ -19046,7 +19046,7 @@ void Player::_SaveStats(SQLTransaction& trans) const
     trans->Append(stmt);
 }
 
-void Player::outDebugValues() const
+void Player::OutDebugValues() const
 {
     if (!sLog->ShouldLog("entities.unit", LOG_LEVEL_DEBUG))
         return;
@@ -22387,7 +22387,7 @@ uint32 Player::GetResurrectionSpellId()
 }
 
 // Used in triggers for check "Only to targets that grant experience or honor" req
-bool Player::isHonorOrXPTarget(Unit* victim) const
+bool Player::IsHonorOrXPTarget(Unit* victim) const
 {
     uint8 v_level = victim->getLevel();
     uint8 k_grey  = Trinity::XP::GetGrayLevel(getLevel());
@@ -22397,10 +22397,9 @@ bool Player::isHonorOrXPTarget(Unit* victim) const
         return false;
 
     if (Creature const* creature = victim->ToCreature())
-    {
         if (!creature->CanGiveExperience())
             return false;
-    }
+
     return true;
 }
 
@@ -22943,7 +22942,7 @@ bool Player::CanUseBattlegroundObject(GameObject* gameobject) const
 
     // BUG: sometimes when player clicks on flag in AB - client won't send gameobject_use, only gameobject_report_use packet
     // Note: Mount, stealth and invisibility will be removed when used
-    return (!isTotalImmune() &&                            // Damage immune
+    return (!IsTotalImmune() &&                            // Damage immune
             !HasAura(SPELL_RECENTLY_DROPPED_FLAG) &&       // Still has recently held flag debuff
             IsAlive());                                    // Alive
 }
@@ -22955,7 +22954,7 @@ bool Player::CanCaptureTowerPoint() const
             IsAlive());                                     // live player
 }
 
-bool Player::isTotalImmune() const
+bool Player::IsTotalImmune() const
 {
     AuraEffectList const& immune = GetAuraEffectsByType(SPELL_AURA_SCHOOL_IMMUNITY);
 

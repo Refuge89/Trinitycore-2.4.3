@@ -1923,7 +1923,7 @@ void AuraEffect::HandleAuraTransform(AuraApplication const* aurApp, uint8 mode, 
             // for players, start regeneration after 1s (in polymorph fast regeneration case)
             // only if caster is Player (after patch 2.4.2)
             if (GetCasterGUID().IsPlayer())
-                target->ToPlayer()->setRegenTimerCount(1 * IN_MILLISECONDS);
+                target->ToPlayer()->SetRegenTimerCount(1 * IN_MILLISECONDS);
 
             //dismount polymorphed target (after patch 2.4.2)
             if (target->IsMounted())
@@ -4241,15 +4241,6 @@ void AuraEffect::HandleChannelDeathItem(AuraApplication const* aurApp, uint8 mod
     if (GetSpellInfo()->Effects[m_effIndex].ItemType == 0)
         return;
 
-    // Soul Shard
-    if (GetSpellInfo()->Effects[m_effIndex].ItemType == 6265)
-    {
-        // Soul Shard only from units that grant XP or honor
-        if (!plCaster->isHonorOrXPTarget(target) ||
-            (target->GetTypeId() == TYPEID_UNIT && !target->ToCreature()->isTappedBy(plCaster)))
-            return;
-    }
-
     //Adding items
     uint32 noSpaceForCount = 0;
     uint32 count = GetAmount();
@@ -4455,7 +4446,7 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster) const
                 }
                 // There is a Chance to make a Soul Shard when Drain soul does damage
                 else if ((GetSpellInfo()->SpellFamilyFlags[0] & 0x00004000))
-                    if (caster && caster->GetTypeId() == TYPEID_PLAYER && caster->ToPlayer()->isHonorOrXPTarget(target))
+                    if (caster && caster->GetTypeId() == TYPEID_PLAYER && caster->ToPlayer()->IsHonorOrXPTarget(target))
                         if (roll_chance_i(20))
                             caster->CastSpell(caster, 43836, this);
 

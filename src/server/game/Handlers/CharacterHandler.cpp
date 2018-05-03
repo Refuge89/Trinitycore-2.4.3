@@ -466,7 +466,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recvData)
             }
 
             if ((haveSameRace && skipCinematics == 1) || skipCinematics == 2)
-                newChar.setCinematic(1);                          // not show intro
+                newChar.SetCinematic(1);                          // not show intro
 
             newChar.SetAtLoginFlag(AT_LOGIN_FIRST);               // First login
 
@@ -689,9 +689,9 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     pCurrChar->SendInitialPacketsBeforeAddToMap();
 
     //Show cinematic at the first time that player login
-    if (!pCurrChar->getCinematic())
+    if (!pCurrChar->GetCinematic())
     {
-        pCurrChar->setCinematic(1);
+        pCurrChar->SetCinematic(1);
 
         if (ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(pCurrChar->getRace()))
             pCurrChar->SendCinematicStart(rEntry->CinematicSequence);

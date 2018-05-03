@@ -221,7 +221,7 @@ class spell_warl_curse_of_doom : public SpellScriptLoader
                 if (removeMode != AURA_REMOVE_BY_DEATH || !IsExpired())
                     return;
 
-                if (GetCaster()->ToPlayer()->isHonorOrXPTarget(GetTarget()))
+                if (GetCaster()->ToPlayer()->IsHonorOrXPTarget(GetTarget()))
                     GetCaster()->CastSpell(GetTarget(), SPELL_WARLOCK_CURSE_OF_DOOM_EFFECT, aurEff);
             }
 
