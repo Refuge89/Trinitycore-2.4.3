@@ -1175,7 +1175,6 @@ void WorldSession::InitializeSessionCallback(SQLQueryHolder* realmHolder)
     ResetTimeOutTime(false);
 
     SendAddonsInfo();
-    SendTutorialsData();
 
     delete realmHolder;
 }

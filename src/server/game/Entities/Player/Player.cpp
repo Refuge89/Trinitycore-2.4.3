@@ -8387,8 +8387,6 @@ void Player::SendInitWorldStates(uint32 zoneid, uint32 areaid)
     data << uint32(0x8d3) << uint32(0x0);                   // 6
                                                             // 7 1 - Arena season in progress, 0 - end of season
     data << uint32(0xC77) << uint32(sWorld->getBoolConfig(CONFIG_ARENA_SEASON_IN_PROGRESS));
-                                                            // 8 Arena season id
-    data << uint32(0xF3D) << uint32(sWorld->getIntConfig(CONFIG_ARENA_SEASON_ID));
 
     if (mapid == 530)                                       // Outland
     {
@@ -21160,10 +21158,8 @@ void Player::UpdateTriggerVisibility()
 void Player::SendInitialVisiblePackets(Unit* target) const
 {
     if (target->IsAlive())
-    {
         if (target->HasUnitState(UNIT_STATE_MELEE_ATTACKING) && target->GetVictim())
             target->SendMeleeAttackStart(target->GetVictim());
-    }
 }
 
 template<class T>
@@ -21306,16 +21302,11 @@ void Player::SendInitialPacketsBeforeAddToMap()
     data << uint32(0);
     SendDirectMessage(&data);
 
-    /// Pass 'this' as argument because we're not stored in ObjectAccessor yet
-    GetSocial()->SendSocialList(this, SOCIAL_FLAG_ALL);
-
-    // guild bank list wtf?
-
     // Homebind
     data.Initialize(SMSG_BINDPOINTUPDATE, 5 * 4);
     data << m_homebindX << m_homebindY << m_homebindZ;
-    data << (uint32) m_homebindMapId;
-    data << (uint32) m_homebindAreaId;
+    data << uint32(m_homebindMapId);
+    data << uint32(m_homebindAreaId);
     SendDirectMessage(&data);
 
     // SMSG_SET_PROFICIENCY
@@ -21323,9 +21314,12 @@ void Player::SendInitialPacketsBeforeAddToMap()
     // SMSG_SET_FLAT_SPELL_MODIFIER
     // SMSG_UPDATE_AURA_DURATION
 
+    GetSession()->SendTutorialsData();
+
     // SMSG_INSTANCE_DIFFICULTY
-    data.Initialize(SMSG_INSTANCE_DIFFICULTY, 4);
+    data.Initialize(SMSG_INSTANCE_DIFFICULTY, 4 + 4);
     data << uint32(GetMap()->GetDifficulty());
+    data << uint32(0);
     SendDirectMessage(&data);
 
     SendInitialSpells();
@@ -21335,7 +21329,7 @@ void Player::SendInitialPacketsBeforeAddToMap()
     SendDirectMessage(&data);
 
     SendActionButtons();
-    m_reputationMgr->SendInitialReputations();
+    GetReputationMgr().SendInitialReputations();
 
     data.Initialize(SMSG_LOGIN_SETTIMESPEED, 4 + 4);
     data.AppendPackedTime(GameTime::GetGameTime());
@@ -21351,6 +21345,8 @@ void Player::SendInitialPacketsBeforeAddToMap()
 
 void Player::SendInitialPacketsAfterAddToMap()
 {
+    GetSocial()->SendSocialList(this, SOCIAL_FLAG_ALL);
+
     UpdateVisibilityForPlayer();
 
     // update zone
@@ -21386,24 +21382,14 @@ void Player::SendInitialPacketsAfterAddToMap()
     // manual send package (have code in HandleEffect(this, AURA_EFFECT_HANDLE_SEND_FOR_CLIENT, true); that must not be re-applied.
     if (HasAuraType(SPELL_AURA_MOD_ROOT))
     {
-        WorldPacket data2(SMSG_FORCE_MOVE_ROOT, 10);
+        WorldPacket data2(SMSG_FORCE_MOVE_ROOT, GetPackGUID().size() + 4);
         data2 << GetPackGUID();
-        data2 << (uint32)2;
+        data2 << uint32(2);
         SendMessageToSet(&data2, true);
     }
 
     SendEnchantmentDurations();                             // must be after add to map
     SendItemDurations();                                    // must be after add to map
-    SendQuestGiverStatusMultiple();
-    SendTaxiNodeStatusMultiple();
-
-    if (GetPlayerSharingQuest())
-    {
-        if (Quest const* quest = sObjectMgr->GetQuestTemplate(GetSharedQuestID()))
-            PlayerTalkClass->SendQuestGiverQuestDetails(quest, GetGUID(), true);
-        else
-            ClearQuestSharingInfo();
-    }
 }
 
 void Player::SendUpdateToOutOfRangeGroupMembers()

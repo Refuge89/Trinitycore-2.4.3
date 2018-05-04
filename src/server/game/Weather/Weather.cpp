@@ -286,29 +286,29 @@ void Weather::SetWeather(WeatherType type, float grade)
 /// Get the sound number associated with the current weather
 WeatherState Weather::GetWeatherState() const
 {
-    if (m_grade<0.27f)
+    if (m_grade < 0.27f)
         return WEATHER_STATE_FINE;
 
     switch (m_type)
     {
         case WEATHER_TYPE_RAIN:
-            if (m_grade<0.40f)
+            if (m_grade < 0.40f)
                 return WEATHER_STATE_LIGHT_RAIN;
-            else if (m_grade<0.70f)
+            else if (m_grade < 0.70f)
                 return WEATHER_STATE_MEDIUM_RAIN;
             else
                 return WEATHER_STATE_HEAVY_RAIN;
         case WEATHER_TYPE_SNOW:
-            if (m_grade<0.40f)
+            if (m_grade < 0.40f)
                 return WEATHER_STATE_LIGHT_SNOW;
-            else if (m_grade<0.70f)
+            else if (m_grade < 0.70f)
                 return WEATHER_STATE_MEDIUM_SNOW;
             else
                 return WEATHER_STATE_HEAVY_SNOW;
         case WEATHER_TYPE_STORM:
-            if (m_grade<0.40f)
+            if (m_grade < 0.40f)
                 return WEATHER_STATE_LIGHT_SANDSTORM;
-            else if (m_grade<0.70f)
+            else if (m_grade < 0.70f)
                 return WEATHER_STATE_MEDIUM_SANDSTORM;
             else
                 return WEATHER_STATE_HEAVY_SANDSTORM;
