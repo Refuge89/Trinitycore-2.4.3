@@ -157,11 +157,11 @@ class TC_GAME_API ThreatManager
         // Removes all targets from the threat list (will cause evade in UpdateVictim if called)
         void ClearAllThreat();
 
-        // Fixtate on the passed target; this target will always be selected until the fixtate is cleared
+        // Fixate on the passed target; this target will always be selected until the fixate is cleared
         // (if the target is not in the threat list, does nothing)
-        void FixtateTarget(Unit* target);
-        void ClearFixtate() { FixtateTarget(nullptr); }
-        Unit* GetFixtateTarget() const;
+        void FixateTarget(Unit* target);
+        void ClearFixate() { FixateTarget(nullptr); }
+        Unit* GetFixateTarget() const;
 
         ///== AFFECT OTHERS' THREAT LISTS ==
         // what it says on the tin - call AddThreat on everything that's threatened by us with the specified params
@@ -198,7 +198,7 @@ class TC_GAME_API ThreatManager
         std::unordered_map<ObjectGuid, ThreatReference*> _myThreatListEntries;
         ThreatReference const* _currentVictimRef;
         ThreatReference const* ReselectVictim();
-        ThreatReference const* _fixtateRef;
+        ThreatReference const* _fixateRef;
 
         ///== OTHERS' THREAT LISTS ==
         void PutThreatenedByMeRef(ObjectGuid const& guid, ThreatReference* ref);
