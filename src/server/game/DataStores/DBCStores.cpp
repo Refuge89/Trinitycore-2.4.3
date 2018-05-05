@@ -151,6 +151,9 @@ DBCStorage <TalentTabEntry> sTalentTabStore(TalentTabEntryfmt);
 
 // store absolute bit position for first rank for talent inspect
 static uint32 sTalentTabPages[MAX_CLASSES][3];
+typedef std::map<uint32, uint32> TalentInspectMap;
+static TalentInspectMap sTalentPosInInspect;
+static TalentInspectMap sTalentTabSizeInInspect;
 
 DBCStorage <TaxiNodesEntry> sTaxiNodesStore(TaxiNodesEntryfmt);
 TaxiMask sTaxiNodesMask;
@@ -421,15 +424,31 @@ void LoadDBCStores(const std::string& dataPath)
 
     // create talent spells set
     for (TalentEntry const* talentInfo : sTalentStore)
-    {
         for (uint8 j = 0; j < MAX_TALENT_RANK; ++j)
             if (talentInfo->RankID[j])
                 sTalentSpellPosMap[talentInfo->RankID[j]] = TalentSpellPos(talentInfo->TalentID, j);
-    }
 
 
     // prepare fast data access to bit pos of talent ranks for use at inspecting
     {
+        typedef std::map<uint32, uint32> TalentBitSize;
+        TalentBitSize sTalentBitSize;
+        for (TalentEntry const* talentInfo : sTalentStore)
+        {
+            // find max talent rank (0~4)
+            int8 curTalentMaxRank = 0;
+            for (int8 rank = MAX_TALENT_RANK; rank > 0; --rank)
+            {
+                if (talentInfo->RankID[rank - 1])
+                {
+                    curTalentMaxRank = rank;
+                    break;
+                }
+            }
+
+            sTalentBitSize[(talentInfo->Row << 24) + (talentInfo->Col << 16) + talentInfo->TalentID] = curTalentMaxRank;
+            sTalentTabSizeInInspect[talentInfo->TalentTab] += curTalentMaxRank;
+        }
         // now have all max ranks (and then bit amount used for store talent ranks in inspect)
         for (TalentTabEntry const* talentTabInfo : sTalentTabStore)
         {
@@ -439,8 +458,25 @@ void LoadDBCStores(const std::string& dataPath)
 
             // store class talent tab pages
             for (uint32 cls = 1; cls < MAX_CLASSES; ++cls)
+            {
                 if (talentTabInfo->ClassMask & (1 << (cls - 1)))
+                {
                     sTalentTabPages[cls][talentTabInfo->tabpage] = talentTabInfo->TalentTabID;
+
+                    // add total amount bits for first rank starting from talent tab first talent rank pos.
+                    uint32 pos = 0;
+                    for (TalentBitSize::iterator itr = sTalentBitSize.begin(); itr != sTalentBitSize.end(); ++itr)
+                    {
+                        uint32 talentId = itr->first & 0xFFFF;
+                        TalentEntry const* talentInfo = sTalentStore.LookupEntry(talentId);
+                        if (!talentInfo)
+                            continue;
+
+                        sTalentPosInInspect[talentId] = pos;
+                        pos += itr->second;
+                    }
+                }
+            }
         }
     }
 
@@ -568,7 +604,7 @@ char* GetPetName(uint32 petfamily, uint32 dbclang)
     CreatureFamilyEntry const* pet_family = sCreatureFamilyStore.LookupEntry(petfamily);
     if (!pet_family)
         return nullptr;
-    return pet_family->Name[dbclang]?pet_family->Name[dbclang]:nullptr;
+    return pet_family->Name[dbclang] ? pet_family->Name[dbclang] : nullptr;
 }
 
 TalentSpellPos const* GetTalentSpellPos(uint32 spellId)
@@ -583,7 +619,7 @@ TalentSpellPos const* GetTalentSpellPos(uint32 spellId)
 uint32 GetTalentSpellCost(uint32 spellId)
 {
     if (TalentSpellPos const* pos = GetTalentSpellPos(spellId))
-        return pos->rank+1;
+        return pos->rank + 1;
 
     return 0;
 }
@@ -712,6 +748,24 @@ MapDifficulty const* GetDownscaledMapDifficultyData(uint32 mapId, Difficulty &di
 
     difficulty = Difficulty(tmpDiff);
     return mapDiff;
+}
+
+uint32 GetTalentInspectBitPosInTab(uint32 talentId)
+{
+    TalentInspectMap::const_iterator itr = sTalentPosInInspect.find(talentId);
+    if (itr == sTalentPosInInspect.end())
+        return 0;
+
+    return itr->second;
+}
+
+uint32 GetTalentTabInspectBitSize(uint32 talentTabId)
+{
+    TalentInspectMap::const_iterator itr = sTalentTabSizeInInspect.find(talentTabId);
+    if (itr == sTalentTabSizeInInspect.end())
+        return 0;
+
+    return itr->second;
 }
 
 uint32 const* GetTalentTabPages(uint8 cls)

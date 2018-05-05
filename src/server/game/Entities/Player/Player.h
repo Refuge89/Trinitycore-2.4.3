@@ -125,7 +125,6 @@ struct PlayerSpell
 struct PlayerTalent
 {
     PlayerSpellState state : 8;
-    uint8 spec             : 8;
 };
 
 // Spell modifier (used for modify other spells)
@@ -992,7 +991,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         Item* StoreItem(ItemPosCountVec const& pos, Item* pItem, bool update);
         Item* EquipNewItem(uint16 pos, uint32 item, bool update);
         Item* EquipItem(uint16 pos, Item* pItem, bool update);
-        void AutoUnequipOffhandIfNeed(bool force = false);
+        void AutoUnequipOffhandIfNeed();
         bool StoreNewItemInBestSlots(uint32 item_id, uint32 item_count);
         void AutoStoreLoot(uint8 bag, uint8 slot, uint32 loot_id, LootStore const& store, bool broadcast = false);
         void AutoStoreLoot(uint32 loot_id, LootStore const& store, bool broadcast = false) { AutoStoreLoot(NULL_BAG, NULL_SLOT, loot_id, store, broadcast); }
@@ -1331,21 +1330,13 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool ResetTalents(bool no_cost = false);
         uint32 ResetTalentsCost() const;
         void InitTalentForLevel();
-        void BuildPlayerTalentsInfoData(WorldPacket* data);
         void LearnTalent(uint32 talentId, uint32 talentRank);
 
-        bool AddTalent(uint32 spellId, uint8 spec, bool learning);
-        bool HasTalent(uint32 spell_id, uint8 spec) const;
+        bool AddTalent(uint32 spellId, bool learning);
+        bool HasTalent(uint32 spell_id) const;
 
         uint32 CalculateTalentsPoints() const;
 
-        // Dual Spec
-        void UpdateSpecCount(uint8 count);
-        uint32 GetActiveSpec() const { return m_activeSpec; }
-        void SetActiveSpec(uint8 spec){ m_activeSpec = spec; }
-        uint8 GetSpecsCount() const { return m_specsCount; }
-        void SetSpecsCount(uint8 count) { m_specsCount = count; }
-        void ActivateSpec(uint8 spec);
         void LoadActions(PreparedQueryResult result);
 
         uint32 GetFreePrimaryProfessionPoints() const { return GetUInt32Value(PLAYER_CHARACTER_POINTS2); }
@@ -2120,11 +2111,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         PlayerMails m_mail;
         PlayerSpellMap m_spells;
-        PlayerTalentMap* m_talents[MAX_TALENT_SPECS];
+        PlayerTalentMap* m_talents;
         uint32 m_lastPotionId;                              // last used health/mana potion in combat, that block next potion use
-
-        uint8 m_activeSpec;
-        uint8 m_specsCount;
 
         ActionButtonList m_actionButtons;
 

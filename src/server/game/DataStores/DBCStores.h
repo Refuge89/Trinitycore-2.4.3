@@ -53,6 +53,7 @@ enum ContentLevels : uint8
     CONTENT_61_70,
     CONTENT_71_80
 };
+
 TC_GAME_API ContentLevels GetContentLevelsForMapAndZone(uint32 mapid, uint32 zoneId);
 
 TC_GAME_API bool IsTotemCategoryCompatiableWith(uint32 itemTotemCategoryId, uint32 requiredTotemCategoryId);
@@ -64,6 +65,8 @@ typedef std::map<uint32/*pair32(map, diff)*/, MapDifficulty> MapDifficultyMap;
 TC_GAME_API MapDifficulty const* GetMapDifficultyData(uint32 mapId, Difficulty difficulty);
 TC_GAME_API MapDifficulty const* GetDownscaledMapDifficultyData(uint32 mapId, Difficulty &difficulty);
 
+TC_GAME_API uint32 GetTalentTabInspectBitSize(uint32 talentTabId);
+TC_GAME_API uint32 GetTalentInspectBitPosInTab(uint32 talentId);
 TC_GAME_API uint32 const* /*[MAX_TALENT_TABS]*/ GetTalentTabPages(uint8 cls);
 
 TC_GAME_API uint32 GetLiquidFlags(uint32 liquidType);

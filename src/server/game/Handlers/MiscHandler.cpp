@@ -976,18 +976,68 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recvData)
     if (GetPlayer()->IsValidAttackTarget(player))
         return;
 
-    uint32 talent_points = 0x47;
-    uint32 guid_size = player->GetPackGUID().size();
-    WorldPacket data(SMSG_INSPECT_TALENT, guid_size + 4 + talent_points);
+    uint32 talentPoints = 0x3D;
+    uint32 guidSize = player->GetPackGUID().size();
+    WorldPacket data(SMSG_INSPECT_TALENT, guidSize + 4 + talentPoints);
     data << player->GetPackGUID();
+    data << uint32(talentPoints);
 
     if (GetPlayer()->CanBeGameMaster() || sWorld->getIntConfig(CONFIG_TALENTS_INSPECTING) + (GetPlayer()->GetTeamId() == player->GetTeamId()) > 1)
-        player->BuildPlayerTalentsInfoData(&data);
+    {
+        for (uint8 i = 0; i < talentPoints; ++i)
+            data << uint8(0);
+
+        uint32 talentTabPos = 0;
+        // find class talent tabs (all players have 3 talent tabs)
+        uint32 const* talentTabIds = GetTalentTabPages(player->getClass());
+
+        for (uint8 i = 0; i < MAX_TALENT_TABS; ++i)
+        {
+            uint32 talentTabId = talentTabIds[i];
+
+            for (TalentEntry const* talentInfo : sTalentStore)
+            {
+                // skip another tab talents
+                if (talentInfo->TalentTab != talentTabId)
+                    continue;
+
+                // find max talent rank (0~4)
+                int8 curTalentMaxRank = -1;
+                for (int8 rank = MAX_TALENT_RANK - 1; rank >= 0; --rank)
+                {
+                    if (talentInfo->RankID[rank] && player->HasTalent(talentInfo->RankID[rank]))
+                    {
+                        curTalentMaxRank = rank;
+                        break;
+                    }
+                }
+
+                // not learned talent
+                if (curTalentMaxRank < 0)
+                    continue;
+
+                uint32 curTalentRankIndex = talentTabPos + GetTalentInspectBitPosInTab(talentInfo->TalentID) + curTalentMaxRank;
+                // slot/offset in 7-bit bytes
+                uint32 curTalentRankSlot = curTalentRankIndex / 7;
+                uint32 curTalentRankOffset = curTalentRankIndex % 7;
+                // rank pos with skipped 8 bit
+                curTalentRankIndex = curTalentRankSlot * 8 + curTalentRankOffset;
+                // slot/offset in 8-bit bytes with skipped high bit
+                curTalentRankSlot = curTalentRankIndex / 8;
+                curTalentRankOffset =  curTalentRankIndex % 8;
+                // apply mask
+                uint32 val = data.read<uint8>(guidSize + 4 + curTalentRankSlot);
+                val |= (1 << curTalentRankOffset);
+                data.put<uint8>(guidSize + 4 + curTalentRankSlot, val & 0xFF);
+            }
+
+            talentTabPos += GetTalentTabInspectBitSize(talentTabId);
+        }
+    }
     else
     {
-        data << uint32(0);                                  // unspentTalentPoints
-        data << uint8(0);                                   // talentGroupCount
-        data << uint8(0);                                   // talentGroupIndex
+        for (uint8 i = 0; i < talentPoints; ++i)
+            data << uint8(0);
     }
 
     player->BuildEnchantmentsInfoData(&data);
