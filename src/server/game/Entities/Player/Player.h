@@ -354,8 +354,8 @@ enum PlayerFieldBytes2Offsets
     PLAYER_FIELD_BYTES_2_OFFSET_AURA_VISION                         = 1
 };
 
-#define KNOWN_TITLES_SIZE   3
-#define MAX_TITLE_INDEX     (KNOWN_TITLES_SIZE * 64)          // 3 uint64 fields
+#define KNOWN_TITLES_SIZE   2
+#define MAX_TITLE_INDEX     64          // 1 uint64 fields
 
 // used in PLAYER_FIELD_BYTES values
 enum PlayerFieldByteFlags
