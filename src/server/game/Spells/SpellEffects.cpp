@@ -3556,10 +3556,10 @@ void Spell::EffectInebriate(SpellEffIndex /*effIndex*/)
         return;
 
     Player* player = unitTarget->ToPlayer();
-    uint8 currentDrunk = player->GetDrunkValue();
-    uint8 drunkMod = damage;
-    if (currentDrunk + drunkMod > 100)
-        currentDrunk = 100;
+    uint16 currentDrunk = player->GetDrunkValue();
+    uint16 drunkMod = damage * 256;
+    if (currentDrunk + drunkMod > 0xFFFE)
+        currentDrunk = 0xFFFE;
     else
         currentDrunk += drunkMod;
 

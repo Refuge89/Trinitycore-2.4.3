@@ -488,7 +488,7 @@ bool Player::Create(ObjectGuid::LowType guidlow, CharacterCreateInfo* createInfo
     SetByteValue(PLAYER_BYTES, PLAYER_BYTES_OFFSET_HAIR_COLOR_ID, createInfo->HairColor);
     SetByteValue(PLAYER_BYTES_2, PLAYER_BYTES_2_OFFSET_FACIAL_STYLE, createInfo->FacialHair);
     SetByteValue(PLAYER_BYTES_2, PLAYER_BYTES_2_OFFSET_REST_STATE, (GetSession()->IsARecruiter() || GetSession()->GetRecruiterId() != 0) ? REST_STATE_RAF_LINKED : REST_STATE_NOT_RAF_LINKED);
-    SetByteValue(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER, createInfo->Gender);
+    SetUInt16Value(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER, createInfo->Gender); // Gender, Drunk = 0
     SetByteValue(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_ARENA_FACTION, 0);
 
     SetUInt32Value(PLAYER_GUILDID, 0);
@@ -908,46 +908,43 @@ void Player::HandleDrowning(uint32 time_diff)
     m_MirrorTimerFlagsLast = m_MirrorTimerFlags;
 }
 
-///The player sobers by 1% every 9 seconds
+///The player sobers by 256 every 10 seconds
 void Player::HandleSobering()
 {
     m_drunkTimer = 0;
 
-    uint8 currentDrunkValue = GetDrunkValue();
-    uint8 drunk = currentDrunkValue ? --currentDrunkValue : 0;
+    uint16 currentDrunkValue = GetDrunkValue();
+    uint16 drunk = currentDrunkValue && currentDrunkValue >= 256 ? (currentDrunkValue - 256) : 0;
     SetDrunkValue(drunk);
 }
 
-DrunkenState Player::GetDrunkenstateByValue(uint8 value)
+DrunkenState Player::GetDrunkenstateByValue(uint16 value)
 {
-    if (value >= 90)
+    if (value >= 23000)
         return DRUNKEN_SMASHED;
-    if (value >= 50)
+    if (value >= 12800)
         return DRUNKEN_DRUNK;
     if (value)
         return DRUNKEN_TIPSY;
+
     return DRUNKEN_SOBER;
 }
 
-void Player::SetDrunkValue(uint8 newDrunkValue, uint32 itemId /*= 0*/)
+void Player::SetDrunkValue(uint16 newDrunkValue, uint32 itemId /*= 0*/)
 {
     bool isSobering = newDrunkValue < GetDrunkValue();
     uint32 oldDrunkenState = Player::GetDrunkenstateByValue(GetDrunkValue());
-    if (newDrunkValue > 100)
-        newDrunkValue = 100;
+    uint32 newDrunkenState = Player::GetDrunkenstateByValue(newDrunkValue);
 
-    // select drunk percent or total SPELL_AURA_MOD_FAKE_INEBRIATE amount, whichever is higher for visibility updates
-    int32 drunkPercent = std::max<int32>(newDrunkValue, GetTotalAuraModifier(SPELL_AURA_MOD_FAKE_INEBRIATE));
-    if (drunkPercent)
+    if (newDrunkenState >= DRUNKEN_DRUNK)
     {
         m_invisibilityDetect.AddFlag(INVISIBILITY_DRUNK);
-        m_invisibilityDetect.SetValue(INVISIBILITY_DRUNK, drunkPercent);
+        m_invisibilityDetect.SetValue(INVISIBILITY_DRUNK, uint32(newDrunkValue / 256));
     }
-    else if (!HasAuraType(SPELL_AURA_MOD_FAKE_INEBRIATE) && !newDrunkValue)
+    else
         m_invisibilityDetect.DelFlag(INVISIBILITY_DRUNK);
 
-    uint32 newDrunkenState = Player::GetDrunkenstateByValue(newDrunkValue);
-    SetByteValue(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_INEBRIATION, newDrunkValue);
+    SetUint16Value(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER, uint16(getGender()) | (newDrunkValue & 0xFFFE));
     UpdateObjectVisibility();
 
     if (!isSobering)
@@ -4455,7 +4452,7 @@ Corpse* Player::CreateCorpse()
     uint8 haircolor = GetByteValue(PLAYER_BYTES, PLAYER_BYTES_OFFSET_HAIR_COLOR_ID);
     uint8 facialhair = GetByteValue(PLAYER_BYTES_2, PLAYER_BYTES_2_OFFSET_FACIAL_STYLE);
 
-    _cfb1 = ((0x00) | (getRace() << 8) | (GetByteValue(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER) << 16) | (skin << 24));
+    _cfb1 = ((0x00) | (getRace() << 8) | ((GetByteValue(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER) & 0x01) << 16) | (skin << 24));
     _cfb2 = ((face) | (hairstyle << 8) | (haircolor << 16) | (facialhair << 24));
 
     corpse->SetUInt32Value(CORPSE_FIELD_BYTES_1, _cfb1);
@@ -15998,8 +15995,7 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
     SetByteValue(PLAYER_BYTES_2, PLAYER_BYTES_2_OFFSET_FACIAL_STYLE, fields[13].GetUInt8());
     SetByteValue(PLAYER_BYTES_2, PLAYER_BYTES_2_OFFSET_BANK_BAG_SLOTS, fields[14].GetUInt8());
     SetByteValue(PLAYER_BYTES_2, PLAYER_BYTES_2_OFFSET_REST_STATE, fields[15].GetUInt8());
-    SetByteValue(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER, fields[5].GetUInt8());
-    SetByteValue(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_INEBRIATION, fields[54].GetUInt8());
+    SetUint16Value(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER, uint16(fields[5].GetUInt8()) | (fields[54].GetUInt16() & 0xFFFE));
 
     if (!ValidateAppearance(
         fields[3].GetUInt8(), // race
@@ -16373,9 +16369,9 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
 
     // set value, including drunk invisibility detection
     // calculate sobering. after 15 minutes logged out, the player will be sober again
-    uint8 newDrunkValue = 0;
-    if (time_diff < uint32(GetDrunkValue()) * 9)
-        newDrunkValue = GetDrunkValue() - time_diff / 9;
+    uint16 newDrunkValue = 0;
+    if (time_diff < 15 * MINUTE)
+        newDrunkValue = GetDrunkValue() * (1 - (time_diff / 15 * MINUTE));
 
     SetDrunkValue(newDrunkValue);
 
@@ -18006,7 +18002,7 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setString(index++, GetName());
         stmt->setUInt8(index++, getRace());
         stmt->setUInt8(index++, getClass());
-        stmt->setUInt8(index++, GetByteValue(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER));   // save gender from PLAYER_BYTES_3, UNIT_BYTES_0 changes with every transform effect
+        stmt->setUInt8(index++, GetByteValue(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER) & 0x01);   // save gender from PLAYER_BYTES_3, UNIT_BYTES_0 changes with every transform effect
         stmt->setUInt8(index++, getLevel());
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_XP));
         stmt->setUInt32(index++, GetMoney());
@@ -18066,7 +18062,7 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt16(index++, GetUInt16Value(PLAYER_FIELD_KILLS, 1));
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_CHOSEN_TITLE));
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX));
-        stmt->setUInt8(index++, GetDrunkValue());
+        stmt->setUInt16(index++, GetDrunkValue());
         stmt->setUInt32(index++, GetHealth());
 
         for (uint32 i = 0; i < MAX_POWERS; ++i)
@@ -18112,7 +18108,7 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setString(index++, GetName());
         stmt->setUInt8(index++, getRace());
         stmt->setUInt8(index++, getClass());
-        stmt->setUInt8(index++, GetByteValue(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER));   // save gender from PLAYER_BYTES_3, UNIT_BYTES_0 changes with every transform effect
+        stmt->setUInt8(index++, GetByteValue(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER) & 0x01);   // save gender from PLAYER_BYTES_3, UNIT_BYTES_0 changes with every transform effect
         stmt->setUInt8(index++, getLevel());
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_XP));
         stmt->setUInt32(index++, GetMoney());
@@ -18187,7 +18183,7 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt16(index++, GetUInt16Value(PLAYER_FIELD_KILLS, 1));
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_CHOSEN_TITLE));
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX));
-        stmt->setUInt8(index++, GetDrunkValue());
+        stmt->setUInt16(index++, GetDrunkValue());
         stmt->setUInt32(index++, GetHealth());
 
         for (uint32 i = 0; i < MAX_POWERS; ++i)
@@ -20128,7 +20124,7 @@ void Player::InitDisplayIds()
         return;
     }
 
-    uint8 gender = GetByteValue(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER);
+    uint8 gender = GetByteValue(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER) & 0x01;
     switch (gender)
     {
         case GENDER_FEMALE:

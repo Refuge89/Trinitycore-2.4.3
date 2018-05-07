@@ -662,8 +662,10 @@ public:
         if (drunklevel > 100)
             drunklevel = 100;
 
+        uint16 drunkMod = drunklevel * 0xFFFF / 100;
+
         if (Player* target = handler->getSelectedPlayerOrSelf())
-            target->SetDrunkValue(drunklevel);
+            target->SetDrunkValue(drunkMod);
 
         return true;
     }
@@ -890,7 +892,7 @@ public:
 
         // Set gender
         target->SetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_GENDER, gender);
-        target->SetByteValue(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER, gender);
+        target->SetUInt16Value(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER, uint16(gender) | (target->GetDrunkValue() & 0xFFFE));
 
         // Change display ID
         target->InitDisplayIds();
