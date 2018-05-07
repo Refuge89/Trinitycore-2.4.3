@@ -425,16 +425,15 @@ enum QuestSaveType
 //               quest
 typedef std::map<uint32, QuestSaveType> QuestStatusSaveMap;
 
-
 enum QuestSlotOffsets
 {
     QUEST_ID_OFFSET     = 0,
     QUEST_STATE_OFFSET  = 1,
     QUEST_COUNTS_OFFSET = 2,
-    QUEST_TIME_OFFSET   = 4
+    QUEST_TIME_OFFSET   = 3
 };
 
-#define MAX_QUEST_OFFSET 5
+#define MAX_QUEST_OFFSET 4
 
 enum QuestSlotStateMask
 {
@@ -1152,10 +1151,10 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         uint16 FindQuestSlot(uint32 quest_id) const;
         uint32 GetQuestSlotQuestId(uint16 slot) const;
         uint32 GetQuestSlotState(uint16 slot) const;
-        uint16 GetQuestSlotCounter(uint16 slot, uint8 counter) const;
+        uint8 GetQuestSlotCounter(uint16 slot, uint8 counter) const;
         uint32 GetQuestSlotTime(uint16 slot) const;
         void SetQuestSlot(uint16 slot, uint32 quest_id, uint32 timer = 0);
-        void SetQuestSlotCounter(uint16 slot, uint8 counter, uint16 count);
+        void SetQuestSlotCounter(uint16 slot, uint8 counter, uint8 count);
         void SetQuestSlotState(uint16 slot, uint32 state);
         void RemoveQuestSlotState(uint16 slot, uint32 state);
         void SetQuestSlotTimer(uint16 slot, uint32 timer);

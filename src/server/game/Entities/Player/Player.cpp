@@ -944,7 +944,7 @@ void Player::SetDrunkValue(uint16 newDrunkValue, uint32 itemId /*= 0*/)
     else
         m_invisibilityDetect.DelFlag(INVISIBILITY_DRUNK);
 
-    SetUint16Value(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER, uint16(getGender()) | (newDrunkValue & 0xFFFE));
+    SetUInt16Value(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER, uint16(getGender()) | (newDrunkValue & 0xFFFE));
     UpdateObjectVisibility();
 
     if (!isSobering)
@@ -15005,9 +15005,9 @@ uint32 Player::GetQuestSlotState(uint16 slot)   const
     return GetUInt32Value(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_STATE_OFFSET);
 }
 
-uint16 Player::GetQuestSlotCounter(uint16 slot, uint8 counter) const
+uint8 Player::GetQuestSlotCounter(uint16 slot, uint8 counter) const
 {
-    return (uint16)(GetUInt64Value(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_COUNTS_OFFSET) >> (counter * 16));
+    return GetByteValue(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_COUNTS_OFFSET, counter);
 }
 
 uint32 Player::GetQuestSlotTime(uint16 slot) const
@@ -15020,16 +15020,12 @@ void Player::SetQuestSlot(uint16 slot, uint32 quest_id, uint32 timer /*= 0*/)
     SetUInt32Value(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_ID_OFFSET, quest_id);
     SetUInt32Value(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_STATE_OFFSET, 0);
     SetUInt32Value(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_COUNTS_OFFSET, 0);
-    SetUInt32Value(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_COUNTS_OFFSET + 1, 0);
     SetUInt32Value(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_TIME_OFFSET, timer);
 }
 
-void Player::SetQuestSlotCounter(uint16 slot, uint8 counter, uint16 count)
+void Player::SetQuestSlotCounter(uint16 slot, uint8 counter, uint8 count)
 {
-    uint64 val = GetUInt64Value(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_COUNTS_OFFSET);
-    val &= ~((uint64)0xFFFF << (counter * 16));
-    val |= ((uint64)count << (counter * 16));
-    SetUInt64Value(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_COUNTS_OFFSET, val);
+    SetByteValue(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_COUNTS_OFFSET, counter, count);
 }
 
 void Player::SetQuestSlotState(uint16 slot, uint32 state)
@@ -15663,7 +15659,7 @@ void Player::SendQuestUpdateAddItem(Quest const* /*quest*/, uint32 /*item_idx*/,
 
 void Player::SendQuestUpdateAddCreatureOrGo(Quest const* quest, ObjectGuid guid, uint32 creatureOrGO_idx, uint16 old_count, uint16 add_count)
 {
-    ASSERT(old_count + add_count < 65536 && "mob/GO count store in 16 bits 2^16 = 65536 (0..65536)");
+    ASSERT(old_count + add_count < 256 && "mob/GO count store in 8 bits 2^8 = 256");
 
     int32 entry = quest->RequiredNpcOrGo[creatureOrGO_idx];
     if (entry < 0)
@@ -15675,7 +15671,7 @@ void Player::SendQuestUpdateAddCreatureOrGo(Quest const* quest, ObjectGuid guid,
     data << uint32(quest->GetQuestId());
     data << uint32(entry);
     data << uint32(old_count + add_count);
-    data << uint32(quest->RequiredNpcOrGoCount[ creatureOrGO_idx ]);
+    data << uint32(quest->RequiredNpcOrGoCount[creatureOrGO_idx]);
     data << uint64(guid);
     SendDirectMessage(&data);
 
@@ -15686,7 +15682,7 @@ void Player::SendQuestUpdateAddCreatureOrGo(Quest const* quest, ObjectGuid guid,
 
 void Player::SendQuestUpdateAddPlayer(Quest const* quest, uint16 old_count, uint16 add_count)
 {
-    ASSERT(old_count + add_count < 65536 && "player count store in 16 bits");
+    ASSERT(old_count + add_count < 256 && "player count store in 8 bits");
 
     uint16 log_slot = FindQuestSlot(quest->GetQuestId());
     if (log_slot < MAX_QUEST_LOG_SIZE)
@@ -15995,7 +15991,7 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
     SetByteValue(PLAYER_BYTES_2, PLAYER_BYTES_2_OFFSET_FACIAL_STYLE, fields[13].GetUInt8());
     SetByteValue(PLAYER_BYTES_2, PLAYER_BYTES_2_OFFSET_BANK_BAG_SLOTS, fields[14].GetUInt8());
     SetByteValue(PLAYER_BYTES_2, PLAYER_BYTES_2_OFFSET_REST_STATE, fields[15].GetUInt8());
-    SetUint16Value(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER, uint16(fields[5].GetUInt8()) | (fields[54].GetUInt16() & 0xFFFE));
+    SetUInt16Value(PLAYER_BYTES_3, PLAYER_BYTES_3_OFFSET_GENDER, uint16(fields[5].GetUInt8()) | (fields[54].GetUInt16() & 0xFFFE));
 
     if (!ValidateAppearance(
         fields[3].GetUInt8(), // race
