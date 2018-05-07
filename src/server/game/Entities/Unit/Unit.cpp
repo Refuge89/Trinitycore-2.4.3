@@ -2177,7 +2177,7 @@ void Unit::SendMeleeAttackStop(Unit* victim)
     if (victim)
         data << victim->GetPackGUID();
     else
-        data << uint8(0);
+        data << PackedGuid();
 
     data << uint32(0);                                     //! Can also take the value 0x01, which seems related to updating rotation
     SendMessageToSet(&data, true);
@@ -7993,7 +7993,7 @@ void Unit::SetSpeedRate(UnitMoveType mtype, float rate)
         self << GetPackGUID();
         self << (uint32)0;                                  // Movement counter. Unimplemented at the moment! NUM_PMOVE_EVTS = 0x39Z.
         if (mtype == MOVE_RUN)
-            self << uint8(1);                               // unknown byte added in 2.1.0
+            self << uint8(0);                               // unknown byte added in 2.1.0
         self << float(GetSpeed(mtype));
         playerMover->SendDirectMessage(&self);
 
@@ -10159,7 +10159,7 @@ bool Unit::InitTamedPet(Pet* pet, uint8 level, uint32 spell_id)
             if (creature)
             {
                 WorldPacket data2(SMSG_LOOT_LIST, 8 + 1 + 1);
-                data2 << uint64(creature->GetGUID());
+                data2 << creature->GetGUID();
                 data2 << uint8(0); // unk1
                 data2 << uint8(0); // no group looter
                 player->SendMessageToSet(&data2, true);

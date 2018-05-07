@@ -4179,9 +4179,7 @@ void Spell::UpdateSpellCastDataTargets(WorldPackets::Spells::SpellCastData& data
 void Spell::SendLogExecute()
 {
     WorldPacket data(SMSG_SPELLLOGEXECUTE, 8 + 4 + 4 + 4 + 4 + 8);
-
     data << m_caster->GetPackGUID();
-
     data << uint32(m_spellInfo->Id);
 
     uint8 effCount = 0;
@@ -4201,7 +4199,6 @@ void Spell::SendLogExecute()
             continue;
 
         data << uint32(m_spellInfo->Effects[i].Effect);             // spell effect
-
         data.append(*m_effectExecuteData[i]);
 
         delete m_effectExecuteData[i];
@@ -4279,18 +4276,15 @@ void Spell::ExecuteLogEffectResurrect(uint8 effIndex, Unit* target)
 
 void Spell::SendInterrupted(uint8 result)
 {
-    WorldPacket data(SMSG_SPELL_FAILURE, 8 + 1 + 4 + 1);
+    WorldPacket data(SMSG_SPELL_FAILURE, 8 + 4 + 1);
     data << m_caster->GetPackGUID();
-    data << uint8(m_cast_count);
     data << uint32(m_spellInfo->Id);
     data << uint8(result);
     m_caster->SendMessageToSet(&data, true);
 
-    data.Initialize(SMSG_SPELL_FAILED_OTHER, 8 + 1 + 4 + 1);
+    data.Initialize(SMSG_SPELL_FAILED_OTHER, 8 + 4);
     data << m_caster->GetPackGUID();
-    data << uint8(m_cast_count);
     data << uint32(m_spellInfo->Id);
-    data << uint8(result);
     m_caster->SendMessageToSet(&data, true);
 }
 

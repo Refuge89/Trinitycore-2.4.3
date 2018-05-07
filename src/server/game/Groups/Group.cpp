@@ -914,7 +914,7 @@ void Group::SendLooter(Creature* creature, Player* groupLooter)
     ASSERT(creature);
 
     WorldPacket data(SMSG_LOOT_LIST, 8 + 8);
-    data << uint64(creature->GetGUID());
+    data << creature->GetGUID();
 
     if (GetLootMethod() == MASTER_LOOT && creature->loot.hasOverThresholdItem())
         data << GetMasterLooterGuid().WriteAsPacked();

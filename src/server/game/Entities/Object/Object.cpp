@@ -45,7 +45,7 @@
 #include "World.h"
 #include <G3D/Vector3.h>
 
-Object::Object() : m_PackGUID(sizeof(uint64)+1)
+Object::Object() : m_PackGUID(sizeof(uint64) + 1)
 {
     m_objectTypeId      = TYPEID_OBJECT;
     m_objectType        = TYPEMASK_OBJECT;
@@ -107,7 +107,8 @@ void Object::_InitValues()
 
 void Object::_Create(ObjectGuid::LowType guidlow, uint32 entry, HighGuid guidhigh)
 {
-    if (!m_uint32Values) _InitValues();
+    if (!m_uint32Values)
+        _InitValues();
 
     ObjectGuid guid(guidhigh, entry, guidlow);
     SetGuidValue(OBJECT_FIELD_GUID, guid);
@@ -153,7 +154,7 @@ void Object::BuildMovementUpdateBlock(UpdateData* data, uint8 flags) const
     ByteBuffer buf(500);
 
     buf << uint8(UPDATETYPE_MOVEMENT);
-    buf << GetPackGUID();
+    buf << GetGUID();
 
     BuildMovementUpdate(&buf, flags);
 
@@ -278,7 +279,7 @@ void Object::DestroyForPlayer(Player* target) const
     ASSERT(target);
 
     WorldPacket data(SMSG_DESTROY_OBJECT, 8);
-    data << uint64(GetGUID());
+    data << GetGUID();
     target->SendDirectMessage(&data);
 }
 
@@ -426,7 +427,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint8 flags) const
         if (Unit* victim = unit->GetVictim())
             *data << victim->GetPackGUID();
         else
-            *data << uint8(0);
+            *data << PackedGuid();
     }
 
     // 0x2

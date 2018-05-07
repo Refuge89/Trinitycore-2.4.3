@@ -79,7 +79,7 @@ void WorldSession::SendAttackStop(Unit const* enemy)
     if (enemy)
         data << enemy->GetPackGUID();
     else
-        data << uint8(0);
+        data << PackedGuid();
 
     data << uint32(0);                                      // unk, can be 1 also
     SendPacket(&data);
