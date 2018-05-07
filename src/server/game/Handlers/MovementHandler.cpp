@@ -436,7 +436,7 @@ void WorldSession::HandleForceSpeedChangeAck(WorldPacket &recvData)
     UnitMoveType move_type;
     UnitMoveType force_move_type;
 
-    static char const* move_type_name[MAX_MOVE_TYPE] = {  "Walk", "Run", "RunBack", "Swim", "SwimBack", "TurnRate", "Flight", "FlightBack", "PitchRate" };
+    static char const* move_type_name[MAX_MOVE_TYPE] = {  "Walk", "Run", "RunBack", "Swim", "SwimBack", "TurnRate", "Flight", "FlightBack" };
 
     switch (recvData.GetOpcode())
     {

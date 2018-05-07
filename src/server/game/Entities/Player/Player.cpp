@@ -495,7 +495,7 @@ bool Player::Create(ObjectGuid::LowType guidlow, CharacterCreateInfo* createInfo
     SetUInt32Value(PLAYER_GUILDRANK, 0);
     SetUInt32Value(PLAYER_GUILD_TIMESTAMP, 0);
 
-    SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES, 0);  // 0=disabled
+    SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES, 0); // 0=disabled
     SetUInt32Value(PLAYER_CHOSEN_TITLE, 0);
 
     SetUInt32Value(PLAYER_FIELD_KILLS, 0);

@@ -261,11 +261,10 @@ enum UnitMoveType
     MOVE_SWIM_BACK      = 4,
     MOVE_TURN_RATE      = 5,
     MOVE_FLIGHT         = 6,
-    MOVE_FLIGHT_BACK    = 7,
-    MOVE_PITCH_RATE     = 8
+    MOVE_FLIGHT_BACK    = 7
 };
 
-#define MAX_MOVE_TYPE     9
+#define MAX_MOVE_TYPE     8
 
 TC_GAME_API extern float baseMoveSpeed[MAX_MOVE_TYPE];
 TC_GAME_API extern float playerBaseMoveSpeed[MAX_MOVE_TYPE];
