@@ -19052,10 +19052,9 @@ void Player::SendExplorationExperience(uint32 Area, uint32 Experience) const
 
 void Player::SendDungeonDifficulty(bool IsInGroup) const
 {
-    uint8 val = 0x00000001;
     WorldPacket data(MSG_SET_DUNGEON_DIFFICULTY, 4 + 4 + 4);
     data << (uint32)GetDungeonDifficulty();
-    data << uint32(val);
+    data << uint32(0x01);
     data << uint32(IsInGroup);
     SendDirectMessage(&data);
 }
@@ -21198,8 +21197,6 @@ void Player::SendInitialPacketsBeforeAddToMap()
     data << float(0.01666667f);                             // game speed
     SendDirectMessage(&data);
 
-    GetReputationMgr().SendForceReactions();                // SMSG_SET_FORCED_REACTIONS
-
     // SMSG_UPDATE_WORLD_STATE
 
     SetMovedUnit(this);
@@ -22987,9 +22984,9 @@ void Player::_LoadSkills(PreparedQueryResult result)
         do
         {
             Field* fields = result->Fetch();
-            uint16 skill    = fields[0].GetUInt16();
-            uint16 value    = fields[1].GetUInt16();
-            uint16 max      = fields[2].GetUInt16();
+            uint16 skill = fields[0].GetUInt16();
+            uint16 value = fields[1].GetUInt16();
+            uint16 max = fields[2].GetUInt16();
 
             SkillRaceClassInfoEntry const* rcEntry = GetSkillRaceClassInfo(skill, getRace(), getClass());
             if (!rcEntry)

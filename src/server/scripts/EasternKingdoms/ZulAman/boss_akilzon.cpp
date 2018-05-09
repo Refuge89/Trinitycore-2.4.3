@@ -145,7 +145,7 @@ class boss_akilzon : public CreatureScript
                 if (!map->IsDungeon())
                     return;
 
-                WorldPacket data(SMSG_WEATHER, 4 + 4 + 4);
+                WorldPacket data(SMSG_WEATHER, 4 + 4 + 1);
                 data << uint32(weather) << float(grade) << uint8(0);
 
                 map->SendToPlayers(&data);
