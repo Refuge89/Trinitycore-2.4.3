@@ -12288,6 +12288,20 @@ void Unit::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* target)
                 else
                     fieldBuffer << m_uint32Values[index];
             }
+            else if (index == UNIT_FIELD_HEALTH)
+            {
+                if (target != this && !IsInRaidWith(target) && !IsPet() && !target->IsGameMaster())
+                    fieldBuffer << uint32(std::ceil(GetHealthPct()));
+                else
+                    fieldBuffer << m_uint32Values[index];
+            }
+            else if (index == UNIT_FIELD_MAXHEALTH)
+            {
+                if (target != this && !IsInRaidWith(target) && !IsPet() && !target->IsGameMaster())
+                    fieldBuffer << uint32(100);
+                else
+                    fieldBuffer << m_uint32Values[index];
+            }
             else
             {
                 // send in current format (float as float, uint32 as uint32)
