@@ -11272,21 +11272,21 @@ void Player::SetVisibleItemSlot(uint8 slot, Item* pItem)
 {
     if (pItem)
     {
-        SetGuidValue(PLAYER_VISIBLE_ITEM_1_CREATOR + (slot * 16), pItem->GetGuidValue(ITEM_FIELD_CREATOR));
-        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + (slot * 16), pItem->GetEntry());
+        SetGuidValue(PLAYER_VISIBLE_ITEM_1_CREATOR + (slot * MAX_VISIBLE_ITEM_OFFSET), pItem->GetGuidValue(ITEM_FIELD_CREATOR));
+        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + (slot * MAX_VISIBLE_ITEM_OFFSET), pItem->GetEntry());
         for (uint8 i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
-            SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + (slot * 16) + i + 1, pItem->GetEnchantmentId(EnchantmentSlot(i)));
-        SetUInt16Value(PLAYER_VISIBLE_ITEM_1_PROPERTIES + (slot * 16), 0, pItem->GetItemRandomPropertyId());
-        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_PROPERTIES + (slot * 16) + 1, pItem->GetItemSuffixFactor());
+            SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + (slot * MAX_VISIBLE_ITEM_OFFSET) + i + 1, pItem->GetEnchantmentId(EnchantmentSlot(i)));
+        SetUInt16Value(PLAYER_VISIBLE_ITEM_1_PROPERTIES + (slot * MAX_VISIBLE_ITEM_OFFSET), 0, pItem->GetItemRandomPropertyId());
+        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_PROPERTIES + (slot * MAX_VISIBLE_ITEM_OFFSET) + 1, pItem->GetItemSuffixFactor());
     }
     else
     {
-        SetGuidValue(PLAYER_VISIBLE_ITEM_1_CREATOR + (slot * 16), ObjectGuid::Empty);
-        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + (slot * 16), 0);
+        SetGuidValue(PLAYER_VISIBLE_ITEM_1_CREATOR + (slot * MAX_VISIBLE_ITEM_OFFSET), ObjectGuid::Empty);
+        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + (slot * MAX_VISIBLE_ITEM_OFFSET), 0);
         for (uint8 i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
-            SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + (slot * 16) + i + 1, 0);
-        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_PROPERTIES + (slot * 16), 0);
-        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_PROPERTIES + (slot * 16) + 1, 0);
+            SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + (slot * MAX_VISIBLE_ITEM_OFFSET) + i + 1, 0);
+        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_PROPERTIES + (slot * MAX_VISIBLE_ITEM_OFFSET), 0);
+        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_PROPERTIES + (slot * MAX_VISIBLE_ITEM_OFFSET) + 1, 0);
     }
 }
 
@@ -13008,7 +13008,7 @@ void Player::ApplyEnchantment(Item* item, EnchantmentSlot slot, bool apply, bool
 
     // visualize enchantment at player and equipped items
     if (slot < MAX_INSPECTED_ENCHANTMENT_SLOT)
-        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + (item->GetSlot() * 16) + 1 + slot, apply ? item->GetEnchantmentId(slot) : 0);
+        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + (item->GetSlot() * MAX_VISIBLE_ITEM_OFFSET) + 1 + slot, apply ? item->GetEnchantmentId(slot) : 0);
 
     if (apply_dur)
     {

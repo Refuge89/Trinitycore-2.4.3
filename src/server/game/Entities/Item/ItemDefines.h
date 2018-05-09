@@ -151,11 +151,11 @@ enum EnchantmentSlot : uint16
     PROP_ENCHANTMENT_SLOT_0         = 6,                    // used with RandomSuffix
     PROP_ENCHANTMENT_SLOT_1         = 7,                    // used with RandomSuffix
     PROP_ENCHANTMENT_SLOT_2         = 8,                    // used with RandomSuffix and RandomProperty
-    PROP_ENCHANTMENT_SLOT_3         = 9,                   // used with RandomProperty
+    PROP_ENCHANTMENT_SLOT_3         = 9,                    // used with RandomProperty
     PROP_ENCHANTMENT_SLOT_4         = 10,                   // used with RandomProperty
     MAX_ENCHANTMENT_SLOT            = 11
 };
 
-#define MAX_VISIBLE_ITEM_OFFSET       2                     // 2 fields per visible item (entry+enchantment)
+#define MAX_VISIBLE_ITEM_OFFSET       16                    // 2(Creator) 12(Entry + Enchanments) 1(Properties) 1(Pad)
 
 #endif // ItemDefines_h__
