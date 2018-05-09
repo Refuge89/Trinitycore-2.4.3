@@ -94,9 +94,8 @@ enum AccountDataType
 
 struct AccountData
 {
-    AccountData() : Time(0), Data("") { }
+    AccountData() : Data("") { }
 
-    time_t Time;
     std::string Data;
 };
 
@@ -352,7 +351,7 @@ class TC_GAME_API WorldSession
 
         // Account Data
         AccountData* GetAccountData(AccountDataType type) { return &m_accountData[type]; }
-        void SetAccountData(AccountDataType type, time_t tm, std::string const& data);
+        void SetAccountData(AccountDataType type, std::string const& data);
         void SendAccountDataTimes();
         void LoadAccountData(PreparedQueryResult result, uint32 mask);
 

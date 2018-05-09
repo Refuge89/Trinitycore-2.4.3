@@ -745,17 +745,17 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recvData)
 {
     TC_LOG_DEBUG("network", "WORLD: Received CMSG_UPDATE_ACCOUNT_DATA");
 
-    uint32 type, timestamp, decompressedSize;
-    recvData >> type >> timestamp >> decompressedSize;
+    uint32 type, decompressedSize;
+    recvData >> type >> decompressedSize;
 
-    TC_LOG_DEBUG("network", "UAD: type %u, time %u, decompressedSize %u", type, timestamp, decompressedSize);
+    TC_LOG_DEBUG("network", "UAD: type %u, decompressedSize %u", type, decompressedSize);
 
     if (type > NUM_ACCOUNT_DATA_TYPES)
         return;
 
     if (decompressedSize == 0)                               // erase
     {
-        SetAccountData(AccountDataType(type), 0, "");
+        SetAccountData(AccountDataType(type), "");
         return;
     }
 
@@ -782,7 +782,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recvData)
     std::string adata;
     dest >> adata;
 
-    SetAccountData(AccountDataType(type), timestamp, adata);
+    SetAccountData(AccountDataType(type), adata);
 }
 
 void WorldSession::HandleRequestAccountData(WorldPacket& recvData)
@@ -800,7 +800,6 @@ void WorldSession::HandleRequestAccountData(WorldPacket& recvData)
     AccountData* adata = GetAccountData(AccountDataType(type));
 
     uint32 size = adata->Data.size();
-
     uLongf destSize = compressBound(size);
 
     ByteBuffer dest;
@@ -814,10 +813,8 @@ void WorldSession::HandleRequestAccountData(WorldPacket& recvData)
 
     dest.resize(destSize);
 
-    WorldPacket data(SMSG_UPDATE_ACCOUNT_DATA, 8 + 4 + 4 + 4 + destSize);
-    data << uint64(_player ? _player->GetGUID() : ObjectGuid::Empty);
+    WorldPacket data(SMSG_UPDATE_ACCOUNT_DATA, 4 + 4 + destSize);
     data << uint32(type);                                   // type (0-7)
-    data << uint32(adata->Time);                            // unix time
     data << uint32(size);                                   // decompressed length
     data.append(dest);                                      // compressed data
     SendPacket(&data);

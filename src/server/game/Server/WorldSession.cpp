@@ -707,13 +707,12 @@ void WorldSession::LoadAccountData(PreparedQueryResult result, uint32 mask)
             continue;
         }
 
-        m_accountData[type].Time = time_t(fields[1].GetUInt32());
-        m_accountData[type].Data = fields[2].GetString();
+        m_accountData[type].Data = fields[1].GetString();
     }
     while (result->NextRow());
 }
 
-void WorldSession::SetAccountData(AccountDataType type, time_t tm, std::string const& data)
+void WorldSession::SetAccountData(AccountDataType type std::string const& data)
 {
     uint32 id = 0;
     CharacterDatabaseStatements index;
@@ -735,11 +734,9 @@ void WorldSession::SetAccountData(AccountDataType type, time_t tm, std::string c
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(index);
     stmt->setUInt32(0, id);
     stmt->setUInt8 (1, type);
-    stmt->setUInt32(2, uint32(tm));
-    stmt->setString(3, data);
+    stmt->setString(2, data);
     CharacterDatabase.Execute(stmt);
 
-    m_accountData[type].Time = tm;
     m_accountData[type].Data = data;
 }
 
