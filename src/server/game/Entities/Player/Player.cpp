@@ -5050,34 +5050,34 @@ float Player::GetMeleeCritFromAgility() const
 void Player::GetDodgeFromAgility(float &diminishing, float &nondiminishing) const
 {
     // Table for base dodge values
-    const float dodge_base[MAX_CLASSES] =
+    const float dodgeBase[MAX_CLASSES] =
     {
-         0.036640f, // Warrior
-         0.034943f, // Paladin
-        -0.040873f, // Hunter
-         0.020957f, // Rogue
-         0.034178f, // Priest
-         0.036640f, // DK
-         0.021080f, // Shaman
-         0.036587f, // Mage
-         0.024211f, // Warlock
-         0.0f,      // ??
-         0.056097f  // Druid
+        0.0075f,    // Warrior
+        0.00652f,   // Paladin
+        -0.0545f,   // Hunter
+        -0.0059f,   // Rogue
+        0.03183f,   // Priest
+        0.f,        // DK
+        0.0167f,    // Shaman
+        0.034575f,  // Mage
+        0.02011f,   // Warlock
+        0.f,        // ??
+        -0.0187f    // Druid
     };
-    // Crit/agility to dodge/agility coefficient multipliers; 3.2.0 increased required agility by 15%
-    const float crit_to_dodge[MAX_CLASSES] =
+
+    const float critToDodge[MAX_CLASSES] =
     {
-         0.85f/1.15f,    // Warrior
-         1.00f/1.15f,    // Paladin
-         1.11f/1.15f,    // Hunter
-         2.00f/1.15f,    // Rogue
-         1.00f/1.15f,    // Priest
-         0.85f/1.15f,    // DK
-         1.60f/1.15f,    // Shaman
-         1.00f/1.15f,    // Mage
-         0.97f/1.15f,    // Warlock (?)
-         0.0f,           // ??
-         2.00f/1.15f     // Druid
+         1.1f,      // Warrior
+         1.f,       // Paladin
+         1.6f,      // Hunter
+         2.f,       // Rogue
+         1.f,       // Priest
+         0.f,       // DK
+         1.f,       // Shaman
+         1.f,       // Mage
+         1.f,       // Warlock (?)
+         0.f,       // ??
+         1.7f       // Druid
     };
 
     uint8 level = getLevel();
@@ -5087,7 +5087,7 @@ void Player::GetDodgeFromAgility(float &diminishing, float &nondiminishing) cons
         level = GT_MAX_LEVEL;
 
     // Dodge per agility is proportional to crit per agility, which is available from DBC files
-    GtChanceToMeleeCritEntry  const* dodgeRatio = sGtChanceToMeleeCritStore.LookupEntry((pclass-1)*GT_MAX_LEVEL + level-1);
+    GtChanceToMeleeCritEntry  const* dodgeRatio = sGtChanceToMeleeCritStore.LookupEntry((pclass - 1) * GT_MAX_LEVEL + level - 1);
     if (dodgeRatio == nullptr || pclass > MAX_CLASSES)
         return;
 
@@ -5096,8 +5096,8 @@ void Player::GetDodgeFromAgility(float &diminishing, float &nondiminishing) cons
     float bonus_agility = GetStat(STAT_AGILITY) - base_agility;
 
     // calculate diminishing (green in char screen) and non-diminishing (white) contribution
-    diminishing = 100.0f * bonus_agility * dodgeRatio->ratio * crit_to_dodge[pclass-1];
-    nondiminishing = 100.0f * (dodge_base[pclass-1] + base_agility * dodgeRatio->ratio * crit_to_dodge[pclass-1]);
+    diminishing = 100.0f * bonus_agility * dodgeRatio->ratio * critToDodge[pclass - 1];
+    nondiminishing = 100.0f * (dodgeBase[pclass - 1] + base_agility * dodgeRatio->ratio * critToDodge[pclass - 1]);
 }
 
 float Player::GetSpellCritFromIntellect() const
