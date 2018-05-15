@@ -103,7 +103,7 @@ void WorldSession::SendTaxiMenu(Creature* unit)
 
     WorldPacket data(SMSG_SHOWTAXINODES, 4 + 8 + 4 + (8 * 4));
     data << uint32(1);
-    data << uint64(unit->GetGUID());
+    data << unit->GetGUID();
     data << uint32(curloc);
     GetPlayer()->m_taxi.AppendTaximaskTo(data, GetPlayer()->IsTaxiCheater());
     SendPacket(&data);
@@ -140,8 +140,8 @@ bool WorldSession::SendLearnNewTaxiNode(Creature* unit)
         WorldPacket msg(SMSG_NEW_TAXI_PATH, 0);
         SendPacket(&msg);
 
-        WorldPacket update(SMSG_TAXINODE_STATUS, 9);
-        update << uint64(unit->GetGUID());
+        WorldPacket update(SMSG_TAXINODE_STATUS, 8 + 1);
+        update << unit->GetGUID();
         update << uint8(1);
         SendPacket(&update);
 
@@ -160,14 +160,14 @@ void WorldSession::SendDiscoverNewTaxiNode(uint32 nodeid)
     }
 }
 
-void WorldSession::HandleActivateTaxiExpressOpcode (WorldPacket& recvData)
+void WorldSession::HandleActivateTaxiExpressOpcode(WorldPacket& recvData)
 {
     TC_LOG_DEBUG("network", "WORLD: Received CMSG_ACTIVATETAXIEXPRESS");
 
     ObjectGuid guid;
-    uint32 node_count;
+    uint32 cost, nodeCount;
 
-    recvData >> guid >> node_count;
+    recvData >> guid >> cost >> nodeCount;
 
     Creature* npc = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_FLIGHTMASTER);
     if (!npc)
@@ -176,9 +176,9 @@ void WorldSession::HandleActivateTaxiExpressOpcode (WorldPacket& recvData)
         SendActivateTaxiReply(ERR_TAXITOOFARAWAY);
         return;
     }
-    std::vector<uint32> nodes;
 
-    for (uint32 i = 0; i < node_count; ++i)
+    std::vector<uint32> nodes;
+    for (uint32 i = 0; i < nodeCount; ++i)
     {
         uint32 node;
         recvData >> node;
@@ -204,9 +204,6 @@ void WorldSession::HandleActivateTaxiExpressOpcode (WorldPacket& recvData)
 void WorldSession::HandleMoveSplineDoneOpcode(WorldPacket& recvData)
 {
     TC_LOG_DEBUG("network", "WORLD: Received CMSG_MOVE_SPLINE_DONE");
-
-    uint64 guid; // used only for proper packet read
-    recvData.readPackGUID(guid);
 
     MovementInfo movementInfo;                              // used only for proper packet read
     ReadMovementInfo(recvData, &movementInfo);
