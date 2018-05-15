@@ -626,7 +626,7 @@ void WorldSession::SendListInventory(ObjectGuid vendorGuid)
     if (!items)
     {
         WorldPacket data(SMSG_LIST_INVENTORY, 8 + 1 + 1);
-        data << uint64(vendorGuid);
+        data << vendorGuid;
         data << uint8(0);                                   // count == 0, next will be error code
         data << uint8(0);                                   // "Vendor has no inventory"
         SendPacket(&data);
@@ -637,7 +637,7 @@ void WorldSession::SendListInventory(ObjectGuid vendorGuid)
     uint8 count = 0;
 
     WorldPacket data(SMSG_LIST_INVENTORY, 8 + 1 + itemCount * 8 * 4);
-    data << uint64(vendorGuid);
+    data << vendorGuid;
 
     size_t countPos = data.wpos();
     data << uint8(count);
@@ -908,22 +908,22 @@ void WorldSession::HandleSetAmmoOpcode(WorldPacket& recvData)
 
 void WorldSession::SendEnchantmentLog(ObjectGuid target, ObjectGuid caster, uint32 itemId, uint32 enchantId)
 {
-    WorldPacket data(SMSG_ENCHANTMENTLOG, 8 + 8 + 4 + 4);     // last check 2.0.10
-    data << target.WriteAsPacked();
-    data << caster.WriteAsPacked();
+    WorldPacket data(SMSG_ENCHANTMENTLOG, 8 + 8 + 4 + 4 + 1);
+    data << target;
+    data << caster;
     data << uint32(itemId);
     data << uint32(enchantId);
+    data << uint8(0);
     GetPlayer()->SendMessageToSet(&data, true);
 }
 
 void WorldSession::SendItemEnchantTimeUpdate(ObjectGuid Playerguid, ObjectGuid Itemguid, uint32 slot, uint32 Duration)
 {
-                                                            // last check 2.0.10
     WorldPacket data(SMSG_ITEM_ENCHANT_TIME_UPDATE, 8 + 4 + 4 + 8);
-    data << uint64(Itemguid);
+    data << Itemguid;
     data << uint32(slot);
     data << uint32(Duration);
-    data << uint64(Playerguid);
+    data << Playerguid;
     SendPacket(&data);
 }
 
