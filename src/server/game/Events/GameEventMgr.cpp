@@ -1046,7 +1046,6 @@ void GameEventMgr::StartArenaSeason()
 
     StartEvent(eventId, true);
     TC_LOG_INFO("gameevent", "Arena Season %u started...", season);
-
 }
 
 uint32 GameEventMgr::Update()                               // return the next event delay in ms
