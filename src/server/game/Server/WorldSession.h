@@ -107,15 +107,6 @@ enum PartyOperation
     PARTY_OP_SWAP     = 4
 };
 
-enum BFLeaveReason
-{
-    BF_LEAVE_REASON_CLOSE     = 0x00000001,
-    //BF_LEAVE_REASON_UNK1      = 0x00000002, (not used)
-    //BF_LEAVE_REASON_UNK2      = 0x00000004, (not used)
-    BF_LEAVE_REASON_EXITED    = 0x00000008,
-    BF_LEAVE_REASON_LOW_LEVEL = 0x00000010
-};
-
 enum ChatRestrictionType
 {
     ERR_CHAT_RESTRICTED = 0,
@@ -137,45 +128,46 @@ enum TutorialsFlag : uint8
     TUTORIALS_FLAG_LOADED_FROM_DB                 = 0x02
 };
 
-//class to deal with packet processing
-//allows to determine if next packet is safe to be processed
+// class to deal with packet processing
+// allows to determine if next packet is safe to be processed
 class PacketFilter
 {
-public:
-    explicit PacketFilter(WorldSession* pSession) : m_pSession(pSession) { }
-    virtual ~PacketFilter() { }
+    public:
+        explicit PacketFilter(WorldSession* pSession) : m_pSession(pSession) { }
+        virtual ~PacketFilter() { }
 
-    virtual bool Process(WorldPacket* /*packet*/) { return true; }
-    virtual bool ProcessLogout() const { return true; }
+        virtual bool Process(WorldPacket* /*packet*/) { return true; }
+        virtual bool ProcessLogout() const { return true; }
 
-protected:
-    WorldSession* const m_pSession;
+    protected:
+        WorldSession* const m_pSession;
 
-private:
-    PacketFilter(PacketFilter const& right) = delete;
-    PacketFilter& operator=(PacketFilter const& right) = delete;
+    private:
+        PacketFilter(PacketFilter const& right) = delete;
+        PacketFilter& operator=(PacketFilter const& right) = delete;
 };
-//process only thread-safe packets in Map::Update()
+
+// process only thread-safe packets in Map::Update()
 class MapSessionFilter : public PacketFilter
 {
-public:
-    explicit MapSessionFilter(WorldSession* pSession) : PacketFilter(pSession) { }
-    ~MapSessionFilter() { }
+    public:
+        explicit MapSessionFilter(WorldSession* pSession) : PacketFilter(pSession) { }
+        ~MapSessionFilter() { }
 
-    virtual bool Process(WorldPacket* packet) override;
-    //in Map::Update() we do not process player logout!
-    virtual bool ProcessLogout() const override { return false; }
+        virtual bool Process(WorldPacket* packet) override;
+        //in Map::Update() we do not process player logout!
+        virtual bool ProcessLogout() const override { return false; }
 };
 
-//class used to filer only thread-unsafe packets from queue
-//in order to update only be used in World::UpdateSessions()
+// class used to filer only thread-unsafe packets from queue
+// in order to update only be used in World::UpdateSessions()
 class WorldSessionFilter : public PacketFilter
 {
-public:
-    explicit WorldSessionFilter(WorldSession* pSession) : PacketFilter(pSession) { }
-    ~WorldSessionFilter() { }
+    public:
+        explicit WorldSessionFilter(WorldSession* pSession) : PacketFilter(pSession) { }
+        ~WorldSessionFilter() { }
 
-    virtual bool Process(WorldPacket* packet) override;
+        virtual bool Process(WorldPacket* packet) override;
 };
 
 // Proxy structure to contain data passed to callback function,
@@ -211,37 +203,13 @@ struct CharacterRenameInfo
         std::string Name;
 };
 
-struct CharacterCustomizeInfo : public CharacterRenameInfo
-{
-    friend class Player;
-    friend class WorldSession;
-
-    protected:
-        uint8 Gender     = GENDER_NONE;
-        uint8 Skin       = 0;
-        uint8 Face       = 0;
-        uint8 HairStyle  = 0;
-        uint8 HairColor  = 0;
-        uint8 FacialHair = 0;
-};
-
-struct CharacterFactionChangeInfo : public CharacterCustomizeInfo
-{
-    friend class Player;
-    friend class WorldSession;
-
-    protected:
-        uint8 Race = 0;
-        bool FactionChange = false;
-};
-
 struct PacketCounter
 {
     time_t lastReceiveTime;
     uint32 amountCounter;
 };
 
-/// Player session in the World
+// Player session in the World
 class TC_GAME_API WorldSession
 {
     public:
@@ -293,19 +261,19 @@ class TC_GAME_API WorldSession
 
         void InitWarden(BigNumber* k, std::string const& os);
 
-        /// Session in auth.queue currently
+        // Session in auth.queue currently
         void SetInQueue(bool state) { m_inQueue = state; }
 
-        /// Is the user engaged in a log out process?
+        // Is the user engaged in a log out process?
         bool isLogingOut() const { return _logoutTime || m_playerLogout; }
 
-        /// Engage the logout process for the user
+        // Engage the logout process for the user
         void LogoutRequest(time_t requestTime)
         {
             _logoutTime = requestTime;
         }
 
-        /// Is logout cooldown expired?
+        // Is logout cooldown expired?
         bool ShouldLogOut(time_t currTime) const
         {
             return (_logoutTime > 0 && currTime >= _logoutTime + 20);
@@ -317,7 +285,7 @@ class TC_GAME_API WorldSession
         void QueuePacket(WorldPacket* new_packet);
         bool Update(uint32 diff, PacketFilter& updater);
 
-        /// Handle the authentication waiting queue (to be completed)
+        // Handle the authentication waiting queue (to be completed)
         void SendAuthWaitQue(uint32 position);
 
         void SendNameQueryOpcode(ObjectGuid guid);
@@ -367,19 +335,18 @@ class TC_GAME_API WorldSession
                 m_TutorialsChanged |= TUTORIALS_FLAG_CHANGED;
             }
         }
-        //used with item_page table
-        bool SendItemInfo(uint32 itemid, WorldPacket data);
-        //auction
+
+        // auction
         void SendAuctionHello(ObjectGuid guid, Creature* unit);
         void SendAuctionCommandResult(uint32 auctionId, uint32 Action, uint32 ErrorCode, uint32 bidError = 0);
         void SendAuctionBidderNotification(uint32 location, uint32 auctionId, ObjectGuid bidder, uint32 bidSum, uint32 diff, uint32 item_template);
         void SendAuctionOwnerNotification(AuctionEntry* auction);
 
-        //Item Enchantment
+        // Item Enchantment
         void SendEnchantmentLog(ObjectGuid target, ObjectGuid caster, uint32 itemId, uint32 enchantId);
         void SendItemEnchantTimeUpdate(ObjectGuid Playerguid, ObjectGuid Itemguid, uint32 slot, uint32 Duration);
 
-        //Taxi
+        // Taxi
         void SendTaxiStatus(ObjectGuid guid);
         void SendTaxiMenu(Creature* unit);
         void SendDoFlight(uint32 mountDisplayId, uint32 path, uint32 pathNode = 0);
@@ -425,8 +392,7 @@ class TC_GAME_API WorldSession
         uint32 GetRecruiterId() const { return recruiterId; }
         bool IsARecruiter() const { return isRecruiter; }
 
-    public:                                                 // opcodes handlers
-
+        // opcodes handlers
         void Handle_NULL(WorldPacket& recvPacket);          // not used
         void Handle_EarlyProccess(WorldPacket& recvPacket); // just mark packets processed in WorldSocket::OnRead
         void Handle_ServerSide(WorldPacket& recvPacket);    // sever side only, can't be accepted from client
@@ -453,7 +419,6 @@ class TC_GAME_API WorldSession
         // new
         void HandleMoveUnRootAck(WorldPacket& recvPacket);
         void HandleMoveRootAck(WorldPacket& recvPacket);
-        void HandleLookingForGroup(WorldPacket& recvPacket);
 
         // new inspect
         void HandleInspectOpcode(WorldPacket& recvPacket);
@@ -522,7 +487,6 @@ class TC_GAME_API WorldSession
         void HandleAreaTriggerOpcode(WorldPacket& recvPacket);
 
         void HandleSetFactionAtWar(WorldPacket& recvData);
-        void HandleSetFactionCheat(WorldPacket& recvData);
         void HandleSetWatchedFactionOpcode(WorldPacket& recvData);
         void HandleSetFactionInactiveOpcode(WorldPacket& recvData);
 
@@ -555,7 +519,7 @@ class TC_GAME_API WorldSession
         void HandleBattleMasterHelloOpcode(WorldPacket& recvData);
 
         void HandleGroupInviteOpcode(WorldPacket& recvPacket);
-        //void HandleGroupCancelOpcode(WorldPacket& recvPacket);
+        // void HandleGroupCancelOpcode(WorldPacket& recvPacket);
         void HandleGroupAcceptOpcode(WorldPacket& recvPacket);
         void HandleGroupDeclineOpcode(WorldPacket& recvPacket);
         void HandleGroupUninviteOpcode(WorldPacket& recvPacket);
@@ -766,7 +730,7 @@ class TC_GAME_API WorldSession
         void HandleTutorialClear(WorldPacket& recvData);
         void HandleTutorialReset(WorldPacket& recvData);
 
-        //Pet
+        // Pet
         void HandlePetAction(WorldPacket& recvData);
         void HandlePetStopAttack(WorldPacket& recvData);
         void HandlePetActionHelper(Unit* pet, ObjectGuid guid1, uint32 spellid, uint16 flag, ObjectGuid guid2);
@@ -783,7 +747,7 @@ class TC_GAME_API WorldSession
 
         void HandleTotemDestroyed(WorldPacket& recvData);
 
-        //Battleground
+        // Battleground
         void HandleBattlemasterHelloOpcode(WorldPacket& recvData);
         void HandleBattlemasterJoinOpcode(WorldPacket& recvData);
         void HandleBattlegroundPlayerPositionsOpcode(WorldPacket& recvData);
@@ -793,13 +757,6 @@ class TC_GAME_API WorldSession
         void HandleBattlefieldLeaveOpcode(WorldPacket& recvData);
         void HandleBattlemasterJoinArena(WorldPacket& recvData);
         void HandleReportPvPAFK(WorldPacket& recvData);
-
-        // Battlefield
-        void SendBfInvitePlayerToWar(uint32 battleId, uint32 zoneId, uint32 time);
-        void SendBfInvitePlayerToQueue(uint32 battleId);
-        void SendBfQueueInviteResponse(uint32 battleId, uint32 zoneId, bool canQueue = true, bool full = false);
-        void SendBfEntered(uint32 battleId);
-        void SendBfLeaveMessage(uint32 battleId, BFLeaveReason reason = BF_LEAVE_REASON_EXITED);
 
         void HandleWardenDataOpcode(WorldPacket& recvData);
         void HandleWorldTeleportOpcode(WorldPacket& recvData);
@@ -879,7 +836,6 @@ class TC_GAME_API WorldSession
         void HandleSpellClick(WorldPacket& recvData);
         void HandleMirrorImageDataRequest(WorldPacket& recvData);
 
-    public:
         QueryCallbackProcessor& GetQueryProcessor() { return _queryProcessor; }
 
     private:
@@ -944,7 +900,7 @@ class TC_GAME_API WorldSession
         Player* _player;
         std::shared_ptr<WorldSocket> m_Socket;
         std::string m_Address;                              // Current Remote Address
-     // std::string m_LAddress;                             // Last Attempted Remote Adress - we can not set attempted ip for a non-existing session!
+        // std::string m_LAddress;                          // Last Attempted Remote Adress - we can not set attempted ip for a non-existing session!
 
         AccountTypes _security;
         uint32 _accountId;
