@@ -56,59 +56,16 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recvData)
         uint32 mapId;
         float x, y, z;
         std::string message;
-        uint32 needResponse;
-        bool needMoreHelp;
-        uint32 count;
-        std::list<uint32> times;
-        uint32 decompressedSize;
-        std::string chatLog;
+        std::string messageUnk;
 
         recvData >> mapId;
         recvData >> x >> y >> z;
         recvData >> message;
-
-        recvData >> needResponse;
-        recvData >> needMoreHelp;
-
-        recvData >> count;
-
-        for (uint32 i = 0; i < count; i++)
-        {
-            uint32 time;
-            recvData >> time;
-            times.push_back(time);
-        }
-
-        recvData >> decompressedSize;
-
-        if (count && decompressedSize && decompressedSize < 0xFFFF)
-        {
-            uint32 pos = recvData.rpos();
-            ByteBuffer dest;
-            dest.resize(decompressedSize);
-
-            uLongf realSize = decompressedSize;
-            if (uncompress(dest.contents(), &realSize, recvData.contents() + pos, recvData.size() - pos) == Z_OK)
-            {
-                dest >> chatLog;
-            }
-            else
-            {
-                TC_LOG_ERROR("network", "CMSG_GMTICKET_CREATE possibly corrupt. Uncompression failed.");
-                recvData.rfinish();
-                return;
-            }
-
-            recvData.rfinish(); // Will still have compressed data in buffer.
-        }
+        recvData >> messageUnk; // Maybe
 
         ticket = new GmTicket(GetPlayer());
         ticket->SetPosition(mapId, x, y, z);
         ticket->SetMessage(message);
-        ticket->SetGmAction(needResponse, needMoreHelp);
-
-        if (!chatLog.empty())
-            ticket->SetChatLog(times, chatLog);
 
         sTicketMgr->AddTicket(ticket);
         sTicketMgr->UpdateLastChange();

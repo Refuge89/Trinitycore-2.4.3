@@ -128,7 +128,6 @@ public:
     void SetViewed() { _viewed = true; }
     void SetUnassigned();
     void SetPosition(uint32 mapId, float x, float y, float z);
-    void SetGmAction(uint32 needResponse, bool needMoreHelp);
 
     void AppendResponse(std::string const& response) { _response += response; }
 
@@ -164,7 +163,6 @@ private:
     bool _completed;
     GMTicketEscalationStatus _escalatedStatus;
     bool _viewed;
-    bool _needResponse; /// @todo find out the use of this, and then store it in DB
     bool _needMoreHelp;
     std::string _response;
     std::string _chatLog; // No need to store in db, will be refreshed every session client side

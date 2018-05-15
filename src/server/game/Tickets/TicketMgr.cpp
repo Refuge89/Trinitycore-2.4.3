@@ -36,21 +36,17 @@ inline float GetAge(uint64 t) { return float(GameTime::GetGameTime() - t) / DAY;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // GM ticket
 GmTicket::GmTicket() : _id(0), _type(TICKET_TYPE_OPEN), _posX(0), _posY(0), _posZ(0), _mapId(0), _createTime(0), _lastModifiedTime(0),
-                       _completed(false), _escalatedStatus(TICKET_UNASSIGNED), _viewed(false),
-                       _needResponse(false), _needMoreHelp(false) { }
+                       _completed(false), _escalatedStatus(TICKET_UNASSIGNED), _viewed(false) { }
 
 GmTicket::GmTicket(Player* player) : _type(TICKET_TYPE_OPEN), _posX(0), _posY(0), _posZ(0), _mapId(0), _createTime(GameTime::GetGameTime()), _lastModifiedTime(GameTime::GetGameTime()),
-                       _completed(false), _escalatedStatus(TICKET_UNASSIGNED), _viewed(false),
-                       _needResponse(false), _needMoreHelp(false)
+                       _completed(false), _escalatedStatus(TICKET_UNASSIGNED), _viewed(false)
 {
     _id = sTicketMgr->GenerateTicketId();
     _playerName = player->GetName();
     _playerGuid = player->GetGUID();
 }
 
-GmTicket::~GmTicket()
-{
-}
+GmTicket::~GmTicket() { }
 
 Player* GmTicket::GetPlayer() const
 {
@@ -64,10 +60,10 @@ Player* GmTicket::GetAssignedPlayer() const
 
 bool GmTicket::LoadFromDB(Field* fields)
 {
-    // 0    1        2        3         4            5        6     7     8     9           10           11         12         13        14        15        16         17         18
-    // id, type, playerGuid, name, description, createTime, mapId, posX, posY, posZ, lastModifiedTime, closedBy, assignedTo, comment, response, completed, escalated, viewed, needMoreHelp
+    // 0    1        2        3         4            5        6     7     8     9           10           11         12         13        14        15        16         17
+    // id, type, playerGuid, name, description, createTime, mapId, posX, posY, posZ, lastModifiedTime, closedBy, assignedTo, comment, response, completed, escalated, viewed
     uint8 index = 0;
-    _id                 = fields[  index].GetUInt32();
+    _id                 = fields[index].GetUInt32();
     _type               = TicketType(fields[++index].GetUInt8());
     _playerGuid         = ObjectGuid(HighGuid::Player, fields[++index].GetUInt32());
     _playerName         = fields[++index].GetString();
@@ -85,14 +81,13 @@ bool GmTicket::LoadFromDB(Field* fields)
     _completed          = fields[++index].GetBool();
     _escalatedStatus    = GMTicketEscalationStatus(fields[++index].GetUInt8());
     _viewed             = fields[++index].GetBool();
-    _needMoreHelp       = fields[++index].GetBool();
     return true;
 }
 
 void GmTicket::SaveToDB(SQLTransaction& trans) const
 {
-    //  0    1       2         3          4          5        6     7     8     9           10           11          12        13        14        15         16        17         18          19
-    // id, type, playerGuid, name, description, createTime, mapId, posX, posY, posZ, lastModifiedTime, closedBy, assignedTo, comment, response, completed, escalated, viewed, needMoreHelp, resolvedBy
+    //  0    1       2         3          4          5        6     7     8     9           10           11          12        13        14        15         16        17         18
+    // id, type, playerGuid, name, description, createTime, mapId, posX, posY, posZ, lastModifiedTime, closedBy, assignedTo, comment, response, completed, escalated, viewed, resolvedBy
     uint8 index = 0;
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_REP_GM_TICKET);
     stmt->setUInt32(  index, _id);
@@ -113,7 +108,6 @@ void GmTicket::SaveToDB(SQLTransaction& trans) const
     stmt->setBool  (++index, _completed);
     stmt->setUInt8 (++index, uint8(_escalatedStatus));
     stmt->setBool  (++index, _viewed);
-    stmt->setBool  (++index, _needMoreHelp);
     stmt->setInt32 (++index, int32(_resolvedBy.GetCounter()));
 
     CharacterDatabase.ExecuteOrAppend(trans, stmt);
@@ -129,9 +123,8 @@ void GmTicket::DeleteFromDB()
 void GmTicket::WritePacket(WorldPacket& data) const
 {
     data << uint32(GMTICKET_STATUS_HASTEXT);
-    data << uint32(_id);
     data << _message;
-    data << uint8(_needMoreHelp);
+    data << uint8(0x07);
     data << GetAge(_lastModifiedTime);
     if (GmTicket* ticket = sTicketMgr->GetOldestOpenTicket())
         data << GetAge(ticket->GetLastModifiedTime());
@@ -214,12 +207,6 @@ void GmTicket::SetPosition(uint32 mapId, float x, float y, float z)
     _posX = x;
     _posY = y;
     _posZ = z;
-}
-
-void GmTicket::SetGmAction(uint32 needResponse, bool needMoreHelp)
-{
-    _needResponse = (needResponse == 17);   // Requires GM response. 17 = true, 1 = false (17 is default)
-    _needMoreHelp = needMoreHelp;           // Requests further GM interaction on a ticket to which a GM has already responded. Basically means "has a new ticket"
 }
 
 void GmTicket::TeleportTo(Player* player) const
