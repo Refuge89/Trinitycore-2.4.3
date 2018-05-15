@@ -141,7 +141,6 @@ void WorldSession::HandleMoveWorldportAck()
     }
 
     // resurrect character at enter into instance where his corpse exist after add to map
-
     if (mEntry->IsDungeon() && !GetPlayer()->IsAlive())
     {
         if (GetPlayer()->GetCorpseLocation().GetMapId() == mEntry->MapID)
@@ -204,11 +203,9 @@ void WorldSession::HandleMoveTeleportAck(WorldPacket& recvData)
 {
     TC_LOG_DEBUG("network", "MSG_MOVE_TELEPORT_ACK");
     ObjectGuid guid;
-
-    recvData >> guid.ReadAsPacked();
-
     uint32 sequenceIndex, time;
-    recvData >> sequenceIndex >> time;
+
+    recvData >> guid >> sequenceIndex >> time;
 
     Player* plMover = _player->m_unitMovedByMe->ToPlayer();
 
@@ -267,20 +264,10 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
         return;
     }
 
-    /* extract packet */
-    ObjectGuid guid;
-
-    recvData >> guid.ReadAsPacked();
-
     MovementInfo movementInfo;
-    movementInfo.guid = guid;
     ReadMovementInfo(recvData, &movementInfo);
 
     recvData.rfinish();                         // prevent warnings spam
-
-    // prevent tampered movement data
-    if (guid != mover->GetGUID())
-        return;
 
     if (!movementInfo.pos.IsPositionValid())
     {
@@ -352,11 +339,9 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
     if (opcode == MSG_MOVE_FALL_LAND || opcode == MSG_MOVE_START_SWIM)
         mover->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_LANDING); // Parachutes
 
+    // now client not include swimming flag in case jumping under water
     if (plrMover && ((movementInfo.flags & MOVEMENTFLAG_SWIMMING) != 0) != plrMover->IsInWater())
-    {
-        // now client not include swimming flag in case jumping under water
         plrMover->SetInWater(!plrMover->IsInWater() || plrMover->GetBaseMap()->IsUnderWater(movementInfo.pos.GetPositionX(), movementInfo.pos.GetPositionY(), movementInfo.pos.GetPositionZ()));
-    }
 
     uint32 mstime = GameTime::GetGameTimeMS();
     /*----------------------*/
@@ -409,27 +394,25 @@ void WorldSession::HandleForceSpeedChangeAck(WorldPacket &recvData)
     /* extract packet */
     ObjectGuid guid;
     uint32 unk1;
-    float  newspeed;
+    float newspeed;
 
-    recvData >> guid.ReadAsPacked();
+    recvData >> guid;
 
     // now can skip not our packet
     if (_player->GetGUID() != guid)
     {
-        recvData.rfinish();                   // prevent warnings spam
+        recvData.rfinish(); // prevent warnings spam
         return;
     }
 
     // continue parse packet
-
-    recvData >> unk1;                                      // counter or moveEvent
+    recvData >> unk1; // counter or moveEvent
 
     MovementInfo movementInfo;
     movementInfo.guid = guid;
     ReadMovementInfo(recvData, &movementInfo);
 
     recvData >> newspeed;
-    /*----------------*/
 
     // client ACK send one packet for mounted/run case and need skip all except last from its
     // in other cases anti-cheat check can be fail in false case
@@ -464,13 +447,13 @@ void WorldSession::HandleForceSpeedChangeAck(WorldPacket &recvData)
 
     if (!_player->GetTransport() && std::fabs(_player->GetSpeed(move_type) - newspeed) > 0.01f)
     {
-        if (_player->GetSpeed(move_type) > newspeed)         // must be greater - just correct
+        if (_player->GetSpeed(move_type) > newspeed) // must be greater - just correct
         {
             TC_LOG_ERROR("network", "%sSpeedChange player %s is NOT correct (must be %f instead %f), force set to correct value",
                 move_type_name[move_type], _player->GetName().c_str(), _player->GetSpeed(move_type), newspeed);
             _player->SetSpeedRate(move_type, _player->GetSpeedRate(move_type));
         }
-        else                                                // must be lesser - cheating
+        else                                         // must be lesser - cheating
         {
             TC_LOG_DEBUG("misc", "Player %s from account id %u kicked for incorrect speed (must be %f instead %f)",
                 _player->GetName().c_str(), _player->GetSession()->GetAccountId(), _player->GetSpeed(move_type), newspeed);
@@ -496,7 +479,7 @@ void WorldSession::HandleMoveNotActiveMover(WorldPacket &recvData)
     TC_LOG_DEBUG("network", "WORLD: Recvd CMSG_MOVE_NOT_ACTIVE_MOVER");
 
     ObjectGuid old_mover_guid;
-    recvData >> old_mover_guid.ReadAsPacked();
+    recvData >> old_mover_guid;
 
     MovementInfo mi;
     ReadMovementInfo(recvData, &mi);
@@ -519,12 +502,12 @@ void WorldSession::HandleMoveKnockBackAck(WorldPacket& recvData)
     TC_LOG_DEBUG("network", "CMSG_MOVE_KNOCK_BACK_ACK");
 
     ObjectGuid guid;
-    recvData >> guid.ReadAsPacked();
+    recvData >> guid;
 
     if (_player->m_unitMovedByMe->GetGUID() != guid)
         return;
 
-    recvData.read_skip<uint32>();                          // unk
+    recvData.read_skip<uint32>(); // unk
 
     MovementInfo movementInfo;
     ReadMovementInfo(recvData, &movementInfo);
@@ -549,7 +532,7 @@ void WorldSession::HandleMoveHoverAck(WorldPacket& recvData)
     TC_LOG_DEBUG("network", "CMSG_MOVE_HOVER_ACK");
 
     ObjectGuid guid;                                        // guid - unused
-    recvData >> guid.ReadAsPacked();
+    recvData >> guid;
 
     recvData.read_skip<uint32>();                           // unk
 
@@ -564,7 +547,7 @@ void WorldSession::HandleMoveWaterWalkAck(WorldPacket& recvData)
     TC_LOG_DEBUG("network", "CMSG_MOVE_WATER_WALK_ACK");
 
     ObjectGuid guid;                                        // guid - unused
-    recvData >> guid.ReadAsPacked();
+    recvData >> guid;
 
     recvData.read_skip<uint32>();                           // unk
 
