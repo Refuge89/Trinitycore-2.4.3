@@ -34,7 +34,6 @@
 struct AccessRequirement;
 struct AreaTableEntry;
 struct AreaTriggerEntry;
-struct CharacterCustomizeInfo;
 struct CharTitlesEntry;
 struct ChatChannelsEntry;
 struct CreatureTemplate;
@@ -1228,7 +1227,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void SaveGoldToDB(SQLTransaction& trans) const;
 
         static void SetUInt32ValueInArray(Tokenizer& data, uint16 index, uint32 value);
-        static void Customize(CharacterCustomizeInfo const* customizeInfo, SQLTransaction& trans);
         static void SavePositionInDB(WorldLocation const& loc, uint16 zoneId, ObjectGuid guid, SQLTransaction& trans);
 
         static void DeleteFromDB(ObjectGuid playerguid, uint32 accountId, bool updateRealmChars = true, bool deleteFinally = false);
