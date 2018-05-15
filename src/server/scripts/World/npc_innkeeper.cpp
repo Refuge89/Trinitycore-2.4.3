@@ -149,8 +149,12 @@ public:
 
             switch (action)
             {
-                case GOSSIP_ACTION_TRADE: player->GetSession()->SendListInventory(me->GetGUID()); break;
-                case GOSSIP_ACTION_INN: player->SetBindPoint(me->GetGUID()); break;
+                case GOSSIP_ACTION_TRADE:
+                    player->GetSession()->SendListInventory(me->GetGUID());
+                    break;
+                case GOSSIP_ACTION_INN:
+                    player->SetBindPoint(me->GetGUID());
+                    break;
             }
             return true;
         }

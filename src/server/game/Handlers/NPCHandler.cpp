@@ -424,7 +424,7 @@ void WorldSession::SendBindPoint(Creature* npc)
     npc->CastSpell(_player, bindspell, true);
 
     WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, 8 + 4);
-    data << uint64(npc->GetGUID());
+    data << npc->GetGUID();
     data << uint32(bindspell);
     SendPacket(&data);
 

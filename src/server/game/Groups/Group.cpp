@@ -1658,7 +1658,7 @@ void Group::OfflineReadyCheck()
         if (!player || !player->GetSession())
         {
             WorldPacket data(MSG_RAID_READY_CHECK_CONFIRM, 8 + 1);
-            data << uint64(citr->guid);
+            data << citr->guid;
             data << uint8(0);
             BroadcastReadyCheck(&data);
         }

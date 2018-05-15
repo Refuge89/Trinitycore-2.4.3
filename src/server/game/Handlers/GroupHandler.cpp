@@ -697,7 +697,7 @@ void WorldSession::HandleRaidReadyCheckOpcode(WorldPacket& recvData)
 
         // everything's fine, do it
         WorldPacket data(MSG_RAID_READY_CHECK_CONFIRM, 8 + 1);
-        data << uint64(GetPlayer()->GetGUID());
+        data << GetPlayer()->GetGUID();
         data << uint8(state);
         group->BroadcastReadyCheck(&data);
     }
