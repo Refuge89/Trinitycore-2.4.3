@@ -712,7 +712,7 @@ void WorldSession::LoadAccountData(PreparedQueryResult result, uint32 mask)
     while (result->NextRow());
 }
 
-void WorldSession::SetAccountData(AccountDataType type std::string const& data)
+void WorldSession::SetAccountData(AccountDataType type, std::string const& data)
 {
     uint32 id = 0;
     CharacterDatabaseStatements index;
