@@ -72,12 +72,12 @@ enum GMTicketOpenedByGMStatus
 
 enum LagReportType
 {
-    LAG_REPORT_TYPE_LOOT = 1,
-    LAG_REPORT_TYPE_AUCTION_HOUSE = 2,
-    LAG_REPORT_TYPE_MAIL = 3,
-    LAG_REPORT_TYPE_CHAT = 4,
-    LAG_REPORT_TYPE_MOVEMENT = 5,
-    LAG_REPORT_TYPE_SPELL = 6
+    LAG_REPORT_TYPE_LOOT            = 1,
+    LAG_REPORT_TYPE_AUCTION_HOUSE   = 2,
+    LAG_REPORT_TYPE_MAIL            = 3,
+    LAG_REPORT_TYPE_CHAT            = 4,
+    LAG_REPORT_TYPE_MOVEMENT        = 5,
+    LAG_REPORT_TYPE_SPELL           = 6
 };
 
 enum TicketType
@@ -163,7 +163,6 @@ private:
     bool _completed;
     GMTicketEscalationStatus _escalatedStatus;
     bool _viewed;
-    bool _needMoreHelp;
     std::string _response;
     std::string _chatLog; // No need to store in db, will be refreshed every session client side
 };
