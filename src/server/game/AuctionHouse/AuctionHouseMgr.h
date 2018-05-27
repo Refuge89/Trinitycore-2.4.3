@@ -31,7 +31,7 @@ class Player;
 class WorldPacket;
 struct AuctionHouseEntry;
 
-#define MIN_AUCTION_TIME (12*HOUR)
+#define MIN_AUCTION_TIME (12 * HOUR)
 #define MAX_AUCTION_ITEMS 160
 #define MAX_GETALL_RETURN 55000
 
@@ -101,7 +101,6 @@ struct TC_GAME_API AuctionEntry
     bool LoadFromDB(Field* fields);
     std::string BuildAuctionMailSubject(MailAuctionAnswers response) const;
     static std::string BuildAuctionMailBody(ObjectGuid::LowType lowGuid, uint32 bid, uint32 buyout, uint32 deposit, uint32 cut);
-
 };
 
 //this class is used as auctionhouse instance
@@ -147,7 +146,6 @@ class TC_GAME_API AuctionHouseObject
     // Map of throttled players for GetAll, and throttle expiry time
     // Stored here, rather than player object to maintain persistence after logout
     PlayerGetAllThrottleMap GetAllThrottleMap;
-
 };
 
 class TC_GAME_API AuctionHouseMgr
