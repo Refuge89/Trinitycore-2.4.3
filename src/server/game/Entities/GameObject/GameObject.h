@@ -52,7 +52,7 @@ union GameObjectValue
     //29 GAMEOBJECT_TYPE_CAPTURE_POINT
     struct
     {
-        OPvPCapturePoint *OPvPObj;
+        OPvPCapturePoint* OPvPObj;
     } CapturePoint;
     //33 GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING
     struct
@@ -141,20 +141,20 @@ class TC_GAME_API GameObject : public WorldObject, public GridObject<GameObject>
 
         void SetRespawnTime(int32 respawn);
         void Respawn();
-        bool isSpawned() const
+        bool IsSpawned() const
         {
             return m_respawnDelayTime == 0 ||
                 (m_respawnTime > 0 && !m_spawnedByDefault) ||
                 (m_respawnTime == 0 && m_spawnedByDefault);
         }
-        bool isSpawnedByDefault() const { return m_spawnedByDefault; }
+        bool IsSpawnedByDefault() const { return m_spawnedByDefault; }
         void SetSpawnedByDefault(bool b) { m_spawnedByDefault = b; }
         uint32 GetRespawnDelay() const { return m_respawnDelayTime; }
         void Refresh();
         void DespawnOrUnsummon(Milliseconds const& delay = 0ms, Seconds const& forceRespawnTime = 0s);
         void Delete();
-        void getFishLoot(Loot* loot, Player* loot_owner);
-        void getFishLootJunk(Loot* loot, Player* loot_owner);
+        void GetFishLoot(Loot* loot, Player* loot_owner);
+        void GetFishLootJunk(Loot* loot, Player* loot_owner);
         GameobjectTypes GetGoType() const { return GameobjectTypes(GetInt32Value(GAMEOBJECT_TYPE_ID)); }
         void SetGoType(GameobjectTypes type) { SetInt32Value(GAMEOBJECT_TYPE_ID, type); }
         GOState GetGoState() const { return GOState(GetInt32Value(GAMEOBJECT_STATE)); }
@@ -171,7 +171,7 @@ class TC_GAME_API GameObject : public WorldObject, public GridObject<GameObject>
 
         void Use(Unit* user);
 
-        LootState getLootState() const { return m_lootState; }
+        LootState GetLootState() const { return m_lootState; }
         // Note: unit is only used when s = GO_ACTIVATED
         void SetLootState(LootState s, Unit* unit = nullptr);
 

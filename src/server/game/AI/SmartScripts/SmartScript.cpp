@@ -1438,7 +1438,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                     TC_LOG_WARN("sql.sql", "Invalid creature target '%s' (entry %u, spawnId %u) specified for SMART_ACTION_ENABLE_TEMP_GOBJ", target->GetName().c_str(), target->GetEntry(), target->ToCreature()->GetSpawnId());
                 else if (IsGameObject(target))
                 {
-                    if (target->ToGameObject()->isSpawnedByDefault())
+                    if (target->ToGameObject()->IsSpawnedByDefault())
                         TC_LOG_WARN("sql.sql", "Invalid gameobject target '%s' (entry %u, spawnId %u) for SMART_ACTION_ENABLE_TEMP_GOBJ - the object is spawned by default", target->GetName().c_str(), target->GetEntry(), target->ToGameObject()->GetSpawnId());
                     else
                         target->ToGameObject()->SetRespawnTime(e.action.enableTempGO.duration);

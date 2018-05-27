@@ -195,7 +195,7 @@ void GameObject::AddToWorld()
             GetMap()->GetGameObjectBySpawnIdStore().insert(std::make_pair(m_spawnId, this));
 
         // The state can be changed after GameObject::Create but before GameObject::AddToWorld
-        bool toggledState = GetGoType() == GAMEOBJECT_TYPE_CHEST ? getLootState() == GO_READY : (GetGoState() == GO_STATE_READY || IsTransport());
+        bool toggledState = GetGoType() == GAMEOBJECT_TYPE_CHEST ? GetLootState() == GO_READY : (GetGoState() == GO_STATE_READY || IsTransport());
         if (m_model)
         {
             if (Transport* trans = ToTransport())
@@ -574,7 +574,7 @@ void GameObject::Update(uint32 diff)
             if (!m_respawnCompatibilityMode && m_respawnTime > 0)
                 SaveRespawnTime(0, false);
 
-            if (isSpawned())
+            if (IsSpawned())
             {
                 GameObjectTemplate const* goInfo = GetGOInfo();
                 if (goInfo->type == GAMEOBJECT_TYPE_TRAP)
@@ -816,7 +816,7 @@ void GameObject::Refresh()
     if (m_respawnTime > 0 && m_spawnedByDefault)
         return;
 
-    if (isSpawned())
+    if (IsSpawned())
         GetMap()->AddToMap(this);
 }
 
@@ -864,7 +864,7 @@ void GameObject::Delete()
         AddObjectToRemoveList();
 }
 
-void GameObject::getFishLoot(Loot* fishloot, Player* loot_owner)
+void GameObject::GetFishLoot(Loot* fishloot, Player* loot_owner)
 {
     fishloot->clear();
 
@@ -884,7 +884,7 @@ void GameObject::getFishLoot(Loot* fishloot, Player* loot_owner)
     }
 }
 
-void GameObject::getFishLootJunk(Loot* fishloot, Player* loot_owner)
+void GameObject::GetFishLootJunk(Loot* fishloot, Player* loot_owner)
 {
     fishloot->clear();
 
@@ -1197,7 +1197,7 @@ bool GameObject::IsInvisibleDueToDespawn() const
         return true;
 
     // Despawned
-    if (!isSpawned())
+    if (!IsSpawned())
         return true;
 
     return false;
@@ -1607,7 +1607,7 @@ void GameObject::Use(Unit* user)
             if (player->GetGUID() != GetOwnerGUID())
                 return;
 
-            switch (getLootState())
+            switch (GetLootState())
             {
                 case GO_READY:                              // ready for loot
                 {
@@ -2462,7 +2462,7 @@ class GameObjectModelOwnerImpl : public GameObjectModelOwnerBase
 public:
     explicit GameObjectModelOwnerImpl(GameObject* owner) : _owner(owner) { }
 
-    virtual bool IsSpawned() const override { return _owner->isSpawned(); }
+    virtual bool IsSpawned() const override { return _owner->IsSpawned(); }
     virtual uint32 GetDisplayId() const override { return _owner->GetDisplayId(); }
     virtual uint32 GetPhaseMask() const override { return _owner->GetPhaseMask(); }
     virtual G3D::Vector3 GetPosition() const override { return G3D::Vector3(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ()); }

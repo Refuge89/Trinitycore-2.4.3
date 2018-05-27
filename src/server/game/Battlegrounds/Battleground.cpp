@@ -1354,7 +1354,7 @@ void Battleground::DoorClose(uint32 type)
     if (GameObject* obj = GetBgMap()->GetGameObject(BgObjects[type]))
     {
         // If doors are open, close it
-        if (obj->getLootState() == GO_ACTIVATED && obj->GetGoState() != GO_STATE_READY)
+        if (obj->GetLootState() == GO_ACTIVATED && obj->GetGoState() != GO_STATE_READY)
         {
             obj->SetLootState(GO_READY);
             obj->SetGoState(GO_STATE_READY);
@@ -1415,7 +1415,7 @@ void Battleground::SpawnBGObject(uint32 type, uint32 respawntime)
             if (respawntime)
                 obj->SetLootState(GO_JUST_DEACTIVATED);
             else
-                if (obj->getLootState() == GO_JUST_DEACTIVATED)
+                if (obj->GetLootState() == GO_JUST_DEACTIVATED)
                     // Change state from GO_JUST_DEACTIVATED to GO_READY in case battleground is starting again
                     obj->SetLootState(GO_READY);
             obj->SetRespawnTime(respawntime);
@@ -1586,7 +1586,7 @@ void Battleground::EndNow()
 void Battleground::HandleTriggerBuff(ObjectGuid go_guid)
 {
     GameObject* obj = GetBgMap()->GetGameObject(go_guid);
-    if (!obj || obj->GetGoType() != GAMEOBJECT_TYPE_TRAP || !obj->isSpawned())
+    if (!obj || obj->GetGoType() != GAMEOBJECT_TYPE_TRAP || !obj->IsSpawned())
         return;
 
     // Change buff type, when buff is used:

@@ -418,11 +418,8 @@ void PoolGroup<GameObject>::Spawn1Object(PoolObject* obj)
                 delete pGameobject;
                 return;
             }
-            else
-            {
-                if (pGameobject->isSpawnedByDefault())
-                    map->AddToMap(pGameobject);
-            }
+            else if (pGameobject->IsSpawnedByDefault())
+                map->AddToMap(pGameobject);
         }
     }
 }

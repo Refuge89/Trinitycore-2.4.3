@@ -374,7 +374,7 @@ public:
                     GetGameObjectListWithEntryInGrid(eluneLights, me, GO_ELUNE_LIGHT, 20.0f);
                     for (std::list<GameObject*>::const_iterator itr = eluneLights.begin(); itr != eluneLights.end(); ++itr)
                     {
-                        if ((*itr)->isSpawned())
+                        if ((*itr)->IsSpawned())
                             continue;
 
                         (*itr)->SetRespawnTime(115);
@@ -416,7 +416,7 @@ public:
                     // make the gem respawn
                     if (GameObject* gem = GetClosestGameObjectWithEntry(me, GO_ELUNE_GEM, 10.0f))
                     {
-                        if (gem->isSpawned())
+                        if (gem->IsSpawned())
                             break;
 
                         gem->SetRespawnTime(90);

@@ -2735,7 +2735,7 @@ void Unit::_UpdateSpells(uint32 time)
         GameObjectList::iterator itr;
         for (itr = m_gameObj.begin(); itr != m_gameObj.end();)
         {
-            if (!(*itr)->isSpawned())
+            if (!(*itr)->IsSpawned())
             {
                 (*itr)->SetOwnerGUID(ObjectGuid::Empty);
                 (*itr)->SetRespawnTime(0);

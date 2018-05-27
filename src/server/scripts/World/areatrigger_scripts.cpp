@@ -59,7 +59,7 @@ class AreaTrigger_at_coilfang_waterfall : public AreaTriggerScript
         bool OnTrigger(Player* player, AreaTriggerEntry const* /*trigger*/) override
         {
             if (GameObject* go = GetClosestGameObjectWithEntry(player, GO_COILFANG_WATERFALL, 35.0f))
-                if (go->getLootState() == GO_READY)
+                if (go->GetLootState() == GO_READY)
                     go->UseDoorOrButton();
 
             return false;

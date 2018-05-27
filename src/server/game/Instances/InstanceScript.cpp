@@ -493,9 +493,9 @@ void InstanceScript::DoUseDoorOrButton(ObjectGuid guid, uint32 withRestoreTime /
     {
         if (go->GetGoType() == GAMEOBJECT_TYPE_DOOR || go->GetGoType() == GAMEOBJECT_TYPE_BUTTON)
         {
-            if (go->getLootState() == GO_READY)
+            if (go->GetLootState() == GO_READY)
                 go->UseDoorOrButton(withRestoreTime, useAlternativeState);
-            else if (go->getLootState() == GO_ACTIVATED)
+            else if (go->GetLootState() == GO_ACTIVATED)
                 go->ResetDoorOrButton();
         }
         else
@@ -514,7 +514,7 @@ void InstanceScript::DoCloseDoorOrButton(ObjectGuid guid)
     {
         if (go->GetGoType() == GAMEOBJECT_TYPE_DOOR || go->GetGoType() == GAMEOBJECT_TYPE_BUTTON)
         {
-            if (go->getLootState() == GO_ACTIVATED)
+            if (go->GetLootState() == GO_ACTIVATED)
                 go->ResetDoorOrButton();
         }
         else
@@ -541,7 +541,7 @@ void InstanceScript::DoRespawnGameObject(ObjectGuid guid, uint32 timeToDespawn /
                 break;
         }
 
-        if (go->isSpawned())
+        if (go->IsSpawned())
             return;
 
         go->SetRespawnTime(timeToDespawn);

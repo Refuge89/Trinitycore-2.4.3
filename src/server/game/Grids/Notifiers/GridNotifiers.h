@@ -673,7 +673,7 @@ namespace Trinity
                 if (go->GetGOInfo()->spellFocus.focusId != _focusId)
                     return false;
 
-                if (!go->isSpawned())
+                if (!go->IsSpawned())
                     return false;
 
                 float const dist = go->GetGOInfo()->spellFocus.dist / 2.f;
@@ -693,7 +693,7 @@ namespace Trinity
 
             bool operator()(GameObject* go)
             {
-                if (go->GetGOInfo()->type == GAMEOBJECT_TYPE_FISHINGHOLE && go->isSpawned() && i_obj.IsWithinDistInMap(go, i_range) && i_obj.IsWithinDistInMap(go, (float)go->GetGOInfo()->fishinghole.radius))
+                if (go->GetGOInfo()->type == GAMEOBJECT_TYPE_FISHINGHOLE && go->IsSpawned() && i_obj.IsWithinDistInMap(go, i_range) && i_obj.IsWithinDistInMap(go, (float)go->GetGOInfo()->fishinghole.radius))
                 {
                     i_range = i_obj.GetDistance(go);
                     return true;

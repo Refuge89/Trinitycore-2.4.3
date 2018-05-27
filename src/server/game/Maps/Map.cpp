@@ -4223,7 +4223,7 @@ GameObject* Map::GetGameObjectBySpawnId(ObjectGuid::LowType spawnId) const
 
     std::unordered_multimap<uint32, GameObject*>::const_iterator creatureItr = std::find_if(bounds.first, bounds.second, [](Map::GameObjectBySpawnIdContainer::value_type const& pair)
     {
-        return pair.second->isSpawned();
+        return pair.second->IsSpawned();
     });
 
     return creatureItr != bounds.second ? creatureItr->second : bounds.first->second;

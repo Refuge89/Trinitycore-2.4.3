@@ -1283,7 +1283,7 @@ void GameEventMgr::GameEventSpawn(int16 event_id)
                     delete pGameobject;
                 else
                 {
-                    if (pGameobject->isSpawnedByDefault())
+                    if (pGameobject->IsSpawnedByDefault())
                         map->AddToMap(pGameobject);
                 }
             }

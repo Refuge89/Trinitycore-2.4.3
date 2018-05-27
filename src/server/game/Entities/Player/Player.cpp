@@ -7959,7 +7959,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
                 if (lootType != LOOT_FISHINGHOLE && ((lootType != LOOT_FISHING && lootType != LOOT_FISHING_JUNK) || go->GetOwnerGUID() != GetGUID()) && !go->IsWithinDistInMap(this, INTERACTION_DISTANCE))
                     return true;
 
-                if (lootType == LOOT_CORPSE && go->GetRespawnTime() && go->isSpawnedByDefault())
+                if (lootType == LOOT_CORPSE && go->GetRespawnTime() && go->IsSpawnedByDefault())
                     return true;
             }
 
@@ -7976,10 +7976,10 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
 
         // loot was generated and respawntime has passed since then, allow to recreate loot
         // to avoid bugs, this rule covers spawned gameobjects only
-        if (go->isSpawnedByDefault() && go->getLootState() == GO_ACTIVATED && !go->loot.isLooted() && go->GetLootGenerationTime() + go->GetRespawnDelay() < GameTime::GetGameTime())
+        if (go->IsSpawnedByDefault() && go->GetLootState() == GO_ACTIVATED && !go->loot.isLooted() && go->GetLootGenerationTime() + go->GetRespawnDelay() < GameTime::GetGameTime())
             go->SetLootState(GO_READY);
 
-        if (go->getLootState() == GO_READY)
+        if (go->GetLootState() == GO_READY)
         {
             uint32 lootid = go->GetGOInfo()->GetLootId();
             if (Battleground* bg = GetBattleground())
@@ -8013,9 +8013,9 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
                     loot->generateMoneyLoot(addon->Mingold, addon->Maxgold);
 
             if (loot_type == LOOT_FISHING)
-                go->getFishLoot(loot, this);
+                go->GetFishLoot(loot, this);
             else if (loot_type == LOOT_FISHING_JUNK)
-                go->getFishLootJunk(loot, this);
+                go->GetFishLootJunk(loot, this);
 
             if (go->GetGOInfo()->type == GAMEOBJECT_TYPE_CHEST && go->GetGOInfo()->chest.groupLootRules)
             {
@@ -8042,7 +8042,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
             go->SetLootState(GO_ACTIVATED, this);
         }
 
-        if (go->getLootState() == GO_ACTIVATED)
+        if (go->GetLootState() == GO_ACTIVATED)
         {
             if (Group* group = GetGroup())
             {
