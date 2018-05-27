@@ -21,7 +21,6 @@
 #include "DBCStores.h"
 #include "Log.h"
 #include "Timer.h"
-#include <openssl/md5.h>
 
 namespace AddonMgr
 {
@@ -34,8 +33,6 @@ namespace
     typedef std::list<SavedAddon> SavedAddonsList;
 
     SavedAddonsList m_knownAddons;
-
-    BannedAddonList m_bannedAddons;
 }
 
 void LoadFromDB()
@@ -64,35 +61,6 @@ void LoadFromDB()
     }
     else
         TC_LOG_INFO("server.loading", ">> Loaded 0 known addons. DB table `addons` is empty!");
-
-    oldMSTime = getMSTime();
-    result = CharacterDatabase.Query("SELECT id, name, version, UNIX_TIMESTAMP(timestamp) FROM banned_addons");
-    if (result)
-    {
-        uint32 count = 0;
-
-        do
-        {
-            Field* fields = result->Fetch();
-
-            BannedAddon addon;
-            addon.Id = fields[0].GetUInt32();
-            addon.Timestamp = uint32(fields[3].GetUInt64());
-
-            std::string name = fields[1].GetString();
-            std::string version = fields[2].GetString();
-
-            MD5(reinterpret_cast<uint8 const*>(name.c_str()), name.length(), addon.NameMD5);
-            MD5(reinterpret_cast<uint8 const*>(version.c_str()), version.length(), addon.VersionMD5);
-
-            m_bannedAddons.push_back(addon);
-
-            ++count;
-        }
-        while (result->NextRow());
-
-        TC_LOG_INFO("server.loading", ">> Loaded %u banned addons in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-    }
 }
 
 void SaveAddon(AddonInfo const& addon)
@@ -119,11 +87,6 @@ SavedAddon const* GetAddonInfo(const std::string& name)
     }
 
     return nullptr;
-}
-
-BannedAddonList const* GetBannedAddons()
-{
-    return &m_bannedAddons;
 }
 
 } // Namespace
